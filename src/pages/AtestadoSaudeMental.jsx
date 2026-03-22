@@ -620,23 +620,22 @@ const AtestadoSaudeMental = () => {
 
             <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
-                    @page { margin: 0; size: A4; }
+                    @page { margin: 1cm; size: A4 portrait; }
                     body { background: white !important; }
                     .print\\:hidden { display: none !important; }
                     
-                    .max-w-7xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; display: block !important; }
-                    .lg\\:grid-cols-3 { display: block !important; }
-                    .lg\\:col-span-2 { width: 100% !important; display: block !important; }
+                    /* Desativar o Grid para evitar problemas de largura no Chrome Print */
+                    .grid { display: block !important; }
+                    .gap-8 { gap: 0 !important; }
                     
-                    * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
+                    /* Ocupar a folha inteira na impressão, margens vêm do @page */
+                    .max-w-7xl { max-width: none !important; margin: 0 !important; width: 100% !important; display: block !important; }
                     
-                    #root { padding: 0 !important; margin: 0 !important; }
-
                     .documento-atestado { 
-                        width: 100% !important;
-                        max-width: 794px !important;
-                        margin: 0 auto !important;
-                        padding: 1.5cm !important;
+                        width: auto !important;
+                        max-width: none !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
                         background: white !important;
                         box-shadow: none !important;
                         border: none !important;
@@ -646,6 +645,7 @@ const AtestadoSaudeMental = () => {
                     .print-section {
                         page-break-inside: avoid !important;
                     }
+                    * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
                 }
                 .documento-atestado {
                     width: 100%;

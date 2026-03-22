@@ -376,15 +376,35 @@ const Recibo = () => {
             </div>
             <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
+                    @page { margin: 1cm; size: A4 portrait; }
                     body { background: white !important; }
                     .print\\:hidden { display: none !important; }
-                    .max-w-5xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
+                    
+                    /* Desativar o Grid para evitar problemas de largura no Chrome Print */
+                    .grid { display: block !important; }
+                    .gap-8 { gap: 0 !important; }
+                    
+                    /* Ocupar a folha inteira na impressão, margens vêm do @page */
+                    .max-w-5xl { max-width: none !important; margin: 0 !important; width: 100% !important; display: block !important; }
                     .lg\\:grid-cols-3 { grid-template-columns: 1fr !important; }
                     .lg\\:col-span-2 { grid-column: span 1 / span 1 !important; }
-                    .bg-white { background: white !important; }
+                    
+                    .documento-recibo { 
+                        width: auto !important;
+                        max-width: none !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        background: white !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                        min-height: 0 !important;
+                    }
+
+                    .print-section {
+                        page-break-inside: avoid !important;
+                    }
                     input { border: none !important; text-decoration: none !important; }
                     * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-                    @page { margin: 1cm; size: A4; }
                 }
                 .documento-recibo {
                     width: 100%;

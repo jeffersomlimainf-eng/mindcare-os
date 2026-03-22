@@ -628,16 +628,32 @@ const TermoConsentimento = () => {
 
             <style>{`
                 @media print {
-                    @page { size: A4; margin: 0; }
-                    .print-tcle { 
-                        display: block !important; 
-                        visibility: visible !important; 
-                        background: white !important; 
-                        padding: 45px !important;
-                        text-rendering: optimizeLegibility;
-                        -webkit-font-smoothing: antialiased;
+                    @page { margin: 1cm; size: A4 portrait; }
+                    body { background: white !important; }
+                    .print\\:hidden { display: none !important; }
+                    
+                    /* Desativar o Grid para evitar problemas de largura no Chrome Print */
+                    .grid { display: block !important; }
+                    .gap-8 { gap: 0 !important; }
+                    
+                    /* Ocupar a folha inteira na impressão, margens vêm do @page */
+                    .max-w-7xl { max-width: none !important; margin: 0 !important; width: 100% !important; display: block !important; }
+                    
+                    .documento-termo { 
+                        width: auto !important;
+                        max-width: none !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        background: white !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                        min-height: 0 !important;
                     }
-                    .hidden.print\\:block { display: block !important; }
+
+                    .print-section {
+                        page-break-inside: auto !important;
+                    }
+                    * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
                 }
                 .documento-termo {
                     width: 100%;
