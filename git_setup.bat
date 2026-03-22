@@ -1,0 +1,6 @@
+@echo off
+echo Adicionando arquivos...
+git add .
+echo Criando commit...
+git commit -m "Initial commit"
+echo Pronto!
