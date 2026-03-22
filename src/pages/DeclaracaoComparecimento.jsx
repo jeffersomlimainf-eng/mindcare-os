@@ -293,7 +293,7 @@ const DeclaracaoComparecimento = () => {
     const atualizadoEm = declExistente?.atualizadoEm;
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 pb-20 print:bg-white print:p-0">
             {/* Header */}
             <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
                 <div>
@@ -370,10 +370,10 @@ const DeclaracaoComparecimento = () => {
                                         type="text"
                                         value={dados.finalidade}
                                         onChange={e => handleChange('finalidade', e.target.value)}
-                                        className="font-black border-b border-dotted border-slate-300 focus:border-emerald-500 outline-none bg-transparent print:border-none"
+                                        className="font-black border-b border-dotted border-slate-300 focus:border-emerald-500 outline-none bg-transparent print:hidden"
                                         style={{ width: `${Math.max(dados.finalidade.length, 20) + 2}ch` }}
                                         readOnly={isFinalizado}
-                                    />.
+                                    /><span className="hidden print:inline font-black border-b border-transparent">{dados.finalidade}</span>.
                                 </p>
 
                                 {dados.observacoes ? (
@@ -641,18 +641,32 @@ const DeclaracaoComparecimento = () => {
 
             <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
+                    @page { margin: 0; size: A4; }
                     body { background: white !important; }
                     .print\\:hidden { display: none !important; }
-                    .max-w-7xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
-                    .lg\\:grid-cols-3 { grid-template-columns: 1fr !important; }
-                    .lg\\:col-span-2 { grid-column: span 1 / span 1 !important; }
-                    .bg-slate-50 { background: white !important; }
-                    .dark\\:bg-slate-950 { background: white !important; }
-                    .bg-white { background: white !important; }
-                    .border { border-color: #f1f5f9 !important; }
-                    textarea { border: none !important; height: auto !important; overflow: visible !important; }
+                    
+                    .max-w-7xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; display: block !important; }
+                    .lg\\:grid-cols-3 { display: block !important; }
+                    .lg\\:col-span-2 { width: 100% !important; display: block !important; }
+                    
                     * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-                    @page { margin: 1.5cm; }
+                    
+                    #root { padding: 0 !important; margin: 0 !important; }
+
+                    .documento-declaracao { 
+                        width: 100% !important;
+                        max-width: 794px !important;
+                        margin: 0 auto !important;
+                        padding: 2cm !important;
+                        background: white !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                        min-height: 0 !important;
+                    }
+
+                    .print-section {
+                        page-break-inside: avoid !important;
+                    }
                 }
                 .documento-declaracao {
                     width: 794px; /* A4 width */

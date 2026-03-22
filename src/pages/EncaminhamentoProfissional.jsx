@@ -300,7 +300,7 @@ const EncaminhamentoProfissional = () => {
     const hojeExtenso = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 pb-20 print:bg-white print:p-0">
             {/* Header */}
             <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
                 <div>
@@ -416,48 +416,57 @@ const EncaminhamentoProfissional = () => {
                             </p>
 
                             {/* Motivo */}
-                            <div className="my-4">
+                            <div className="my-4 print:my-4 print-section">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-1 h-5 rounded-full bg-sky-500"></div>
-                                    <p className="text-xs font-black uppercase tracking-wider text-slate-900">Motivo do Encaminhamento</p>
+                                    <div className="w-1 h-5 rounded-full bg-sky-500 print:hidden"></div>
+                                    <p className="text-xs font-black uppercase tracking-wider text-slate-900 print:text-[12pt] print:text-sky-700 border-b border-transparent print:border-slate-200 print:pb-1">Motivo do Encaminhamento</p>
                                 </div>
                                 <textarea
                                     value={dados.motivo}
                                     onChange={e => handleChange('motivo', e.target.value)}
-                                    className="w-full text-[14px] leading-[2] text-slate-700 bg-transparent border-none outline-none resize-none min-h-[80px] focus:bg-sky-50/40 rounded-lg p-3 transition-colors print:p-0"
+                                    className="w-full text-[14px] leading-[2] text-slate-700 bg-transparent border-none outline-none resize-none min-h-[80px] focus:bg-sky-50/40 rounded-lg p-3 transition-colors print:hidden"
                                     placeholder="Descreva o motivo principal do encaminhamento. Ex: Paciente apresenta sintomatologia sugestiva de transtorno de ansiedade generalizada, necessitando de avaliação psiquiátrica para possível intervenção medicamentosa complementar ao tratamento psicoterápico."
                                     readOnly={isFinalizado}
                                 />
+                                <div className="hidden print:block text-[14px] leading-[2.2] text-slate-800 whitespace-pre-wrap text-justify">
+                                    {dados.motivo || 'Não informado.'}
+                                </div>
                             </div>
 
                             {/* Resumo Clínico */}
-                            <div className="my-4">
+                            <div className="my-4 print:my-4 print-section">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-1 h-5 rounded-full bg-sky-500"></div>
-                                    <p className="text-xs font-black uppercase tracking-wider text-slate-900">Resumo Clínico</p>
+                                    <div className="w-1 h-5 rounded-full bg-sky-500 print:hidden"></div>
+                                    <p className="text-xs font-black uppercase tracking-wider text-slate-900 print:text-[12pt] print:text-sky-700 border-b border-transparent print:border-slate-200 print:pb-1">Resumo Clínico</p>
                                 </div>
                                 <textarea
                                     value={dados.resumoClinico}
                                     onChange={e => handleChange('resumoClinico', e.target.value)}
-                                    className="w-full text-[14px] leading-[2] text-slate-700 bg-transparent border-none outline-none resize-none min-h-[80px] focus:bg-sky-50/40 rounded-lg p-3 transition-colors print:p-0"
+                                    className="w-full text-[14px] leading-[2] text-slate-700 bg-transparent border-none outline-none resize-none min-h-[80px] focus:bg-sky-50/40 rounded-lg p-3 transition-colors print:hidden"
                                     placeholder="Breve resumo clínico relevante para o profissional de destino. Ex: Paciente em acompanhamento há 6 meses, com queixa de insônia, irritabilidade e episódios de pânico. Abordagem cognitivo-comportamental em andamento com evolução parcial."
                                     readOnly={isFinalizado}
                                 />
+                                <div className="hidden print:block text-[14px] leading-[2.2] text-slate-800 whitespace-pre-wrap text-justify">
+                                    {dados.resumoClinico || 'Não informado.'}
+                                </div>
                             </div>
 
                             {/* Objetivo */}
-                            <div className="my-4">
+                            <div className="my-4 print:my-4 print-section">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-1 h-5 rounded-full bg-sky-500"></div>
-                                    <p className="text-xs font-black uppercase tracking-wider text-slate-900">Objetivo do Encaminhamento</p>
+                                    <div className="w-1 h-5 rounded-full bg-sky-500 print:hidden"></div>
+                                    <p className="text-xs font-black uppercase tracking-wider text-slate-900 print:text-[12pt] print:text-sky-700 border-b border-transparent print:border-slate-200 print:pb-1">Objetivo do Encaminhamento</p>
                                 </div>
                                 <textarea
                                     value={dados.objetivoEncaminhamento}
                                     onChange={e => handleChange('objetivoEncaminhamento', e.target.value)}
-                                    className="w-full text-[14px] leading-[2] text-slate-700 bg-transparent border-none outline-none resize-none min-h-[60px] focus:bg-sky-50/40 rounded-lg p-3 transition-colors print:p-0"
+                                    className="w-full text-[14px] leading-[2] text-slate-700 bg-transparent border-none outline-none resize-none min-h-[60px] focus:bg-sky-50/40 rounded-lg p-3 transition-colors print:hidden"
                                     placeholder="O que se espera do profissional de destino. Ex: Avaliação diagnóstica e conduta farmacológica, se necessário, para manejo da sintomatologia ansiosa."
                                     readOnly={isFinalizado}
                                 />
+                                <div className="hidden print:block text-[14px] leading-[2.2] text-slate-800 whitespace-pre-wrap text-justify">
+                                    {dados.objetivoEncaminhamento || 'Não informado.'}
+                                </div>
                             </div>
 
                             {dados.observacoes && (
@@ -708,18 +717,32 @@ const EncaminhamentoProfissional = () => {
 
             <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
+                    @page { margin: 0; size: A4; }
                     body { background: white !important; }
                     .print\\:hidden { display: none !important; }
-                    .max-w-7xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
-                    .lg\\:grid-cols-3 { grid-template-columns: 1fr !important; }
-                    .lg\\:col-span-2 { grid-column: span 1 / span 1 !important; }
-                    .bg-slate-50 { background: white !important; }
-                    .dark\\:bg-slate-950 { background: white !important; }
-                    .bg-white { background: white !important; }
-                    .border { border-color: #f1f5f9 !important; }
-                    textarea { border: none !important; height: auto !important; overflow: visible !important; }
+                    
+                    .max-w-7xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; display: block !important; }
+                    .lg\\:grid-cols-3 { display: block !important; }
+                    .lg\\:col-span-2 { width: 100% !important; display: block !important; }
+                    
                     * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-                    @page { margin: 1.5cm; }
+                    
+                    #root { padding: 0 !important; margin: 0 !important; }
+
+                    .documento-encaminhamento { 
+                        width: 100% !important;
+                        max-width: 794px !important;
+                        margin: 0 auto !important;
+                        padding: 1.5cm !important;
+                        background: white !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                        min-height: 0 !important;
+                    }
+
+                    .print-section {
+                        page-break-inside: avoid !important;
+                    }
                 }
                 .documento-encaminhamento {
                     width: 794px; /* A4 width */
