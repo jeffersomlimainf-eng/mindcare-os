@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#1392ec",
+                "background-light": "#f6f7f8",
+                "background-dark": "#101a22",
+              },
+              fontFamily: {
+                "display": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+      </script>
+<title>Enviar Documento - Clínica Médica</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary/20 rounded-full p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">medical_services</span>
+</div>
+<div>
+<h1 class="text-slate-900 dark:text-white text-base font-bold leading-none">Clínica Médica</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Área do Profissional</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Painel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-sm font-medium">Pacientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm font-medium">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-sm font-medium">Documentos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-sm font-medium">Financeiro</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="text-sm font-medium">Relatórios</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="style">style</span>
+<span class="text-sm font-medium">Modelos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors mt-auto" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Configurações</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a professional doctor smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBphh9XRa6BYhqanL6zyLl21P9WKT_JmHDq5AtI77BQwwHA_kfGMK0-I8BNqYxXBOPWjVP-rk3IsFTZyLiQ-GLP0ltRrXA5MESd5qVh7zBeS7FFsLSVFZLMjnJKJZf7vmCWgKq0bqauFiP8UNJSSUhyGfS1UQ2OColUFeNI7Dl-1NyIRddOUEqXQQf14VQ0XCQi7A5QLkdG6JDvBYyZnvewh1ZVhL2M_nAtrzSI07zDbSILelBCq6_wPeoAAPRbwimf6reRWkxbvw"/>
+<div class="overflow-hidden">
+<p class="text-sm font-semibold truncate">Dr. Ricardo Souza</p>
+<p class="text-xs text-slate-500 truncate">CRM/SP 123456</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto">
+<div class="max-w-5xl mx-auto p-8">
+<!-- Header -->
+<header class="mb-8">
+<h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Enviar Documento</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-2">Selecione o canal e revise a mensagem antes de enviar ao paciente.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Settings -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Patient Section -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">person</span> Paciente
+                        </h3>
+<div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg">
+<img class="w-16 h-16 rounded-full object-cover" data-alt="Portrait of a young male patient" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsD46lPrbsowtsNpzw4ehKsu5t4W0SBK11-VR2cwjt_3XOqPKHUrnpz7rwjjbJj8Qa_22U0qe8QUtPRVhBZ40VgXh6NPPmyNG77UlFnpdUn0My7X--4zaENd1O_iybgT4ATe5SCVZvDjw8CkiYpTZutdRzknxSq2IFjD_JBfsaHu3VBK-m8EiFXEeWkwihQQFDkbILva5MpcrUk4N6W2qMUAFKmQbolfsi1Gqk0ubhLx212svXZVanXPENX45YnCTWjdLyn5c3gQ"/>
+<div>
+<p class="text-base font-semibold">João Silva Oliveira</p>
+<p class="text-sm text-slate-500">CPF: 123.456.789-00</p>
+<div class="flex gap-4 mt-2">
+<span class="text-xs flex items-center gap-1 text-slate-500"><span class="material-symbols-outlined text-xs">mail</span> joao.silva@email.com</span>
+<span class="text-xs flex items-center gap-1 text-slate-500"><span class="material-symbols-outlined text-xs">chat</span> (11) 98765-4321</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Channel & Document Selection -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Canal de Envio</h3>
+<div class="grid grid-cols-2 gap-3">
+<label class="relative flex flex-col items-center justify-center p-4 border-2 border-primary bg-primary/5 rounded-xl cursor-pointer">
+<input checked="" class="hidden" name="channel" type="radio"/>
+<span class="material-symbols-outlined text-primary text-3xl mb-1">chat</span>
+<span class="text-sm font-bold text-primary">WhatsApp</span>
+<span class="absolute top-2 right-2 material-symbols-outlined text-primary text-sm">check_circle</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<input class="hidden" name="channel" type="radio"/>
+<span class="material-symbols-outlined text-slate-400 text-3xl mb-1">mail</span>
+<span class="text-sm font-bold text-slate-600 dark:text-slate-400">E-mail</span>
+</label>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Documento Selecionado</h3>
+<div class="p-4 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center gap-3">
+<div class="bg-red-100 dark:bg-red-900/30 p-2 rounded text-red-600">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-bold truncate">Atestado_Medico_JoaoSilva.pdf</p>
+<p class="text-xs text-slate-500">2.4 MB • Gerado em 24/10/2023</p>
+</div>
+<button class="text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Message Editor -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Mensagem Personalizada</h3>
+<textarea class="w-full h-32 p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" placeholder="Escreva uma mensagem adicional para o paciente...">Olá, João! Segue em anexo o seu atestado médico conforme solicitado durante a consulta de hoje. Qualquer dúvida, estamos à disposição.</textarea>
+<div class="mt-4 flex items-center gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400">Incluir link seguro para download</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400">Notificar após visualização</span>
+</label>
+</div>
+</section>
+</div>
+<!-- Right Column: Preview -->
+<div class="lg:col-span-1">
+<div class="bg-slate-200 dark:bg-slate-800 rounded-[2rem] p-4 shadow-xl border-4 border-slate-300 dark:border-slate-700 sticky top-8">
+<div class="bg-emerald-500 rounded-t-2xl p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm">person</span>
+</div>
+<span class="text-white text-sm font-bold">Clínica Médica</span>
+</div>
+<div class="bg-[#e5ddd5] dark:bg-slate-900 h-[400px] p-4 overflow-hidden relative flex flex-col">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, #000 1px, transparent 0); background-size: 20px 20px;"></div>
+<div class="bg-white dark:bg-slate-800 p-3 rounded-lg rounded-tl-none shadow-sm max-w-[85%] relative z-10 self-start">
+<p class="text-[13px] leading-relaxed mb-2">Olá, João! Segue em anexo o seu atestado médico conforme solicitado durante a consulta de hoje. Qualquer dúvida, estamos à disposição.</p>
+<div class="bg-slate-100 dark:bg-slate-700 p-2 rounded-lg flex items-center gap-3 mt-1 border border-slate-200 dark:border-slate-600">
+<div class="bg-red-500 p-1.5 rounded text-white">
+<span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-[11px] font-bold truncate">Atestado_Medico_Joao...</p>
+<p class="text-[9px] text-slate-500">PDF • 2.4 MB</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">download</span>
+</div>
+<div class="flex justify-end mt-1">
+<span class="text-[9px] text-slate-400">14:30</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-2 rounded-lg shadow-sm max-w-[85%] relative z-10 self-start mt-2">
+<p class="text-[11px] text-primary underline mb-1">https://clinica.com/secure/at672h...</p>
+<p class="text-[10px] text-slate-500">Acesse via link seguro.</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-b-2xl p-3 flex items-center gap-2">
+<div class="bg-slate-100 dark:bg-slate-700 flex-1 h-8 rounded-full"></div>
+<div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm">send</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">send</span> Enviar para o Paciente
+                    </button>
+<p class="text-center text-xs text-slate-500 mt-4 px-4">Ao clicar em enviar, o paciente receberá o documento via WhatsApp através do nosso número oficial.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

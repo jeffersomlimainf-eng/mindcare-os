@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agenda de Consultas - MindCare OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .active-nav { border-bottom: 2px solid #1392ec; color: #1392ec; }
+        .time-slot { height: 80px; border-bottom: 1px solid #e2e8f0; }
+        .appointment-card { position: absolute; left: 4px; right: 4px; border-left: 4px solid; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="layout-container flex flex-col h-screen overflow-hidden">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="bg-primary text-white p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold tracking-tight">MindCare OS</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 hover:text-primary text-sm font-medium transition-colors" href="#">Painel</a>
+<a class="text-slate-500 hover:text-primary text-sm font-medium transition-colors" href="#">Pacientes</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-3 mt-3" href="#">Agenda</a>
+<a class="text-slate-500 hover:text-primary text-sm font-medium transition-colors" href="#">Prontuários</a>
+<a class="text-slate-500 hover:text-primary text-sm font-medium transition-colors" href="#">Financeiro</a>
+<a class="text-slate-500 hover:text-primary text-sm font-medium transition-colors" href="#">Relatórios</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary" placeholder="Buscar paciente..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="size-9 rounded-full bg-slate-200 overflow-hidden border border-slate-200 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Foto de perfil do profissional psicólogo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmH8lnxpysdc4oXPG5ss_9lfzIx1f7QglA-p2eJgaiiXmZplCrCVzpRMuZW-oZnIukxfhLZ4MyQdh73SaSAM0QgZInIfA95nRouvf3arnzHCKooOKJ0PpIxI3m3qs1_6zf1FrRwMtmC6Ibr905J9aVcusTYHMJ46Rt8oeajNksqMZrucVMenqoMJQvO4gddq_XkDi4pSuUUyQ9wb41Ce46ZauezcTPA_KmZkVUZ_oFxQ3Zbzlvn7wlQ2WDrc19XOPPJqMD6t1iIA"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="w-20 lg:w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col py-6 overflow-y-auto">
+<div class="px-4 mb-8">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">add</span>
+<span class="hidden lg:inline">Novo Agendamento</span>
+</button>
+</div>
+<div class="px-4 space-y-1">
+<p class="hidden lg:block text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">Mini Calendário</p>
+<div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 mb-6">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-bold">Outubro 2023</span>
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">chevron_left</span>
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">chevron_right</span>
+</div>
+</div>
+<div class="grid grid-cols-7 text-[10px] text-center gap-y-2">
+<span class="text-slate-400">D</span><span class="text-slate-400">S</span><span class="text-slate-400">T</span><span class="text-slate-400">Q</span><span class="text-slate-400">Q</span><span class="text-slate-400">S</span><span class="text-slate-400">S</span>
+<span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+<span class="bg-primary text-white rounded-full size-5 flex items-center justify-center mx-auto">1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+</div>
+</div>
+<p class="hidden lg:block text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">Fila de Espera</p>
+<div class="space-y-2">
+<div class="p-3 bg-primary/5 border border-primary/20 rounded-xl hover:shadow-md transition-shadow cursor-grab">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold text-slate-800 dark:text-slate-100">Ana Beatriz</span>
+<span class="bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 rounded uppercase font-black tracking-tighter">Urgente</span>
+</div>
+<p class="text-[10px] text-slate-500">Tarde/Noite • 50min</p>
+</div>
+<div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:shadow-md transition-shadow cursor-grab">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold text-slate-800 dark:text-slate-100">Marcos Lima</span>
+<span class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 text-[10px] px-1.5 py-0.5 rounded uppercase font-black tracking-tighter">Rotina</span>
+</div>
+<p class="text-[10px] text-slate-500">Manhã • 50min</p>
+</div>
+</div>
+<div class="pt-8">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="hidden lg:inline text-sm font-medium">Configurações</span>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col bg-background-light dark:bg-background-dark overflow-hidden"><div class="mx-6 mt-4 p-3 bg-emerald-500 text-white rounded-xl shadow-lg flex items-center justify-between animate-bounce">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="text-sm font-bold">Consulta agendada com sucesso!</span>
+</div>
+<button class="text-white/80 hover:text-white" onclick="this.parentElement.remove()">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<div class="bg-white dark:bg-slate-900 px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<h1 class="text-xl font-black text-slate-900 dark:text-white">Semana 01 - 07 Outubro</h1>
+<div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+<button class="px-4 py-1.5 text-xs font-bold bg-white dark:bg-slate-700 shadow-sm rounded-md">Semanal</button>
+<button class="px-4 py-1.5 text-xs font-bold text-slate-500">Diário</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-4 mr-4 text-[11px] font-bold text-slate-500">
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-primary"></span> Presencial</div>
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-emerald-500"></span> Teleconsulta</div>
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-amber-500"></span> Pendente</div>
+</div>
+<div class="flex gap-1">
+<button class="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50"><span class="material-symbols-outlined text-xl">chevron_left</span></button>
+<button class="px-4 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50">Hoje</button>
+<button class="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50"><span class="material-symbols-outlined text-xl">chevron_right</span></button>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-auto">
+<div class="min-w-[800px] h-full flex flex-col">
+<div class="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+<div class="p-4"></div>
+<div class="p-4 text-center border-l border-slate-100 dark:border-slate-800">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Segunda</p>
+<p class="text-lg font-black">01</p>
+</div>
+<div class="p-4 text-center border-l border-slate-100 dark:border-slate-800 bg-primary/5">
+<p class="text-[10px] font-bold text-primary uppercase">Terça</p>
+<p class="text-lg font-black text-primary">02</p>
+</div>
+<div class="p-4 text-center border-l border-slate-100 dark:border-slate-800">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Quarta</p>
+<p class="text-lg font-black">03</p>
+</div>
+<div class="p-4 text-center border-l border-slate-100 dark:border-slate-800">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Quinta</p>
+<p class="text-lg font-black">04</p>
+</div>
+<div class="p-4 text-center border-l border-slate-100 dark:border-slate-800">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Sexta</p>
+<p class="text-lg font-black">05</p>
+</div>
+<div class="p-4 text-center border-l border-slate-100 dark:border-slate-800">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Sábado</p>
+<p class="text-lg font-black text-slate-400">06</p>
+</div>
+<div class="p-4 text-center border-l border-slate-100 dark:border-slate-800">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Domingo</p>
+<p class="text-lg font-black text-slate-400">07</p>
+</div>
+</div>
+<div class="relative flex-1 grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]">
+<div class="bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800">
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">08:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">09:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">10:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">11:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">12:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">13:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">14:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">15:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">16:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">17:00</div>
+<div class="time-slot flex items-start justify-center pt-2 text-[11px] font-bold text-slate-400">18:00</div>
+</div>
+<div class="relative border-r border-slate-100 dark:border-slate-800">
+<div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div>
+<div class="appointment-card top-[80px] h-[70px] bg-primary/10 border-primary rounded-lg p-2 shadow-sm group">
+<div class="flex justify-between items-start">
+<p class="text-[11px] font-black text-primary leading-tight">Ricardo Mendes</p>
+<span class="material-symbols-outlined text-primary text-xs opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</div>
+<p class="text-[9px] font-bold text-slate-600 dark:text-slate-400">09:00 - 09:50</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[8px] bg-primary text-white px-1 py-0.5 rounded font-bold uppercase">Confirmado</span>
+<span class="material-symbols-outlined text-[10px] text-slate-400">sync</span>
+</div>
+</div>
+<div class="appointment-card top-[320px] h-[150px] bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500 rounded-lg p-2 shadow-sm group">
+<p class="text-[11px] font-black text-emerald-700 dark:text-emerald-400 leading-tight">Clara Nunes</p>
+<p class="text-[9px] font-bold text-slate-600">12:00 - 13:30</p>
+<div class="flex items-center gap-1 mt-1 mb-2">
+<span class="text-[8px] bg-emerald-500 text-white px-1 py-0.5 rounded font-bold uppercase">Em Sessão</span>
+</div>
+<button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-bold py-1 px-2 rounded flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[12px]">video_call</span> Abrir Link
+                                    </button>
+</div>
+</div>
+<div class="relative border-r border-slate-100 dark:border-slate-800 bg-primary/5">
+<div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div>
+<div class="appointment-card top-[160px] h-[70px] bg-amber-50 dark:bg-amber-950/30 border-amber-500 rounded-lg p-2 shadow-sm group">
+<p class="text-[11px] font-black text-amber-700 dark:text-amber-400 leading-tight">Felipe D'Avila</p>
+<p class="text-[9px] font-bold text-slate-600">10:00 - 10:50</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[8px] bg-amber-500 text-white px-1 py-0.5 rounded font-bold uppercase">Aguardando</span>
+</div>
+</div>
+<div class="absolute top-[210px] left-0 right-0 border-t-2 border-red-500 flex items-center z-20">
+<div class="size-2 rounded-full bg-red-500 -ml-1"></div>
+</div>
+</div>
+<div class="relative border-r border-slate-100 dark:border-slate-800">
+<div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div>
+<div class="appointment-card top-[400px] h-[70px] bg-primary/10 border-primary rounded-lg p-2 shadow-sm">
+<p class="text-[11px] font-black text-primary leading-tight">Sofia Marques</p>
+<p class="text-[9px] font-bold text-slate-600">13:00 - 13:50</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[8px] bg-primary text-white px-1 py-0.5 rounded font-bold uppercase">Confirmado</span>
+<span class="material-symbols-outlined text-[10px] text-slate-400">sync</span>
+</div>
+</div>
+<div class="appointment-card top-[240px] h-[70px] bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500 rounded-lg p-2 shadow-md ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 group z-10">
+<div class="flex justify-between items-start">
+<p class="text-[11px] font-black text-emerald-700 dark:text-emerald-400 leading-tight">Mariana Costa</p>
+<span class="flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+</div>
+<p class="text-[9px] font-bold text-slate-600 dark:text-slate-400">11:00 - 11:50</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[8px] bg-emerald-500 text-white px-1 py-0.5 rounded font-bold uppercase">Novo</span>
+<span class="text-[8px] border border-emerald-500 text-emerald-500 px-1 py-0.5 rounded font-bold uppercase">Confirmado</span>
+</div>
+</div></div>
+<div class="relative border-r border-slate-100 dark:border-slate-800">
+<div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div>
+<div class="appointment-card top-[0px] h-[70px] bg-slate-100 dark:bg-slate-800 border-slate-400 rounded-lg p-2 shadow-sm opacity-60">
+<p class="text-[11px] font-black text-slate-700 dark:text-slate-200 leading-tight">Jorge Paulo</p>
+<p class="text-[9px] font-bold text-slate-500">08:00 - 08:50</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[8px] bg-slate-500 text-white px-1 py-0.5 rounded font-bold uppercase">Concluído</span>
+</div>
+</div>
+</div>
+<div class="relative border-r border-slate-100 dark:border-slate-800">
+<div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div>
+<div class="appointment-card top-[160px] h-[70px] bg-red-50 dark:bg-red-950/30 border-red-400 rounded-lg p-2 shadow-sm group">
+<p class="text-[11px] font-black text-red-700 dark:text-red-400 leading-tight">Eduardo Lima</p>
+<p class="text-[9px] font-bold text-slate-500">10:00 - 10:50</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[8px] bg-red-500 text-white px-1 py-0.5 rounded font-bold uppercase">Faltou</span>
+</div>
+</div>
+</div>
+<div class="relative bg-slate-50/50 dark:bg-slate-800/20 border-r border-slate-100 dark:border-slate-800">
+<div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div>
+</div>
+<div class="relative bg-slate-50/50 dark:bg-slate-800/20">
+<div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div><div class="time-slot"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 flex justify-between items-center">
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">videocam</span>
+<span class="text-xs font-bold text-slate-500">Teleconsulta Integrada (Zoom/Meet)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">sync</span>
+<span class="text-xs font-bold text-slate-500">Recorrência Automática</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-400">
+<span>Fuso horário: Brasília (GMT-3)</span>
+</div>
+</div>
+</main>
+<aside class="hidden xl:flex w-72 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex-col py-6 px-4">
+<div class="mb-6">
+<h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">person_check</span> Status da Recepção
+                    </h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Paciente Felipe D'Avila" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbko6aRnCEJz-yZf6-4OJkl1W_H_yiaBoTEoX5fMUEL4u9ebZZceVzGg9xHVT2cbAVyAjB95UQJHTysy-6wxgs6VSADcRIkxt-U2iJvAJoouwEdmQKvf-4j89W1R4sEwWn-HySvZp38nh_DDe-sNgC3yOdSXStAdC7MsCbphrIKAmH6b-WA9lzy8O_H8aqGkWVMIjC-L2o4VmzTiZrvDPRclTUcnbxp5Gt--gUaYAbCzntcGmDCmGRM8QEWm4Y5S7nFWZjG0_WOg"/>
+</div>
+<div>
+<p class="text-xs font-bold">Felipe D'Avila</p>
+<p class="text-[10px] text-amber-500 font-bold uppercase">Aguardando (12m)</p>
+</div>
+</div>
+<button class="text-primary hover:bg-primary/10 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-sm">login</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-200 overflow-hidden border-2 border-emerald-500">
+<img class="w-full h-full object-cover" data-alt="Paciente Clara Nunes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFM8u5gdnAyJ_UC1kMJSV4J_E7i-8QrrKR8NLijbn2-6V2NopDzL4YupibP4dJ19KlLVDCwBdKH-uLYfFOIXcuWC0oqT6BlGe4Q62pDRhXukypUh4VCRmcRsOU2WFCa-J1pnq97hdAn3CQMnQW-bElA6rOo_xRIGW5vnjm_6CmQQFRa38Wn8vnwSSCrT7cZNK_fa2GUU7mC4DfHMP0udc0DHCbIbjWjqoMMGuk7BxDIixFTRcULR5ROgmhIQqql91OPHMl57nkzw"/>
+</div>
+<div>
+<p class="text-xs font-bold">Clara Nunes</p>
+<p class="text-[10px] text-emerald-500 font-bold uppercase">Em Sessão</p>
+</div>
+</div>
+<span class="animate-pulse size-2 rounded-full bg-emerald-500"></span>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">analytics</span> Atividade Recente
+                    </h3>
+<div class="space-y-4">
+<div class="relative pl-6 pb-4 border-l border-slate-200 dark:border-slate-800 last:border-0">
+<div class="absolute -left-[5px] top-0 size-2.5 rounded-full bg-primary border-2 border-white dark:border-slate-900"></div>
+<p class="text-[10px] font-bold text-slate-400">Há 5 minutos</p>
+<p class="text-xs font-medium"><span class="font-bold">Sofia Marques</span> confirmou presença para as 13h via WhatsApp.</p>
+</div>
+<div class="relative pl-6 pb-4 border-l border-slate-200 dark:border-slate-800 last:border-0">
+<div class="absolute -left-[5px] top-0 size-2.5 rounded-full bg-slate-400 border-2 border-white dark:border-slate-900"></div>
+<p class="text-[10px] font-bold text-slate-400">Há 1 hora</p>
+<p class="text-xs font-medium">Sessão de <span class="font-bold">Jorge Paulo</span> finalizada e prontuário salvo.</p>
+</div>
+</div>
+</div>
+<div class="mt-4 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+<p class="text-xs font-bold text-slate-800 mb-2">Resumo do Dia</p>
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-white dark:bg-slate-800 p-2 rounded-lg text-center">
+<p class="text-lg font-black text-primary">08</p>
+<p class="text-[9px] font-bold text-slate-400 uppercase">Total</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-2 rounded-lg text-center">
+<p class="text-lg font-black text-emerald-500">03</p>
+<p class="text-[9px] font-bold text-slate-400 uppercase">Tele</p>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</body></html>

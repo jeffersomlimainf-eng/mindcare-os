@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vincular Paciente a Pacote - Gestão Clínica</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-size: 24px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+<div class="p-6 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800">
+<div class="bg-primary/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">medical_services</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-sm font-bold leading-none">Gestão Clínica</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Admin Panel</p>
+</div>
+</div>
+<nav class="flex-1 p-4 space-y-2">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm font-medium">Pacientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-sm font-medium">Agendamentos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Financeiro</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Configurações</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3 px-2">
+<div class="size-8 rounded-full bg-slate-200" data-alt="Avatar do usuário administrativo"></div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold text-slate-900 dark:text-white truncate">Dr. Ricardo Silva</p>
+<p class="text-[10px] text-slate-500 truncate">Sair do sistema</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto">
+<header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 sticky top-0 z-10">
+<h2 class="text-lg font-semibold text-slate-800 dark:text-white">Vincular Paciente a Pacote</h2>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">notifications</span>
+<div class="h-8 w-[1px] bg-slate-200"></div>
+<span class="text-sm text-slate-500">Unidade: São Paulo - SP</span>
+</div>
+</header>
+<div class="p-8 max-w-5xl mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex mb-6 text-sm text-slate-500 gap-2">
+<span>Financeiro</span>
+<span>/</span>
+<span class="text-primary font-medium">Novo Vínculo de Pacote</span>
+</nav>
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Dados do Vínculo</h3>
+<p class="text-slate-500 text-sm mt-1">Preencha as informações para gerar o débito financeiro e liberar as sessões.</p>
+</div>
+<form class="p-8 space-y-8">
+<!-- Paciente e Pacote -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Paciente</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3.5 text-slate-400">search</span>
+<select class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all appearance-none">
+<option value="">Selecione um paciente...</option>
+<option>Ana Maria Oliveira</option>
+<option>Carlos Eduardo Santos</option>
+<option>Juliana Ferreira Lima</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Tipo de Pacote</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3.5 text-slate-400">inventory_2</span>
+<select class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all appearance-none">
+<option value="">Escolha o plano...</option>
+<option>Pacote Mensal (4 sessões)</option>
+<option>Pacote Bimestral (8 sessões)</option>
+<option>Pacote Semestral (24 sessões)</option>
+<option>Personalizado</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Valores e Pagamento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Valor Total (R$)</label>
+<div class="relative">
+<span class="absolute left-3 top-3.5 text-slate-400 text-sm font-medium">R$</span>
+<input class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="0,00" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Forma de Pagamento</label>
+<select class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+<option>Cartão de Crédito</option>
+<option>PIX</option>
+<option>Boleto Bancário</option>
+<option>Dinheiro / Espécie</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Parcelas</label>
+<select class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+<option>À vista</option>
+<option>2x sem juros</option>
+<option>3x sem juros</option>
+<option>4x sem juros</option>
+</select>
+</div>
+</div>
+<!-- Configurações Extras -->
+<div class="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Configurações Financeiras</h4>
+<div class="flex flex-wrap gap-6">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="size-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Gerar débito automaticamente</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="size-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Enviar comprovante por E-mail</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="size-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Notificar via WhatsApp</span>
+</label>
+</div>
+</div>
+<!-- Observações -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Observações Internas (Opcional)</label>
+<textarea class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Ex: Pacote promocional de aniversário ou condições especiais de pagamento..." rows="3"></textarea>
+</div>
+<!-- Resumo Visual (Card informativo) -->
+<div class="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<div class="text-sm text-slate-700 dark:text-slate-300">
+<p class="font-bold text-primary">Resumo da operação:</p>
+<p class="mt-1">Ao clicar em confirmar, o sistema criará um vínculo de <strong>4 sessões</strong> para o paciente selecionado e registrará uma entrada de <strong>R$ 0,00</strong> no módulo financeiro.</p>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-end gap-4 pt-6">
+<button class="px-6 py-3 rounded-lg text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" type="button">
+                                Cancelar
+                            </button>
+<button class="px-10 py-3 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center gap-2" type="submit">
+<span class="material-symbols-outlined">check_circle</span>
+                                Confirmar e Gerar Débito
+                            </button>
+</div>
+</form>
+</div>
+<!-- Ajuda/Suporte -->
+<footer class="mt-8 text-center text-slate-500 text-sm">
+<p>Precisa de ajuda? Entre em contato com o <a class="text-primary underline" href="#">suporte técnico</a></p>
+</footer>
+</div>
+</main>
+</div>
+</body></html>

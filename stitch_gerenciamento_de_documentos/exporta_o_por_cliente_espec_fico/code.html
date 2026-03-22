@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exportar Relatórios Financeiros</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-primary/10 bg-white dark:bg-slate-900 flex flex-col">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary/10 rounded-full p-2">
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<div>
+<h1 class="text-sm font-bold text-slate-900 dark:text-white leading-none">Gestão Financeira</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Administrador</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="text-sm font-medium">Relatórios Financeiros</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">calendar_today</span>
+<span class="text-sm font-medium">Agendamentos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">group</span>
+<span class="text-sm font-medium">Clientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary rounded-lg transition-colors mt-8" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm font-medium">Configurações</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-primary/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">JD</div>
+<div class="overflow-hidden">
+<p class="text-xs font-semibold truncate">João de Deus</p>
+<p class="text-[10px] text-slate-500 truncate">joao@empresa.com.br</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative overflow-y-auto">
+<!-- Modal Overlay / Content Container -->
+<div class="p-8 max-w-5xl mx-auto w-full">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Exportar Tudo</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Configure os detalhes para exportação dos seus relatórios financeiros.</p>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg font-bold text-sm hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Voltar para Relatórios
+                    </button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Options -->
+<div class="lg:col-span-2 space-y-6">
+<!-- 1. File Format -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
+<h3 class="text-lg font-bold flex items-center gap-2 mb-4">
+<span class="bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                                Formato do Arquivo
+                            </h3>
+<div class="grid grid-cols-3 gap-3">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="format" type="radio"/>
+<div class="flex flex-col items-center justify-center p-4 border-2 border-slate-100 dark:border-slate-800 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-3xl mb-1 text-slate-400 peer-checked:text-primary">table_chart</span>
+<span class="text-sm font-semibold">Excel (.xlsx)</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="format" type="radio"/>
+<div class="flex flex-col items-center justify-center p-4 border-2 border-slate-100 dark:border-slate-800 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-3xl mb-1 text-slate-400 peer-checked:text-primary">csv</span>
+<span class="text-sm font-semibold">CSV</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="format" type="radio"/>
+<div class="flex flex-col items-center justify-center p-4 border-2 border-slate-100 dark:border-slate-800 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-3xl mb-1 text-slate-400 peer-checked:text-primary">picture_as_pdf</span>
+<span class="text-sm font-semibold">PDF</span>
+</div>
+</label>
+</div>
+</section>
+<!-- 2. Date Range -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
+<h3 class="text-lg font-bold flex items-center gap-2 mb-4">
+<span class="bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                                Período
+                            </h3>
+<div class="space-y-4">
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-full">Últimos 30 dias</button>
+<button class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-full hover:bg-primary/10 transition-colors">Mês Atual</button>
+<button class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-full hover:bg-primary/10 transition-colors">Último Ano</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-1">
+<label class="text-xs font-medium text-slate-500">Data Início</label>
+<input class="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary" type="date"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-medium text-slate-500">Data Fim</label>
+<input class="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary" type="date"/>
+</div>
+</div>
+</div>
+</section><section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
+<h3 class="text-lg font-bold flex items-center gap-2 mb-4">
+<span class="bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                                Filtro de Paciente
+                            </h3>
+<div class="space-y-4">
+<label class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-primary/5 group transition-colors">
+<input checked="" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Filtrar por paciente específico</span>
+</label>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-medium text-slate-500">Selecionar Paciente</label>
+<div class="relative">
+<select class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary appearance-none py-2.5 pl-4 pr-10">
+<option selected="">Ana Oliveira</option>
+<option>Bruno Silva</option>
+<option>Carlos Santos</option>
+<option>Daniela Lima</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">Ao ativar, apenas dados relacionados ao paciente selecionado serão incluídos no relatório.</p>
+</div>
+</div>
+</section>
+<!-- 3. Data Selection -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
+<h3 class="text-lg font-bold flex items-center gap-2 mb-4">
+<span class="bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs">4</span>
+                                Seleção de Dados
+                            </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<label class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-primary/5 group transition-colors">
+<input checked="" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Receitas Totais</span>
+</label>
+<label class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-primary/5 group transition-colors">
+<input checked="" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Despesas Totais</span>
+</label>
+<label class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-primary/5 group transition-colors">
+<input checked="" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Faturamento por Categoria</span>
+</label>
+<label class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-primary/5 group transition-colors">
+<input class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Agendamentos Detalhados</span>
+</label>
+</div>
+</section>
+<div class="flex pt-4">
+<button class="w-full md:w-auto px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">download</span>
+                                Exportar Agora
+                            </button>
+</div>
+</div>
+<!-- Right Column: Recent Exports -->
+<div class="space-y-6">
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5 flex flex-col h-full">
+<h3 class="text-lg font-bold mb-6 flex items-center justify-between">
+                                Exportações Recentes
+                                <span class="material-symbols-outlined text-slate-400">history</span>
+</h3>
+<div class="space-y-4">
+<!-- Item 1 -->
+<div class="p-4 border border-slate-100 dark:border-slate-800 rounded-lg bg-slate-50/50 dark:bg-slate-800/30">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">table_view</span>
+<p class="text-sm font-bold truncate max-w-[140px]">relatorio_maio_2024.xlsx</p>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded">Completo</span>
+</div>
+<div class="flex justify-between items-center text-[11px] text-slate-500">
+<span>Hoje, 14:30</span>
+<button class="text-primary font-bold hover:underline">Download</button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-4 border border-slate-100 dark:border-slate-800 rounded-lg bg-slate-50/50 dark:bg-slate-800/30">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">table_view</span>
+<p class="text-sm font-bold truncate max-w-[140px]">faturamento_anual.csv</p>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded">Completo</span>
+</div>
+<div class="flex justify-between items-center text-[11px] text-slate-500">
+<span>Ontem, 09:15</span>
+<button class="text-primary font-bold hover:underline">Download</button>
+</div>
+</div>
+<!-- Item 3 (Processing) -->
+<div class="p-4 border border-slate-100 dark:border-slate-800 rounded-lg bg-slate-50/50 dark:bg-slate-800/30">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">picture_as_pdf</span>
+<p class="text-sm font-bold truncate max-w-[140px]">consolidado_2023.pdf</p>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded">Processando</span>
+</div>
+<div class="flex justify-between items-center text-[11px] text-slate-500">
+<span>Há 2 minutos</span>
+<div class="w-16 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="w-2/3 h-full bg-primary"></div>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-primary transition-colors border-t border-slate-100 dark:border-slate-800 pt-4">
+                                Ver todo o histórico
+                            </button>
+</section>
+</div>
+</div>
+</div>
+<!-- Background Decoration (Abstract Pattern) -->
+<div class="absolute top-0 right-0 -z-10 w-1/3 h-1/2 opacity-20 pointer-events-none">
+<div class="w-full h-full bg-gradient-to-bl from-primary/30 to-transparent blur-3xl"></div>
+</div>
+</main>
+</div>
+</body></html>

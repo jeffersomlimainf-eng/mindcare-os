@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/* ─── Tailwind v4: Dark Mode via classe ─── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Tailwind v4: Custom Design Tokens ─── */
+@theme {
+  /* Colors */
+  --color-primary: #1392ec;
+  --color-primary-50: #eff8ff;
+  --color-primary-100: #dbeefe;
+  --color-primary-200: #bfe3fd;
+  --color-primary-500: #1392ec;
+  --color-primary-600: #0e7fd0;
+  --color-primary-700: #0b68ab;
+
+  --color-background-light: #f8fafc;
+  --color-background-dark: #0f172a;
+
+  /* Font */
+  --font-family-sans: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* ─── Base ─── */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+
+  .dark body,
+  html.dark body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+  }
+
+  /* Scrollbar fino */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+  /* Glassmorphism Refined */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .dark .glass {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ─── Impressão ─── */
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Forçar fundo branco e remover sombras */
+  * {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .print-header-bg {
+    background-color: #f8fafc !important;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Ocultar elementos desnecessários */
+  .no-print,
+  button,
+  nav,
+  header,
+  aside,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Garantir que o conteúdo principal ocupe a tela toda */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .print\:p-0 {
+    padding: 0 !important;
+  }
+
+  .print\:m-0 {
+    margin: 0 !important;
+  }
+
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  /* Ajuste para containers React Router */
+  #root, 
+  .min-h-screen {
+    min-height: auto !important;
+    background: white !important;
+  }
+}
+

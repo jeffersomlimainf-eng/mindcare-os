@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav {
+            background-color: rgba(19, 146, 236, 0.1);
+            color: #1392ec;
+            border-right: 3px solid #1392ec;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col">
+<div class="p-6">
+<div class="flex items-center gap-2 mb-8">
+<div class="bg-primary p-1.5 rounded-lg text-white">
+<span class="material-symbols-outlined block text-2xl">psychology</span>
+</div>
+<div>
+<h1 class="text-lg font-bold leading-none">Psicologia Pro</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">Gestão Clínica</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Painel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Pacientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-sm font-medium">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-sm font-medium">Prontuários</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-sm font-medium">Financeiro</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="text-sm font-medium">Relatórios</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 active-nav rounded-lg" href="#">
+<span class="material-symbols-outlined">note_add</span>
+<span class="text-sm font-medium">Modelos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Configurações</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark">
+<!-- Header -->
+<header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 shrink-0">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">arrow_back</span>
+<h2 class="text-xl font-bold tracking-tight">Criar Novo Modelo</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                        Cancelar
+                    </button>
+<button class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm shadow-primary/20">
+<span class="material-symbols-outlined text-lg">save</span>
+                        Salvar Modelo
+                    </button>
+</div>
+</header>
+<!-- Editor Area -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Center: The Document Editor -->
+<div class="flex-1 overflow-y-auto p-8 flex flex-col items-center">
+<div class="max-w-4xl w-full space-y-6">
+<!-- Metadata Fields -->
+<div class="grid grid-cols-2 gap-6 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Título do Modelo</label>
+<input class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder="Ex: Laudo Psicológico de Evolução" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Categoria</label>
+<select class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm">
+<option value="">Selecione...</option>
+<option value="laudo">Laudo</option>
+<option value="atestado">Atestado</option>
+<option value="declaracao">Declaração</option>
+<option value="parecer">Parecer Técnico</option>
+</select>
+</div>
+</div>
+<!-- Rich Text Editor Mockup -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col min-h-[600px]">
+<!-- Toolbar -->
+<div class="p-3 border-b border-slate-200 dark:border-slate-800 flex items-center gap-1 flex-wrap">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_bold</span></button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_italic</span></button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_underlined</span></button>
+<div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_align_left</span></button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_align_center</span></button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_align_right</span></button>
+<div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">format_list_numbered</span></button>
+<div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">image</span></button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined">link</span></button>
+</div>
+<!-- Editor Content Area -->
+<div class="flex-1 p-10 focus:outline-none overflow-y-auto prose dark:prose-invert max-w-none" contenteditable="true">
+<h2 class="text-center font-bold text-lg mb-8">ATESTADO PSICOLÓGICO</h2>
+<p class="mb-4">
+                                    Atesto para os devidos fins que o(a) Sr(a). <span class="bg-primary/10 text-primary font-mono px-1 rounded">{{Nome do Paciente}}</span>, 
+                                    inscrito(a) no CPF sob o nº <span class="bg-primary/10 text-primary font-mono px-1 rounded">{{CPF}}</span>, 
+                                    encontra-se em acompanhamento psicoterapêutico nesta clínica.
+                                </p>
+<p class="mb-4">
+                                    O(A) paciente compareceu à sessão realizada no dia <span class="bg-primary/10 text-primary font-mono px-1 rounded">{{Data da Sessão}}</span>, no horário das {{Horário}}.
+                                </p>
+<p class="mb-12">
+                                    A presente declaração é a expressão da verdade.
+                                </p>
+<div class="mt-20 flex flex-col items-center">
+<div class="w-64 border-t border-slate-400 mb-2"></div>
+<p class="text-sm font-bold">{{Nome do Profissional}}</p>
+<p class="text-xs text-slate-500">Psicólogo(a) - <span class="bg-primary/10 text-primary font-mono px-1 rounded">{{CRP do Profissional}}</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Dynamic Fields -->
+<aside class="w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-6 overflow-y-auto">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">variables</span>
+                        Campos Dinâmicos
+                    </h3>
+<p class="text-xs text-slate-400 dark:text-slate-500 mb-6">Clique em um campo para inseri-lo na posição atual do cursor no editor.</p>
+<div class="space-y-6">
+<!-- Group: Paciente -->
+<div class="space-y-2">
+<h4 class="text-xs font-bold text-slate-700 dark:text-slate-300">DADOS DO PACIENTE</h4>
+<div class="grid grid-cols-1 gap-2">
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{Nome do Paciente}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{CPF}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{Data de Nascimento}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{Endereço}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+</div>
+</div>
+<!-- Group: Sessão -->
+<div class="space-y-2">
+<h4 class="text-xs font-bold text-slate-700 dark:text-slate-300">DADOS DA SESSÃO</h4>
+<div class="grid grid-cols-1 gap-2">
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{Data da Sessão}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{Horário da Sessão}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{Valor da Sessão}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+</div>
+</div>
+<!-- Group: Profissional -->
+<div class="space-y-2">
+<h4 class="text-xs font-bold text-slate-700 dark:text-slate-300">PROFISSIONAL</h4>
+<div class="grid grid-cols-1 gap-2">
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{Nome do Profissional}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+<button class="text-left px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:border-primary border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono text-primary transition-all flex items-center justify-between group">
+                                    {{CRP do Profissional}}
+                                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100">add_circle</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

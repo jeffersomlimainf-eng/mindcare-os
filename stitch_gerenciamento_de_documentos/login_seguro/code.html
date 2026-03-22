@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | MindCare OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<div class="flex flex-1 flex-col lg:flex-row">
+<!-- Left Side: Login Form -->
+<div class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-24 bg-background-light dark:bg-background-dark">
+<div class="mx-auto w-full max-w-sm">
+<!-- Logo -->
+<div class="flex items-center gap-2 mb-8">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">MindCare OS</span>
+</div>
+<div class="mb-10">
+<h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">Bem-vindo ao MindCare OS</h1>
+<p class="text-slate-500 dark:text-slate-400">Acesse sua conta para gerenciar seus atendimentos.</p>
+</div>
+<form action="#" class="space-y-6">
+<div>
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-100" for="email">E-mail</label>
+<div class="mt-2">
+<input autocomplete="email" class="block w-full rounded-lg border-0 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-700 sm:text-sm sm:leading-6" id="email" name="email" placeholder="seu@email.com" required="" type="email"/>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between">
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-100" for="password">Senha</label>
+</div>
+<div class="mt-2 relative">
+<input autocomplete="current-password" class="block w-full rounded-lg border-0 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-700 sm:text-sm sm:leading-6" id="password" name="password" placeholder="Digite sua senha" required="" type="password"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-slate-400">
+<span class="material-symbols-outlined">visibility</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-2 block text-sm text-slate-900 dark:text-slate-300" for="remember-me">Lembrar de mim</label>
+</div>
+<div class="text-sm">
+<a class="font-semibold text-primary hover:text-primary/80" href="#">Esqueci minha senha</a>
+</div>
+</div>
+<div>
+<button class="flex w-full justify-center rounded-lg bg-primary px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" type="submit">
+                            Entrar no sistema
+                        </button>
+</div>
+</form>
+<p class="mt-10 text-center text-sm text-slate-500">
+                    Não tem uma conta?
+                    <a class="font-semibold leading-6 text-primary hover:text-primary/80" href="#">Solicite acesso à sua clínica</a>
+</p>
+</div>
+</div>
+<!-- Right Side: Visual Image/Illustration -->
+<div class="hidden lg:block lg:flex-1 relative overflow-hidden bg-primary/10">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent z-10"></div>
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Doctor talking to patient in calming environment" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA28aiU0cqopdHzogEcMQhcxjjAa5bPCBBNmH1pkHFS8_clYGgdp1kBUWhmfmSQDWepQZhTzLEdrbc_wiGzZUiFAkpF5V3Vk2PtHgKFvFizSvDmKGwxHq1EbhuMJt1IJdMkrr29Qbg8oUVjPEHuGInoxaFk4nXYbkWGmncZqWYMvmND3dS6_1Urb44b9KJOLEn1Upb3YVETy35TFRiMqSPUC_-CEsI7adM8YxDttjpNAOJtY9UCPq2mvBy2MZwL999WF0JvYowuSA");'>
+</div>
+<div class="absolute bottom-12 left-12 right-12 z-20 bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
+<p class="text-white text-xl font-medium leading-relaxed italic">
+                    "O cuidado com a mente é a base para uma vida plena. MindCare OS ajuda você a focar no que realmente importa: seus pacientes."
+                </p>
+<div class="mt-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-white">favorite</span>
+</div>
+<span class="text-white font-semibold">Cuidado e Tecnologia</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-background-light dark:bg-background-dark py-6 border-t border-slate-200 dark:border-slate-800">
+<div class="mx-auto max-w-7xl px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-sm text-slate-500 dark:text-slate-400">
+                © 2024 MindCare OS. Todos os direitos reservados.
+            </p>
+<div class="flex gap-6">
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary" href="#">Política de Privacidade</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary" href="#">Termos de Uso</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary" href="#">Suporte Técnico</a>
+</div>
+</div>
+</footer>
+</body></html>

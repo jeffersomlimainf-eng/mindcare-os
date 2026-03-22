@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ajuda e Suporte - MindCare OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col fixed h-full">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-base font-bold leading-none">MindCare OS</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Painel Administrativo</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 mt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Pacientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-sm font-medium">Consultas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="text-sm font-medium">Relatórios</span>
+</a>
+<div class="pt-4 pb-2 px-3">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Suporte</p>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="text-sm font-medium">Central de Ajuda</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 dark:bg-slate-800">
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+                        DR
+                    </div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold truncate">Dr. Ricardo Silva</p>
+<p class="text-[10px] text-slate-500 truncate">Sair do sistema</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-64 p-8">
+<header class="max-w-5xl mx-auto mb-10">
+<h1 class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Ajuda e Suporte</h1>
+<p class="text-slate-500 dark:text-slate-400 text-lg mt-2">Olá, como podemos tornar o seu dia no MindCare OS mais fácil hoje?</p>
+<div class="mt-8 relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-800 border-none rounded-xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary text-base placeholder-slate-400 dark:placeholder-slate-500 transition-all" placeholder="Pesquise por artigos, tutoriais ou soluções..." type="text"/>
+</div>
+</header>
+<div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Knowledge Base & Support Channels -->
+<div class="lg:col-span-2 space-y-10">
+<!-- Quick Actions -->
+<section>
+<h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">contact_support</span>
+                            Canais de Atendimento
+                        </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<button class="flex items-start gap-4 p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary transition-colors text-left group">
+<div class="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Chat ao Vivo</h3>
+<p class="text-sm text-slate-500 mt-1">Tempo de espera: <span class="text-green-500 font-medium">~5 min</span></p>
+</div>
+</button>
+<button class="flex items-start gap-4 p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary transition-colors text-left group">
+<div class="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Abrir Chamado</h3>
+<p class="text-sm text-slate-500 mt-1">Envie uma solicitação técnica detalhada.</p>
+</div>
+</button>
+</div>
+</section>
+<!-- Video Tutorials -->
+<section>
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">play_circle</span>
+                                Tutoriais em Vídeo
+                            </h2>
+<a class="text-primary text-sm font-semibold hover:underline" href="#">Ver todos</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="group cursor-pointer">
+<div class="aspect-video bg-slate-200 dark:bg-slate-700 rounded-xl mb-3 overflow-hidden relative">
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+<div class="size-12 bg-white/90 rounded-full flex items-center justify-center text-primary shadow-lg">
+<span class="material-symbols-outlined text-3xl">play_arrow</span>
+</div>
+</div>
+<div class="h-full w-full bg-gradient-to-br from-primary/30 to-blue-900/40" data-alt="Miniatura de vídeo tutorial sobre configuração de agenda"></div>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white leading-tight">Configurando sua Agenda e Horários de Atendimento</h3>
+<p class="text-sm text-slate-500 mt-1">4:25 min • Início Rápido</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-video bg-slate-200 dark:bg-slate-700 rounded-xl mb-3 overflow-hidden relative">
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+<div class="size-12 bg-white/90 rounded-full flex items-center justify-center text-primary shadow-lg">
+<span class="material-symbols-outlined text-3xl">play_arrow</span>
+</div>
+</div>
+<div class="h-full w-full bg-gradient-to-br from-primary/30 to-indigo-900/40" data-alt="Miniatura de vídeo tutorial sobre prontuários eletrônicos"></div>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white leading-tight">Personalizando Modelos de Prontuário Eletrônico</h3>
+<p class="text-sm text-slate-500 mt-1">6:10 min • Avançado</p>
+</div>
+</div>
+</section>
+<!-- FAQ -->
+<section>
+<h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">quiz</span>
+                            Perguntas Frequentes
+                        </h2>
+<div class="space-y-3">
+<details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm" open="">
+<summary class="p-4 cursor-pointer flex justify-between items-center list-none font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                    Como faço para exportar dados dos pacientes para o Excel?
+                                    <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="p-4 pt-0 text-slate-600 dark:text-slate-400 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-700">
+                                    Para exportar dados, vá ao menu 'Pacientes', selecione os registros desejados e clique no botão 'Exportar' no canto superior direito. Você poderá escolher entre os formatos CSV, Excel e PDF.
+                                </div>
+</details>
+<details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+<summary class="p-4 cursor-pointer flex justify-between items-center list-none font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                    O MindCare OS é compatível com a LGPD?
+                                    <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="p-4 pt-0 text-slate-600 dark:text-slate-400 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-700">
+                                    Sim, o MindCare OS foi desenvolvido seguindo todos os protocolos da Lei Geral de Proteção de Dados (LGPD), garantindo criptografia de ponta a ponta e logs de acesso detalhados.
+                                </div>
+</details>
+<details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+<summary class="p-4 cursor-pointer flex justify-between items-center list-none font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                    Esqueci minha senha. Como recuperar?
+                                    <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="p-4 pt-0 text-slate-600 dark:text-slate-400 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-700">
+                                    Na tela de login, clique em "Esqueci minha senha". Enviaremos um link de redefinição seguro para o seu e-mail cadastrado.
+                                </div>
+</details>
+</div>
+</section>
+</div>
+<!-- Right Sidebar: Articles & Status -->
+<aside class="space-y-8">
+<!-- System Status -->
+<div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+<h3 class="font-bold text-slate-900 dark:text-white mb-4">Status do Sistema</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-sm text-slate-600 dark:text-slate-400">Banco de Dados</span>
+<span class="flex items-center gap-1.5 text-xs font-bold text-green-500 uppercase">
+<span class="size-2 rounded-full bg-green-500"></span> Operacional
+                                </span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm text-slate-600 dark:text-slate-400">API de Pagamentos</span>
+<span class="flex items-center gap-1.5 text-xs font-bold text-green-500 uppercase">
+<span class="size-2 rounded-full bg-green-500"></span> Operacional
+                                </span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm text-slate-600 dark:text-slate-400">Serviço de Mensagens</span>
+<span class="flex items-center gap-1.5 text-xs font-bold text-primary uppercase">
+<span class="size-2 rounded-full bg-primary animate-pulse"></span> Manutenção
+                                </span>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+<p class="text-xs text-slate-400">Última atualização: hoje às 09:42</p>
+</div>
+</div>
+<!-- Trending Articles -->
+<div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+<h3 class="font-bold text-slate-900 dark:text-white mb-4">Mais Lidos</h3>
+<ul class="space-y-4">
+<li>
+<a class="group block" href="#">
+<p class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">Como integrar com o Google Calendar</p>
+<p class="text-xs text-slate-500 mt-1">Lido por 1.2k usuários</p>
+</a>
+</li>
+<li>
+<a class="group block" href="#">
+<p class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">Guia de faturamento para clínicas</p>
+<p class="text-xs text-slate-500 mt-1">Lido por 850 usuários</p>
+</a>
+</li>
+<li>
+<a class="group block" href="#">
+<p class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">Relatórios avançados de produtividade</p>
+<p class="text-xs text-slate-500 mt-1">Lido por 420 usuários</p>
+</a>
+</li>
+</ul>
+</div>
+<!-- Community/Webinars -->
+<div class="p-6 bg-primary rounded-xl text-white shadow-lg shadow-primary/20">
+<h3 class="font-bold text-lg leading-tight">Próximo Webinar</h3>
+<p class="text-primary-foreground/80 text-sm mt-2 opacity-90">Gestão Eficiente de Clínicas Psicológicas com MindCare</p>
+<div class="mt-4 flex items-center gap-2 bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-xs font-medium">15 de Junho às 19:00</span>
+</div>
+<button class="w-full mt-4 py-2 bg-white text-primary font-bold rounded-lg text-sm hover:bg-slate-50 transition-colors">
+                            Inscrever-se Grátis
+                        </button>
+</div>
+</aside>
+</div>
+<!-- Footer Support Info -->
+<footer class="max-w-5xl mx-auto mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-500 text-sm">
+<p>© 2023 MindCare OS. Todos os direitos reservados.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">Privacidade</a>
+<a class="hover:text-primary" href="#">Termos de Uso</a>
+<a class="hover:text-primary" href="#">API Docs</a>
+</div>
+</footer>
+</main>
+</div>
+</body></html>

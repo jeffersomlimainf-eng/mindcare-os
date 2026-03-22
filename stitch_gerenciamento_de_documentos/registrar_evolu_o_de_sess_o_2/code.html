@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Registro de Evolução - Clínica de Psicologia</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex h-full min-h-screen overflow-hidden">
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col hidden lg:flex">
+<div class="p-6 flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<h1 class="text-sm font-bold leading-tight">Clínica Versa</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">Dr. Ricardo Silva</p>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Painel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Pacientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-sm font-medium">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-sm font-medium">Prontuários</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Financeiro</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-sm font-medium">Relatórios</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">book</span>
+<span class="text-sm font-medium">Modelos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Configurações</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 px-2">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Foto de perfil do psicólogo" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAUvsjx-EBX8_t5-alWrluX12X0Y8AHoSw2n9ru9MWBb1Xri-j4TJCCzNnnM5LtLchqBaPv09DKnToLSkA7u2oATYp8IRCAZepMIDUvyIj2zPdLEbhSWI_nJDagxvxtcJNt3WqlR5orkJcQx8XsHiHlmcd3lpXPHoFb7kMK4LNDvp315HwNxGwFewXy3F6E5X9jBDnfAq31fpw_ZBfYm70G3sc1fJPaOhC1Bib8Zkce_csF7FbgxSgdQqIKmTFsbtzcFtRi4t34A')"></div>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold truncate">Dr. Ricardo Silva</p>
+<p class="text-[10px] text-slate-500">CRP 06/123456</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-y-auto">
+<header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<nav class="flex text-sm text-slate-500 dark:text-slate-400 gap-2 items-center">
+<a class="hover:text-primary transition-colors" href="#">Pacientes</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Maria Eduarda Santos</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-slate-900 dark:text-slate-100 font-medium">Nova Evolução</span>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</header>
+<div class="p-8 max-w-5xl mx-auto w-full">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h2 class="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-2">Registro de Evolução</h2>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 bg-primary/10 text-primary text-xs font-bold rounded uppercase tracking-wider">Sessão #24</span>
+<span class="text-slate-500 dark:text-slate-400">Paciente: <strong class="text-slate-900 dark:text-slate-100">Maria Eduarda Santos</strong></span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 font-bold rounded-lg transition-colors text-sm">
+                            Cancelar
+                        </button>
+<button class="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-sm">save</span>
+                            Salvar Registro
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 space-y-6">
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+<div class="p-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<h3 class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">edit_note</span>
+                                    Anotações Clínicas (Evolução)
+                                </h3>
+<div class="flex gap-1">
+<button class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors">
+<span class="material-symbols-outlined text-sm">format_bold</span>
+</button>
+<button class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors">
+<span class="material-symbols-outlined text-sm">format_italic</span>
+</button>
+<button class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors">
+<span class="material-symbols-outlined text-sm">format_list_bulleted</span>
+</button>
+<button class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors">
+<span class="material-symbols-outlined text-sm">link</span>
+</button>
+</div>
+</div>
+<div class="p-6">
+<textarea class="w-full h-80 bg-transparent border-none focus:ring-0 text-slate-800 dark:text-slate-200 leading-relaxed placeholder:text-slate-400" placeholder="Descreva aqui o desenvolvimento da sessão, temas abordados e evolução do paciente..."></textarea>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<label class="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">psychology_alt</span>
+                                    Técnicas Utilizadas
+                                </label>
+<textarea class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm" placeholder="Ex: RDPD, Questionamento Socrático, Mindfulness..." rows="3"></textarea>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<label class="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">visibility</span>
+                                    Observações de Comportamento
+                                </label>
+<textarea class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm" placeholder="Postura, contato visual, humor, fala..." rows="3"></textarea>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<label class="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">event_repeat</span>
+                                Planejamento para a Próxima Sessão
+                            </label>
+<textarea class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm" placeholder="Pontos pendentes e objetivos para o próximo encontro..." rows="3"></textarea>
+</div>
+</div>
+<aside class="space-y-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="font-bold mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">info</span>
+                                Dados da Sessão
+                            </h3>
+<div class="space-y-4">
+<div>
+<label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Paciente</label>
+<select class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm">
+<option>Maria Eduarda Santos</option>
+<option>João Pedro Oliveira</option>
+<option>Ana Clara Lima</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Data da Sessão</label>
+<div class="relative">
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm pl-10" type="date" value="2024-05-20"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">calendar_month</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Início</label>
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm" type="time" value="14:00"/>
+</div>
+<div>
+<label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Fim</label>
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm" type="time" value="14:50"/>
+</div>
+</div>
+<div>
+<label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Tipo de Atendimento</label>
+<select class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 focus:border-primary focus:ring-primary text-sm">
+<option>Psicoterapia Individual</option>
+<option>Terapia de Casal</option>
+<option>Avaliação Psicológica</option>
+<option>Supervisão</option>
+</select>
+</div>
+<div class="pt-2">
+<label class="relative flex items-center gap-3 cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-primary bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800" type="checkbox"/>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Paciente compareceu</span>
+</label>
+</div>
+</div>
+</div>
+<div class="bg-primary/5 dark:bg-primary/10 p-6 rounded-xl border border-primary/20">
+<h4 class="text-sm font-bold text-primary mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lightbulb</span>
+                                Lembrete Clínico
+                            </h4>
+<p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed italic">
+                                "Trabalhar a regulação emocional e a técnica de respiração diafragmática ensinada na sessão anterior, devido ao aumento de demandas no trabalho."
+                            </p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="font-bold mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                                Sessões Recentes
+                            </h3>
+<div class="space-y-3">
+<a class="block p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">Sessão #23</p>
+<p class="text-[10px] text-slate-500 mt-1">13 de Maio, 2024</p>
+</a>
+<a class="block p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">Sessão #22</p>
+<p class="text-[10px] text-slate-500 mt-1">06 de Maio, 2024</p>
+</a>
+</div>
+<button class="w-full mt-4 text-center text-xs font-bold text-primary hover:underline">Ver Histórico Completo</button>
+</div>
+</aside>
+</div>
+</div>
+<footer class="p-8 border-t border-slate-200 dark:border-slate-800 mt-auto bg-white dark:bg-slate-900">
+<p class="text-xs text-slate-500 text-center">© 2024 Clínica Versa - Sistema de Gestão em Saúde Mental. Todos os dados são criptografados em conformidade com a LGPD.</p>
+</footer>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Gestão Financeira - Clínica de Psicologia</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-row overflow-x-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-primary/10 bg-white dark:bg-background-dark hidden md:flex flex-col h-screen sticky top-0">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h2 class="text-lg font-bold tracking-tight">PsyClinic</h2>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span>Painel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Pacientes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span>Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>Documentos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white font-medium" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Financeiro</span>
+</a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span>Relatórios</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">folder_copy</span>
+<span>Modelos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Configurações</span>
+</a>
+</nav>
+<div class="p-4 border-t border-primary/10">
+<div class="flex items-center gap-3 p-2">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Foto de perfil do administrador da clínica" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_y3r-HrkcUSub4UdjfSctn_Svjt1NfPyqJ-qvZk9GM1deQof-6L6HDAKO6px0-TYpK8tm18PLGKwvsI-_WS_kGZwJeyziQZteT6aLP9o5qYfh48bYRF33sGJYZZQ_y9g-SC_AJUufQfcSoPaL65e0ODsDgm95VZ7etJm0guGc06vOa_GyRHrXp1UTEAFjTgdCDB1ppBGXiZgLcAwIZfZNOPQUrMYIZeKnlK3sGUtbg1jQoUzwdJXZMheHxcaMC0iIcGyn7jH3-w"/>
+</div>
+<div>
+<p class="text-sm font-bold">Dr. Ricardo Souza</p>
+<p class="text-xs text-slate-500">Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-h-screen">
+<!-- Header -->
+<header class="h-16 border-b border-primary/10 bg-white dark:bg-background-dark flex items-center justify-between px-8 sticky top-0 z-10">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/50" placeholder="Buscar paciente ou transação..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<button class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Body -->
+<div class="p-8 space-y-8">
+<!-- Page Title & Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Dashboard Financeiro</h1>
+<p class="text-slate-500 dark:text-slate-400">Bem-vindo de volta! Aqui está o resumo da sua clínica.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                            Registrar Pagamento
+                        </button><button class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">remove_circle</span>
+    Lançar Débito
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-primary/20 text-primary dark:text-primary rounded-lg font-bold text-sm hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-sm">receipt_long</span>
+                            Gerar Recibo
+                        </button>
+</div>
+</div>
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-primary/10 shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-slate-500 dark:text-slate-400">Receita Mensal</span>
+<div class="size-10 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 flex items-center justify-center">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+</div>
+<p class="text-3xl font-black text-slate-900 dark:text-white">R$ 12.450,00</p>
+<p class="text-sm font-medium text-green-600 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">arrow_upward</span>
+                            12% em relação ao mês anterior
+                        </p>
+</div>
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-primary/10 shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-slate-500 dark:text-slate-400">Pagamentos Pendentes</span>
+<div class="size-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 text-orange-600 flex items-center justify-center">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+</div>
+<p class="text-3xl font-black text-slate-900 dark:text-white">R$ 1.800,00</p>
+<p class="text-sm font-medium text-orange-600 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">info</span>
+                            5 pacientes com saldo devedor
+                        </p>
+</div>
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-primary/10 shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-slate-500 dark:text-slate-400">Despesas</span>
+<div class="size-10 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+</div>
+<p class="text-3xl font-black text-slate-900 dark:text-white">R$ 4.200,00</p>
+<p class="text-sm font-medium text-red-600 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">arrow_downward</span>
+                            2% acima da meta
+                        </p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Revenue Chart Area -->
+<div class="lg:col-span-2 bg-white dark:bg-background-dark p-6 rounded-xl border border-primary/10 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="font-bold text-lg">Evolução da Receita</h3>
+<p class="text-sm text-slate-500">Fluxo financeiro dos últimos 6 meses</p>
+</div>
+<select class="bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm font-medium focus:ring-primary/20">
+<option>Semestre Atual</option>
+<option>Ano Inteiro</option>
+</select>
+</div>
+<!-- Mockup Line Chart -->
+<div class="h-64 flex items-end justify-between gap-4 px-2">
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[40%] group-hover:bg-primary transition-colors relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$8k</span>
+</div>
+<span class="text-xs font-bold text-slate-400">JAN</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[60%] group-hover:bg-primary transition-colors relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$9.5k</span>
+</div>
+<span class="text-xs font-bold text-slate-400">FEV</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[55%] group-hover:bg-primary transition-colors relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$9k</span>
+</div>
+<span class="text-xs font-bold text-slate-400">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[75%] group-hover:bg-primary transition-colors relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$11k</span>
+</div>
+<span class="text-xs font-bold text-slate-400">ABR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/20 rounded-t-lg h-[85%] group-hover:bg-primary transition-colors relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$12.4k</span>
+</div>
+<span class="text-xs font-bold text-slate-400">MAI</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/10 border-2 border-dashed border-primary/30 rounded-t-lg h-[45%]"></div>
+<span class="text-xs font-bold text-slate-400 italic">JUN*</span>
+</div>
+</div>
+</div>
+<!-- Quick View / Distribution -->
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-primary/10 shadow-sm space-y-6">
+<h3 class="font-bold text-lg">Distribuição de Serviços</h3>
+<div class="space-y-4">
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Psicoterapia Individual</span>
+<span class="font-bold">75%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-3/4"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Terapia de Casal</span>
+<span class="font-bold">15%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-teal-500 h-full w-[15%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Avaliação Psicológica</span>
+<span class="font-bold">10%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-indigo-500 h-full w-[10%]"></div>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-primary/10">
+<div class="bg-primary/5 rounded-lg p-4 flex gap-3">
+<span class="material-symbols-outlined text-primary">lightbulb</span>
+<p class="text-xs text-slate-600 dark:text-slate-400">Você teve um aumento de 15% na demanda por Psicoterapia Individual este mês.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Transactions Table -->
+<div class="bg-white dark:bg-background-dark rounded-xl border border-primary/10 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-primary/10 flex items-center justify-between">
+<div>
+<h3 class="font-bold text-lg text-slate-900 dark:text-white">Transações Recentes</h3>
+<p class="text-sm text-slate-500">Últimos atendimentos e pagamentos</p>
+</div>
+<button class="text-primary text-sm font-bold hover:underline">Ver todas</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/50">
+<tr>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Data</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Paciente</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Serviço</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Valor</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Ação</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5">
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">12/05/2024</td>
+<td class="px-6 py-4 text-sm font-bold">Ana Oliveira</td>
+<td class="px-6 py-4 text-sm text-slate-500">Sessão de Psicoterapia</td>
+<td class="px-6 py-4 text-sm font-bold">R$ 180,00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                            Pago
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">11/05/2024</td>
+<td class="px-6 py-4 text-sm font-bold">Bruno Matos</td>
+<td class="px-6 py-4 text-sm text-slate-500">Avaliação Neuropsicológica</td>
+<td class="px-6 py-4 text-sm font-bold">R$ 450,00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300">
+                                            Pendente
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">10/05/2024</td>
+<td class="px-6 py-4 text-sm font-bold">Carla Mendes</td>
+<td class="px-6 py-4 text-sm text-slate-500">Sessão de Psicoterapia</td>
+<td class="px-6 py-4 text-sm font-bold">R$ 180,00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                            Pago
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">09/05/2024</td>
+<td class="px-6 py-4 text-sm font-bold">Daniel Faria</td>
+<td class="px-6 py-4 text-sm text-slate-500">Terapia de Casal</td>
+<td class="px-6 py-4 text-sm font-bold">R$ 250,00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                            Pago
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

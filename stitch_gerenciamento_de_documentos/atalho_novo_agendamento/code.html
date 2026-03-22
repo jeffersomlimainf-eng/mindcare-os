@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Dashboard Médico - Novo Agendamento</title>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<!-- Main Container -->
+<div class="relative flex min-h-screen w-full">
+<!-- Sidebar -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-screen sticky top-0">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="rounded-full size-10 bg-primary/10 flex items-center justify-center overflow-hidden border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="Foto de perfil do Dr. Silva" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8Rm_Jn7OTokDvrwZYV0qhAv40GWVRcgh-daudbRJ6BVdtfxyDYsAa9TJqKguKzaPAvoz5ZHTB1WSDiWD7zsAMnH-67AQILzzanEytJccXGZTT7G2N_QflJiP6jYFK57iBFnlOwf1NApp6frkd2XVke7URZaE7OAUuePvRUXpq1KrBnZtwZ8r6eaf7_qHdHijNjh0Rjv_C4o7wFvkHtlw7Ikrr3dpR4dOsXVw970GbcuEvg0OTviWRLttaIO6LQLgivpxU5hO4CQ"/>
+</div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-slate-100 text-sm font-bold">Dr. Silva</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Clínica Geral</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">home</span>
+<span class="text-sm font-medium">Início</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">calendar_today</span>
+<span class="text-sm font-medium">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">group</span>
+<span class="text-sm font-medium">Pacientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">bar_chart</span>
+<span class="text-sm font-medium">Relatórios</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-sm font-medium">Configurações</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content (Dashboard Background) -->
+<main class="flex-1 p-8 opacity-40 pointer-events-none select-none">
+<header class="flex flex-wrap justify-between items-end gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Painel Principal</h2>
+<p class="text-slate-500 dark:text-slate-400">Visão geral dos seus agendamentos</p>
+</div>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Consultas Hoje</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-slate-100">12</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Novos Pacientes</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-slate-100">4</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Faturamento</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-slate-100">R$ 2.400</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 h-96">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold">Agenda Recente</h3>
+<button class="text-primary text-sm font-semibold">Ver todos</button>
+</div>
+<!-- Placeholder for table content -->
+<div class="space-y-4">
+<div class="h-12 bg-slate-50 dark:bg-slate-800 rounded-lg w-full"></div>
+<div class="h-12 bg-slate-50 dark:bg-slate-800 rounded-lg w-full"></div>
+<div class="h-12 bg-slate-50 dark:bg-slate-800 rounded-lg w-full"></div>
+</div>
+</div>
+</main>
+<!-- Overlay and Modal -->
+<div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+<div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+<!-- Modal Header -->
+<div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Novo Agendamento</h2>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6">
+<form class="space-y-6">
+<!-- Search Patient -->
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Buscar Paciente</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-transparent focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-lg text-sm" placeholder="Nome ou CPF do paciente" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Date Selection (Calendar) -->
+<div class="flex flex-col">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Selecionar Data</label>
+<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+<div class="flex items-center justify-between mb-4">
+<span class="text-sm font-bold">Maio 2024</span>
+<div class="flex gap-2">
+<button class="material-symbols-outlined text-sm p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors" type="button">chevron_left</button>
+<button class="material-symbols-outlined text-sm p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors" type="button">chevron_right</button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 mb-2">
+<div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SAB</div>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center">
+<div class="p-2 text-xs text-slate-300">28</div>
+<div class="p-2 text-xs text-slate-300">29</div>
+<div class="p-2 text-xs text-slate-300">30</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">1</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">2</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">3</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">4</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">5</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">6</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">7</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">8</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">9</div>
+<div class="p-2 text-xs bg-primary text-white font-bold rounded">10</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">11</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">12</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">13</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">14</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">15</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">16</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">17</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">18</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">19</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">20</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">21</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">22</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">23</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">24</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">25</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">26</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">27</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">28</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">29</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">30</div>
+<div class="p-2 text-xs hover:bg-primary/10 cursor-pointer rounded">31</div>
+<div class="p-2 text-xs text-slate-300">1</div>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<!-- Time Picker -->
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Horário</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-primary/10 hover:border-primary transition-all" type="button">08:00</button>
+<button class="py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-primary/10 hover:border-primary transition-all" type="button">09:00</button>
+<button class="py-2 text-sm border border-primary bg-primary text-white rounded-lg font-bold" type="button">10:00</button>
+<button class="py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-primary/10 hover:border-primary transition-all" type="button">11:00</button>
+<button class="py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-primary/10 hover:border-primary transition-all" type="button">14:00</button>
+<button class="py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-primary/10 hover:border-primary transition-all" type="button">15:00</button>
+</div>
+</div>
+<!-- Service Type -->
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tipo de Atendimento</label>
+<div class="flex gap-4">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only peer" name="service_type" type="radio" value="presencial"/>
+<div class="flex items-center justify-center p-3 text-sm border border-slate-200 dark:border-slate-700 rounded-lg peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary font-medium transition-all">
+<span class="material-symbols-outlined mr-2 text-lg">person</span>
+                                                Presencial
+                                            </div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only peer" name="service_type" type="radio" value="online"/>
+<div class="flex items-center justify-center p-3 text-sm border border-slate-200 dark:border-slate-700 rounded-lg peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary font-medium transition-all">
+<span class="material-symbols-outlined mr-2 text-lg">videocam</span>
+                                                Online
+                                            </div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
+<button class="px-6 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" type="button">
+                                Cancelar
+                            </button>
+<button class="px-8 py-2 text-sm font-bold bg-primary text-white rounded-lg hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all" type="submit">
+                                Agendar Consulta
+                            </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</body></html>

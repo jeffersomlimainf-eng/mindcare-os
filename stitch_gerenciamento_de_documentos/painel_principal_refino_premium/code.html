@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clinical Document Management - Psychologist Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "8px",
+                        "lg": "8px",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
+<div class="flex min-h-screen">
+<!-- Sidebar -->
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 sticky top-0 h-screen shadow-xl z-20" style="width: 260px;">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="">psychology</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-sm font-bold leading-none" style="">MindCare OS</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1" style="">Clinical Portal</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 py-6 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/5 text-primary border-l-4 border-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-bold leading-normal">Painel</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-medium leading-normal">Pacientes</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">calendar_month</span>
+<p class="text-sm font-medium leading-normal">Agenda</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">description</span>
+<p class="text-sm font-medium leading-normal">Prontuários</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<p class="text-sm font-medium leading-normal">Financeiro</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">bar_chart</span>
+<p class="text-sm font-medium leading-normal">Relatórios</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">dashboard_customize</span>
+<p class="text-sm font-medium leading-normal">Modelos</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium leading-normal">Configurações</p>
+</div>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2">
+<div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img class="size-full object-cover" data-alt="Professional headshot of Dr. Sarah Smith" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACsHXtH6EgSdoLe0ln1OQ-HWMg-wwfsCHRhp6DQr836g9k1hIX8t6bdkvVFosqzs4eEbJYyNLJNQYN4Z3NGA7QUwN1xBMbbU-kYcdc8BMRpvs_oXaP1-C_WsLf4Zlj8W3W21ne5vjrjUCBvilRl7SChDCkWSUXemVhwobn020hC6m7bwOjnWMvQ0Bg17i-mrYX_cAzThFfSl953XiDFusiNWxrMXWSoMYLFc4VGYZMX46ZxuiNGLFmv7Q4703SoxscBDVorIa6Vw" style=""/>
+</div>
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-xs font-bold" style="">Dr. Sarah Smith</p>
+<p class="text-slate-500 dark:text-slate-400 text-[10px]" style="">Psicóloga Clínica</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 ml-auto text-sm" style="">logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-8 sticky top-0 z-10">
+<div class="flex flex-col">
+<h2 class="text-slate-900 dark:text-white font-bold text-lg" style="">Gestão de Documentos</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium border border-slate-200 dark:border-slate-700" style=""><span class="material-symbols-outlined text-sm">calendar_today</span> Hoje: 24 de Out, 2023</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-all" style=""><span class="material-symbols-outlined text-sm">add</span> Nova Consulta</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 space-y-8">
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow duration-300" style="border-radius: 8px;">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="">folder_shared</span>
+</div>
+<span class="text-green-600 text-xs font-bold bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full" style="">+12.5%</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider" style="">Total de Documentos</p>
+<p class="text-slate-900 dark:text-white text-3xl font-black mt-1" style="">1,284</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow duration-300" style="border-radius: 8px;">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
+<span class="material-symbols-outlined" style="">draw</span>
+</div>
+<span class="text-slate-400 text-xs font-bold px-2 py-1" style="">Ativo</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider" style="">Assinaturas Pendentes</p>
+<p class="text-slate-900 dark:text-white text-3xl font-black mt-1" style="">12</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow duration-300" style="border-radius: 8px;">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+<span class="material-symbols-outlined" style="">history_edu</span>
+</div>
+<span class="text-green-600 text-xs font-bold bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full" style="">+5.2%</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider" style="">Laudos Emitidos</p>
+<p class="text-slate-900 dark:text-white text-3xl font-black mt-1" style="">48</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow duration-300" style="border-radius: 8px;">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+<span class="material-symbols-outlined" style="">assignment_ind</span>
+</div>
+<span class="text-red-600 text-xs font-bold bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full" style="">-2.4%</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider" style="">Declarações</p>
+<p class="text-slate-900 dark:text-white text-3xl font-black mt-1" style="">312</p>
+</div>
+</div>
+<!-- Quick Actions -->
+<section>
+<h3 class="text-slate-900 dark:text-white font-bold text-lg mb-4 flex items-center gap-2" style=""><span class="material-symbols-outlined text-primary">bolt</span> Ações Rápidas</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<button class="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left hover:-translate-y-1 duration-200" style="">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" style="">description</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm" style="">Criar Novo Laudo</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs" style="">Relatório psicológico</p>
+</div>
+</button>
+<button class="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left hover:-translate-y-1 duration-200" style="">
+<div class="size-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+<span class="material-symbols-outlined" style="">verified</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm" style="">Nova Declaração</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs" style="">Comprovante de comparecimento</p>
+</div>
+</button>
+<button class="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left hover:-translate-y-1 duration-200" style="">
+<div class="size-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+<span class="material-symbols-outlined" style="">medical_information</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm" style="">Emitir Atestado</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs" style="">Certificado clínico</p>
+</div>
+</button>
+<button class="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left hover:-translate-y-1 duration-200" style="">
+<div class="size-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+<span class="material-symbols-outlined" style="">patient_list</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm" style="">Ficha de Anamnese</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs" style="">Formulário detalhado</p>
+</div>
+</button>
+</div>
+</section>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Recent Documents Table -->
+<div class="xl:col-span-2 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-slate-900 dark:text-white font-bold text-lg" style="">Documentos Recentes</h3>
+<a class="text-primary text-sm font-semibold hover:underline" href="#" style="">Ver todos</a>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead class="bg-slate-50 dark:bg-slate-800/50">
+<tr>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider" style="">Documento</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider" style="">Paciente</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider" style="">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider" style="">Data</th>
+<th class="px-6 py-4" style=""></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4" style="">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="">article</span>
+<span class="text-sm font-semibold text-slate-900 dark:text-white" style="">Laudo_Cognitivo_024.pdf</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300" style="">Robert Chen</td>
+<td class="px-6 py-4" style="">
+<span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-[10px] font-bold uppercase tracking-wide" style="">Assinado</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400" style="">24 de Out, 2023</td>
+<td class="px-6 py-4 text-right" style="">
+<button class="text-slate-400 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4" style="">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-500" style="">verified</span>
+<span class="text-sm font-semibold text-slate-900 dark:text-white" style="">Declaração_Presença_10.pdf</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300" style="">Maria Oliveira</td>
+<td class="px-6 py-4" style="">
+<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wide" style="">Pendente</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400" style="">23 de Out, 2023</td>
+<td class="px-6 py-4 text-right" style="">
+<button class="text-slate-400 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4" style="">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-500" style="">medical_information</span>
+<span class="text-sm font-semibold text-slate-900 dark:text-white" style="">Atestado_Clinico_091.pdf</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300" style="">John Doe</td>
+<td class="px-6 py-4" style="">
+<span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-[10px] font-bold uppercase tracking-wide" style="">Assinado</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400" style="">22 de Out, 2023</td>
+<td class="px-6 py-4 text-right" style="">
+<button class="text-slate-400 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4" style="">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="">article</span>
+<span class="text-sm font-semibold text-slate-900 dark:text-white" style="">Laudo_Avaliacao_Infantil.pdf</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300" style="">Lucas Smith</td>
+<td class="px-6 py-4" style="">
+<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wide" style="">Rascunho</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400" style="">20 de Out, 2023</td>
+<td class="px-6 py-4 text-right" style="">
+<button class="text-slate-400 hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Recent Patients -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-slate-900 dark:text-white font-bold text-lg" style="">Pacientes Recentes</h3>
+<a class="text-primary text-sm font-semibold hover:underline" href="#" style="">Ver todos</a>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm space-y-4">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer group">
+<div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined" style="">person</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900 dark:text-white" style="">Robert Chen</p>
+<p class="text-xs text-slate-500" style="">Última sessão: Ontem</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" style="">chevron_right</span>
+</div>
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer group">
+<div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined" style="">person</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900 dark:text-white" style="">Maria Oliveira</p>
+<p class="text-xs text-slate-500" style="">Última sessão: Ontem</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" style="">chevron_right</span>
+</div>
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer group">
+<div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined" style="">person</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900 dark:text-white" style="">John Doe</p>
+<p class="text-xs text-slate-500" style="">Última sessão: há 3 dias</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" style="">chevron_right</span>
+</div>
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer group">
+<div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined" style="">person</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900 dark:text-white" style="">Lucas Smith</p>
+<p class="text-xs text-slate-500" style="">Última sessão: 20 de Out</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" style="">chevron_right</span>
+</div>
+</div>
+<!-- Upcoming tasks/notes simple block -->
+<div class="bg-white dark:bg-slate-900 rounded-lg p-5 border-l-4 border-primary shadow-sm">
+<div class="flex items-center gap-2 mb-2 text-primary">
+<span class="material-symbols-outlined text-lg">info</span>
+<span class="text-sm font-bold">Lembrete Clínico</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">Concluir a avaliação neuropsicológica de Lucas Smith até sexta-feira para o encaminhamento escolar.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

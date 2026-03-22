@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PsyDoc Manager - Gestão de Prontuários</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+<!-- Sidebar -->
+<aside class="hidden md:flex w-64 flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800">
+<div class="p-6 flex items-center gap-3">
+<div class="size-10 flex items-center justify-center bg-primary rounded-xl text-white">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">PsyDoc</span>
+</div>
+<nav class="flex-1 px-4 space-y-1"><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>Painel
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>Pacientes
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>Agenda
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-bold text-primary bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>Prontuários
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>Financeiro
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>Relatórios
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">style</span>Modelos
+</a></nav>
+<div class="p-4 mt-auto border-t border-slate-100 dark:border-slate-800">
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                Configurações
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col overflow-hidden">
+<!-- Top Bar -->
+<header class="h-16 flex items-center justify-between px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative max-w-md w-full hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20" placeholder="Busca global..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden lg:block">
+<p class="text-xs font-bold text-slate-900 dark:text-white">Dra. Marina Silva</p>
+<p class="text-[10px] text-slate-500">Psicóloga Clínica</p>
+</div>
+<div class="size-10 rounded-full border-2 border-primary/20 bg-cover bg-center shadow-sm" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCbOH2Gtz3K8JYZ3e1qYq36frQGVI0xbpROuMGAyunhIj52Ytubj0GfXp1ZQo-_rA4NzEIChVXG3rwGfRaidar0DmvCR4h2r4U_xBmPlKcV2tkWF6P-nmi2w9caZy2eJaKD4zPo_4SXfX8Vt5Z3mA7Roe2evqrrDsM6IHVGHo3vShpZJVJjRKIHMu01UVVxwgJMq_3kpB14DLaRvNrm31EYCOsHnVjutjaVvhEbZXsxsaQUIcegirAWk9eW7thVtOwSKGp74TBkqw");'></div>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Area -->
+<main class="flex-1 overflow-y-auto p-8">
+<div class="max-w-6xl mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<h1 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Gestão de Prontuários</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Gerencie documentos e o histórico clínico dos seus pacientes.</p>
+</div>
+<button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/25 hover:scale-[1.02] active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+                        Novo Documento
+                    </button>
+</div>
+<!-- Filters Bar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-6 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="lg:col-span-4">
+<label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block px-1">Buscar Paciente</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">person</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20" placeholder="Filtrar por nome..." type="text"/>
+</div>
+</div>
+<div class="lg:col-span-5">
+<label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block px-1">Tipo de Documento</label>
+<div class="flex gap-2 overflow-x-auto no-scrollbar">
+<button class="px-4 py-2 rounded-lg bg-primary text-white text-xs font-bold">Todos</button>
+<button class="px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">Laudo</button>
+<button class="px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">Declaração</button>
+<button class="px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">Atestado</button>
+</div>
+</div>
+<div class="lg:col-span-3">
+<label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block px-1">Ordenar</label>
+<select class="w-full py-2 px-3 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-lg text-sm text-slate-600">
+<option>Mais recentes</option>
+<option>Mais antigos</option>
+</select>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase">Nome do Documento</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase">Paciente</th><th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase">Tipo</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase text-center">Status</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase">Data</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Avaliação Psicológica</p>
+<p class="text-[10px] text-slate-400">Laudo Pericial</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 dark:text-slate-300">Alice Freeman</p>
+</td><td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">LAUDO</span></td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                            ASSINADO
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs text-slate-500">12 Out 2023</p>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-1"><div class="relative flex items-center">
+<div class="absolute -inset-2 bg-primary/20 rounded-full animate-ping pointer-events-none"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900 text-white text-[10px] font-bold rounded shadow-lg whitespace-nowrap z-10">
+        Clique aqui para ver o PDF final
+        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+</div>
+<button class="p-1.5 text-primary bg-primary/10 rounded-lg relative z-10">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button></div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Atestado de Comparecimento</p>
+<p class="text-[10px] text-slate-400">Atestado</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 dark:text-slate-300">Bob Smith</p>
+</td><td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">ATESTADO</span></td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                            PENDENTE
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs text-slate-500">10 Out 2023</p>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-1">
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Histórico de Evolução</p>
+<p class="text-[10px] text-slate-400">Histórico</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 dark:text-slate-300">Charlie Brown</p>
+</td><td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">HISTÓRICO</span></td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                            RASCUNHO
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs text-slate-500">05 Out 2023</p>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-1">
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Premium Pagination -->
+<div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<p class="text-xs text-slate-500">Mostrando <span class="font-bold">1</span> a <span class="font-bold">10</span> de <span class="font-bold">24</span> documentos</p>
+<div class="flex items-center gap-2">
+<button class="p-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 disabled:opacity-50">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<div class="flex gap-1">
+<button class="size-8 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-bold">1</button>
+<button class="size-8 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs font-medium">2</button>
+</div>
+<button class="p-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</body></html>

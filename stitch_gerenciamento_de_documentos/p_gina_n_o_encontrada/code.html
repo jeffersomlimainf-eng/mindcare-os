@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>404 - Página Não Encontrada | MindCare OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<div class="relative flex h-full w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-3 bg-white dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div class="flex flex-col">
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">MindCare OS</h2>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Gestão de Saúde Mental</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary/10 overflow-hidden">
+<img alt="Avatar do usuário" data-alt="Foto de perfil de um médico sorrindo profissionalmente" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzrtercejWTfU0wyTKFSXuNqjqckdGlQPquGJdTH83OT8k8rwQSPFqHK3z_aNOionYUVWCUEqmavmF6tRtX_O_pWVivD1A4hWZUyZEUmlxsA1S3Yx3oL67PcmtfFBqShO5qOB_BDCkhvKUxlxdovVb86d11rM3tHyAv6qPejC4yVEdFb0v4kLT1ShRKiLfTh4_3Lkk6Ec2yW7KF6KMrgYzuoh7o4t5lC7PH-f-_4YuaHXUg3YsoFXA0Rck2Hp5HaDpNcWrMQ3Qow"/>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-6 py-12 md:py-24">
+<div class="max-w-2xl w-full text-center flex flex-col items-center gap-8">
+<div class="relative w-full max-w-md aspect-square md:aspect-video flex items-center justify-center">
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="flex gap-4 items-end mb-4">
+<span class="text-9xl font-black text-primary/20 select-none">4</span>
+<div class="w-32 h-32 md:w-40 md:h-40 bg-white dark:bg-slate-800 rounded-3xl shadow-xl flex items-center justify-center border border-slate-100 dark:border-slate-700 transform rotate-12 -translate-y-4">
+<span class="material-symbols-outlined text-primary text-7xl md:text-8xl">search_off</span>
+</div>
+<span class="text-9xl font-black text-primary/20 select-none">4</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4 max-w-lg">
+<h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight leading-tight">
+                            Ops! Esta página tirou uma folga.
+                        </h1>
+<p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                            O endereço que você tentou acessar não existe ou você não possui as permissões necessárias para ver este conteúdo no momento.
+                        </p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
+<a class="flex min-w-[200px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl h-12 px-6 bg-primary text-white text-base font-bold transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="truncate">Voltar ao Painel</span>
+</a>
+<a class="flex min-w-[200px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl h-12 px-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-base font-bold transition-all hover:bg-slate-50 dark:hover:bg-slate-700" href="#">
+<span class="material-symbols-outlined text-xl">help</span>
+<span class="truncate">Suporte Técnico</span>
+</a>
+</div>
+<div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800 w-full flex flex-col items-center gap-4">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-500">Links rápidos que podem ajudar:</p>
+<div class="flex flex-wrap justify-center gap-6 text-sm font-semibold text-primary">
+<a class="hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-base">group</span> Pacientes
+                            </a>
+<a class="hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-base">calendar_month</span> Agenda
+                            </a>
+<a class="hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-base">description</span> Prontuários
+                            </a>
+<a class="hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-base">settings</span> Configurações
+                            </a>
+</div>
+</div>
+</div>
+</main>
+<footer class="px-6 py-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark/50">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 dark:text-slate-500">
+<p>© 2024 MindCare OS. Todos os direitos reservados.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Termos de Uso</a>
+<a class="hover:text-primary transition-colors" href="#">Privacidade</a>
+<a class="hover:text-primary transition-colors" href="#">Ajuda</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>
