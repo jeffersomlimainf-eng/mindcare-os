@@ -392,9 +392,9 @@ const Agenda = () => {
             <AgendaSettingsModal isOpen={settingsModalAberto} onClose={() => setSettingsModalAberto(false)} />
             <NovoNaFilaModal isOpen={filaModalAberto} onClose={() => setFilaModalAberto(false)} />
 
-            <div className="flex gap-4 h-[calc(100vh-8.5rem)]">
+            <div className="flex flex-col xl:flex-row gap-4 h-auto xl:h-[calc(100vh-8.5rem)]">
                 {/* Sidebar */}
-                <aside className="w-56 shrink-0 flex flex-col gap-4 overflow-y-auto">
+                <aside className="w-full xl:w-56 shrink-0 flex flex-col gap-4 overflow-visible xl:overflow-y-auto">
                     <button
                         onClick={() => abrirNovaConsulta(null)}
                         className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all text-sm"
@@ -467,8 +467,8 @@ const Agenda = () => {
                 </aside>
 
                 {/* Grade */}
-                <main className="flex-1 glass dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm flex flex-col overflow-hidden animate-settle">
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                <main className="flex-1 glass dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm flex flex-col min-h-[500px] xl:min-h-0 overflow-hidden animate-settle">
+                    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 lg:px-6 py-4 border-b border-slate-100 dark:border-slate-800 gap-4">
                         <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight">{labelTopo()}</h2>
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-2 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
@@ -496,7 +496,7 @@ const Agenda = () => {
                     </div>
 
                     {/* Barra de Legenda */}
-                    <div className="flex flex-wrap items-center gap-4 px-6 py-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20">
+                    <div className="flex flex-wrap items-center gap-4 px-4 lg:px-6 py-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20">
                         <div className="flex items-center gap-4 border-r border-slate-200 dark:border-slate-700 pr-4">
                             <div className="flex items-center gap-1.5">
                                 <span className="material-symbols-outlined text-sm text-slate-400">person</span>
@@ -527,7 +527,7 @@ const Agenda = () => {
 
                     <div ref={gridRef} className="flex-1 overflow-auto no-scrollbar">
                         {visao === 'mes' ? (
-                            <div className="grid grid-cols-7 h-full">
+                            <div className="grid grid-cols-7 h-full min-w-[700px] xl:min-w-0">
                                 {DIAS_CAL.map((d, i) => <div key={i} className="py-2 text-center text-[10px] font-bold text-slate-400 bg-slate-50/50 dark:bg-slate-800/30 uppercase border-b border-slate-100 dark:border-slate-800">{d}</div>)}
                                 {buildCalMini(calAno, calMes).map((cell, idx) => {
                                     const dateObj = new Date(calAno, calMes, cell.d);
@@ -673,7 +673,7 @@ const Agenda = () => {
                 </main>
 
                 {/* Sidebar Direita */}
-                <aside className="w-64 shrink-0 flex flex-col gap-4 overflow-y-auto">
+                <aside className="w-full xl:w-64 shrink-0 flex flex-col gap-4 overflow-visible xl:overflow-y-auto">
                     <div className="glass dark:bg-slate-800/50 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-700">
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Recepção</p>
                         <div className="space-y-3">
