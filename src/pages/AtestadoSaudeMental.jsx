@@ -648,7 +648,8 @@ const AtestadoSaudeMental = () => {
                     }
                 }
                 .documento-atestado {
-                    width: 794px; /* A4 width */
+                    width: 100%;
+                    max-width: 794px; /* A4 width */
                     margin: 0 auto;
                 }
             `}} />

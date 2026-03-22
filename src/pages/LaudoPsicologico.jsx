@@ -723,7 +723,8 @@ const LaudoPsicologico = () => {
                     }
                 }
                 .documento-laudo {
-                    width: 794px; /* A4 width */
+                    width: 100%;
+                    max-width: 794px; /* A4 width */
                     margin: 0 auto;
                 }
             `}} />

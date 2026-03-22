@@ -639,14 +639,17 @@ const TermoConsentimento = () => {
                     }
                     .hidden.print\\:block { display: block !important; }
                 }
+                .documento-termo {
+                    width: 100%;
+                    max-width: 794px; /* A4 width */
+                    margin: 0 auto;
+                }
                 .print-tcle {
                     font-family: 'Inter', system-ui, -apple-system, sans-serif;
                     color: #1a1a1a;
                     line-height: 1.6;
                     padding: 50px;
                     background: white;
-                    width: 794px;
-                    margin: 0 auto;
                 }
                 .print-tcle .header { border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 30px; text-align: center; }
                 .print-tcle h1 { font-size: 16pt; font-weight: 800; color: #0f172a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: -0.02em; }

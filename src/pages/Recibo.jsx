@@ -387,7 +387,8 @@ const Recibo = () => {
                     @page { margin: 1cm; size: A4; }
                 }
                 .documento-recibo {
-                    width: 794px; /* A4 width */
+                    width: 100%;
+                    max-width: 794px; /* A4 width */
                     margin: 0 auto;
                 }
             `}} />
