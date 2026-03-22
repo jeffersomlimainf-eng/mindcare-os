@@ -101,7 +101,7 @@ const ReciboModal = ({ isOpen, onClose, transacao }) => {
                     </div>
 
                     {/* Corpo do Recibo */}
-                    <div className="p-8 space-y-8 flex flex-col items-stretch print:p-0 print:text-black">
+                    <div className="p-4 md:p-8 space-y-8 flex flex-col items-stretch print:p-0 print:text-black">
                         
                         {/* Cabeçalho da Clínica/Profissional */}
                         <div className="text-center space-y-1">

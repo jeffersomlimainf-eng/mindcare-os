@@ -164,7 +164,7 @@ const Configuracoes = () => {
 
             {/* Perfil */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                     <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
                             <span className="material-symbols-outlined text-primary text-xl">person</span>
@@ -172,8 +172,8 @@ const Configuracoes = () => {
                         Perfil Profissional
                     </h2>
                 </div>
-                <div className="p-8 space-y-6">
-                    <div className="flex items-center gap-6 mb-4">
+                <div className="p-4 md:p-8 space-y-6">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 mb-4 text-center md:text-left">
                         <div className="size-20 rounded-full flex items-center justify-center overflow-hidden shadow-lg shadow-primary/20">
                             {user.avatar_url ? (
                                 <img src={user.avatar_url} alt="Perfil" className="size-full object-cover" />
@@ -258,7 +258,7 @@ const Configuracoes = () => {
 
             {/* Dados da Clínica */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                     <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                             <span className="material-symbols-outlined text-emerald-500 text-xl">domain</span>
@@ -266,7 +266,7 @@ const Configuracoes = () => {
                         Dados da Clínica
                     </h2>
                 </div>
-                <div className="p-8 space-y-6">
+                <div className="p-4 md:p-8 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
@@ -310,7 +310,7 @@ const Configuracoes = () => {
 
             {/* Dados para Recebimento Pix */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                     <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-teal-500/10 flex items-center justify-center">
                             <span className="material-symbols-outlined text-teal-500 text-xl">qr_code_2</span>
@@ -318,7 +318,7 @@ const Configuracoes = () => {
                         Dados para Recebimento (Pix)
                     </h2>
                 </div>
-                <div className="p-8 space-y-6">
+                <div className="p-4 md:p-8 space-y-6">
                     <p className="text-sm text-slate-500 font-medium">Sua chave Pix é usada para gerar o link de cobrança enviado ao paciente.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
@@ -370,7 +370,7 @@ const Configuracoes = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Notificações */}
                 <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                    <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                         <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                             <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
                                 <span className="material-symbols-outlined text-primary text-xl">notifications</span>
@@ -378,7 +378,7 @@ const Configuracoes = () => {
                             Notificações
                         </h2>
                     </div>
-                    <div className="p-8 space-y-6">
+                    <div className="p-4 md:p-8 space-y-6">
                         {[
                             { label: 'E-mail Clínico', desc: 'Avisos de novas consultas', key: 'notifEmail' },
                             { label: 'WhatsApp', desc: 'Lembretes para pacientes', key: 'notifWhatsapp' },
@@ -397,7 +397,7 @@ const Configuracoes = () => {
 
                 {/* Aparência */}
                 <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
-                    <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                    <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                         <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                             <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
                                 <span className="material-symbols-outlined text-primary text-xl">palette</span>
@@ -405,7 +405,7 @@ const Configuracoes = () => {
                             Personalização
                         </h2>
                     </div>
-                    <div className="p-8 flex-1 flex flex-col justify-center">
+                    <div className="p-4 md:p-8 flex-1 flex flex-col justify-center">
                         <div className="flex items-center justify-between py-4">
                             <div>
                                 <p className="text-sm font-black text-slate-900 dark:text-white leading-tight">Modo Escuro</p>
@@ -419,7 +419,7 @@ const Configuracoes = () => {
 
             {/* Segurança */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                     <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
                             <span className="material-symbols-outlined text-orange-500 text-xl">lock</span>
@@ -427,7 +427,7 @@ const Configuracoes = () => {
                         Segurança e Acesso
                     </h2>
                 </div>
-                <div className="p-8 space-y-6">
+                <div className="p-4 md:p-8 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[
                             { label: 'Nova Senha', key: 'novaSenha', icon: 'key' },
@@ -467,7 +467,7 @@ const Configuracoes = () => {
 
             {/* Planos e Assinatura */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden mb-6">
-                <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                     <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
                             <span className="material-symbols-outlined text-primary text-xl">workspace_premium</span>
@@ -483,7 +483,7 @@ const Configuracoes = () => {
                         )}
                     </div>
                 </div>
-                <div className="p-8">
+                <div className="p-4 md:p-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
                             {
@@ -586,7 +586,7 @@ const Configuracoes = () => {
 
             {/* Gerenciamento de Dados */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                     <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
                             <span className="material-symbols-outlined text-primary text-xl">database</span>
@@ -594,7 +594,7 @@ const Configuracoes = () => {
                         Gerenciamento de Dados (Backup)
                     </h2>
                 </div>
-                <div className="p-8">
+                <div className="p-4 md:p-8">
                     <div className="grid grid-cols-1 gap-8">
                         <div className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
                             <div className="flex items-center justify-center gap-3 mb-4">
@@ -621,7 +621,7 @@ const Configuracoes = () => {
             </div>
 
             {/* Zona de Perigo */}
-            <div className="bg-red-50/50 dark:bg-red-900/5 rounded-[2rem] border border-red-100 dark:border-red-900/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="bg-red-50/50 dark:bg-red-900/5 rounded-[2rem] border border-red-100 dark:border-red-900/20 p-4 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="text-center md:text-left">
                     <h2 className="font-black text-red-600 dark:text-red-400 flex items-center gap-2 justify-center md:justify-start mb-1">
                         <span className="material-symbols-outlined">warning_amber</span>

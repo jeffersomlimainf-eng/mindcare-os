@@ -258,10 +258,10 @@ const Pacientes = () => {
                     <h1 className="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">Pacientes</h1>
                     <p className="text-slate-500 font-medium mt-1">Gestão de prontuários e vínculos clínicos.</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                      <button 
                         onClick={() => setModalCompartilharAberto(true)}
-                        className="flex items-center justify-center gap-2 rounded-xl h-12 px-5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary hover:text-white transition-all group"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl h-12 px-5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary hover:text-white transition-all group"
                         title="Gerar link para o paciente preencher os dados"
                     >
                         <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">link</span>
@@ -269,7 +269,7 @@ const Pacientes = () => {
                     </button>
                     <button
                         onClick={handleNovoPaciente}
-                        className="flex items-center justify-center gap-2 rounded-xl h-12 px-6 bg-primary text-white text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl h-12 px-6 bg-primary text-white text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
                     >
                         <span className="material-symbols-outlined text-lg">person_add</span>
                         <span>Novo Paciente</span>
@@ -364,11 +364,11 @@ const Pacientes = () => {
                         <table className="w-full text-left">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
                                 <tr>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Paciente</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Contato</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Idade</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">Status</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ações</th>
+                                    <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Paciente</th>
+                                    <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Contato</th>
+                                    <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Idade</th>
+                                    <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">Status</th>
+                                    <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ações</th>
                                 </tr>
                             </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -377,7 +377,7 @@ const Pacientes = () => {
                                             className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer" 
                                             onDoubleClick={() => handleAbrirEdicao(p)}
                                         >
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-3 md:py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className={`size-10 rounded-full flex items-center justify-center font-bold text-xs ${p.cor || 'bg-slate-100 text-slate-500'}`}>{p.iniciais}</div>
                                                 <div className="flex flex-col">
@@ -386,16 +386,16 @@ const Pacientes = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-3 md:py-4">
                                             <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{safeRender(p.email || p.telefone, '--')}</span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-3 md:py-4">
                                             <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{calcularIdade(p.dataNascimento || p.nascimento)}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-4 md:px-6 py-3 md:py-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${p.status === 'Ativo' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-600'}`}>{p.status}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-4 md:px-6 py-3 md:py-4 text-right">
                                             <div className="flex justify-end gap-2">
                                                 <button onClick={(e) => { e.stopPropagation(); handleVerProntuario(p); }} className="size-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all"><span className="material-symbols-outlined text-lg">visibility</span></button>
                                                 <button onClick={(e) => { e.stopPropagation(); setPacienteParaExcluir(p); }} className="size-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-red-500 hover:text-white transition-all"><span className="material-symbols-outlined text-lg">delete</span></button>

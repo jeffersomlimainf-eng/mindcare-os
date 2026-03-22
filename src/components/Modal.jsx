@@ -20,7 +20,7 @@ const Modal = ({ isOpen, onClose, title, icon, children, maxWidth = 'max-w-2xl',
             {/* Container */}
             <div className={`relative w-full ${maxWidth} bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]`}>
                 {/* Header */}
-                <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                <div className="flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
                     <div className="flex items-center gap-3">
                         {icon && <span className="material-symbols-outlined text-primary text-2xl">{icon}</span>}
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{title}</h2>

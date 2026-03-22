@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout } = useUser();
@@ -29,18 +29,35 @@ const Sidebar = () => {
     const filteredItems = menuItems.filter(item => !item.adminOnly || user.role === 'admin');
 
     return (
-        <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 sticky top-0 h-screen shadow-xl z-20">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-                <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm overflow-hidden p-1.5 border border-slate-100 dark:border-slate-800">
-                        <img src="/favicon.png" alt="Logo" className="size-full object-contain" />
+        <>
+            {/* Mobile Overlay */}
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 md:hidden transition-opacity" 
+                    onClick={onClose}
+                />
+            )}
+
+            <aside className={`fixed top-0 left-0 bottom-0 md:sticky h-screen z-40 w-64 md:w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:shadow-none'}`}>
+                <div className="p-4 md:p-6 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-3">
+                        <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm overflow-hidden p-1.5 border border-slate-100 dark:border-slate-800 shrink-0">
+                            <img src="/favicon.png" alt="Logo" className="size-full object-contain" />
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-0">
+                            <h1 className="text-slate-900 dark:text-white text-sm font-bold leading-none truncate">Meu Sistema Psi</h1>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 truncate">Portal Clínico</p>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <h1 className="text-slate-900 dark:text-white text-sm font-bold leading-none">Meu Sistema Psi</h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Portal Clínico</p>
-                    </div>
+                    {/* Botão de Fechar Mobile */}
+                    <button 
+                        onClick={onClose} 
+                        className="md:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg transition-colors flex items-center justify-center shrink-0"
+                    >
+                        <span className="material-symbols-outlined text-2xl">close</span>
+                    </button>
                 </div>
-            </div>
+
             <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
                 {filteredItems.map((item) => {
                     const isActive = location.pathname === item.path;
@@ -48,13 +65,16 @@ const Sidebar = () => {
                         <Link
                             key={item.path}
                             to={item.path}
+                            onClick={() => {
+                                if (window.innerWidth < 768) onClose();
+                            }}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all cursor-pointer ${isActive
-                                ? `${item.activeColor} border-l-4 font-bold`
+                                ? `${item.activeColor} border-l-4 font-bold bg-opacity-10 dark:bg-opacity-20` // Ajuste para melhor visão no mobile
                                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary font-medium'
                                 }`}
                         >
-                            <span className="material-symbols-outlined">{item.icon}</span>
-                            <p className="text-sm leading-normal">{item.title}</p>
+                            <span className="material-symbols-outlined truncate shrink-0">{item.icon}</span>
+                            <p className="text-sm leading-normal truncate">{item.title}</p>
                         </Link>
                     );
                 })}
@@ -87,6 +107,7 @@ const Sidebar = () => {
                 </div>
             </div>
         </aside>
+        </>
     );
 };
 

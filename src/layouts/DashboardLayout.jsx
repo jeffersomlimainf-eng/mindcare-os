@@ -34,13 +34,15 @@ const DashboardLayout = () => {
     const { unreadCount } = useNotifications();
     const [modalNovaConsulta, setModalNovaConsulta] = useState(false);
     const [notificacoesAbertas, setNotificacoesAbertas] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Integrar atalho Esc Global
     useGlobalShortcuts({
-        isModalOpen: modalNovaConsulta || notificacoesAbertas,
+        isModalOpen: modalNovaConsulta || notificacoesAbertas || isSidebarOpen,
         closeModal: () => {
             if (modalNovaConsulta) setModalNovaConsulta(false);
             if (notificacoesAbertas) setNotificacoesAbertas(false);
+            if (isSidebarOpen) setIsSidebarOpen(false);
         }
     });
 
@@ -82,15 +84,23 @@ const DashboardLayout = () => {
                 onSave={handleNovaConsulta}
             />
 
-            <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased print:bg-white">
+            <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased print:bg-white overflow-x-hidden">
                 <div className="print:hidden">
-                    <Sidebar />
+                    <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
                 </div>
-                <main className="flex-1 flex flex-col min-w-0 print:m-0">
+                <main className="flex-1 flex flex-col min-w-0 max-w-full print:m-0">
                     {/* Header Global */}
-                    <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm print:hidden">
-                        <h2 className="text-slate-900 dark:text-white font-bold text-lg">{titulo}</h2>
-                        <div className="flex items-center gap-3">
+                    <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 shadow-sm print:hidden">
+                        <div className="flex items-center gap-2 md:gap-3">
+                            <button 
+                                onClick={() => setIsSidebarOpen(true)}
+                                className="md:hidden flex items-center justify-center p-2 -ml-2 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg transition-colors"
+                            >
+                                <span className="material-symbols-outlined">menu</span>
+                            </button>
+                            <h2 className="text-slate-900 dark:text-white font-bold text-lg truncate max-w-[150px] sm:max-w-none">{titulo}</h2>
+                        </div>
+                        <div className="flex items-center gap-2 md:gap-3">
                             {/* Tenant Switcher (Apenas para Admin) */}
                             {/* {user.role === 'admin' && <TenantSwitcher />} */}
 
@@ -103,10 +113,10 @@ const DashboardLayout = () => {
                             {/* Botão Nova Consulta */}
                             <button
                                 onClick={() => setModalNovaConsulta(true)}
-                                className="flex items-center gap-2 px-5 py-2 bg-primary text-white text-sm font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]"
+                                className="flex items-center justify-center size-10 md:size-auto md:w-auto md:px-5 md:py-2 bg-primary text-white text-sm font-bold rounded-xl md:rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]"
                             >
                                 <span className="material-symbols-outlined text-base">add</span>
-                                Nova Consulta
+                                <span className="hidden md:inline ml-2">Nova Consulta</span>
                             </button>
 
                             {/* Notificações */}
@@ -131,7 +141,7 @@ const DashboardLayout = () => {
                     </header>
 
                     {/* Conteúdo da página */}
-                    <div className="p-8 flex-1 print:p-0">
+                    <div className="p-4 md:p-8 flex-1 w-full print:p-0">
                         {isLocked ? (
                             <div className="flex flex-col items-center justify-center h-[calc(100vh-12rem)] bg-white dark:bg-slate-900 rounded-[2.5rem] p-12 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
                                 <span className="material-symbols-outlined text-6xl text-rose-500 mb-4 animate-bounce">{isTrialExpired ? 'hourglass_empty' : 'lock'}</span>

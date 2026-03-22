@@ -321,7 +321,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
     if (sucesso) {
         return (
             <Modal isOpen={isOpen} onClose={onClose} title="Agendamento Confirmado" icon="check_circle">
-                <div className="p-8 flex flex-col items-center justify-center text-center">
+                <div className="p-4 md:p-8 flex flex-col items-center justify-center text-center">
                     <div className="size-16 rounded-full bg-emerald-100 text-emerald-500 flex items-center justify-center mb-4">
                         <span className="material-symbols-outlined text-3xl">check</span>
                     </div>

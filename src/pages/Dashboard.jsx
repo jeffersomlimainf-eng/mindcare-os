@@ -1136,10 +1136,10 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             <table className="w-full text-left">
                                 <thead className="bg-slate-50 dark:bg-slate-800/50">
                                     <tr>
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Documento</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Paciente</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                                        <th className="px-6 py-4"></th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Documento</th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Paciente</th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4"></th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -1150,7 +1150,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                                 onDoubleClick={() => handleNavegacaoDocumento(doc, navigate)} 
                                                 className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer group"
                                             >
-                                                <td className="px-6 py-4">
+                                                <td className="px-4 md:px-6 py-3 md:py-4">
                                                     <div className="flex items-center gap-3">
                                                         <div className="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary">
                                                             <span className="material-symbols-outlined text-lg">{doc.icon}</span>
@@ -1161,15 +1161,15 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-4 md:px-6 py-3 md:py-4">
                                                     <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tighter">{safeRender(doc.patient)}</span>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-4 md:px-6 py-3 md:py-4">
                                                     <span className={`px-2.5 py-1 inline-flex items-center rounded-full text-[10px] font-bold uppercase tracking-wide ${doc.status === 'Assinado' ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary'}`}>
                                                         {doc.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
+                                                <td className="px-4 md:px-6 py-3 md:py-4 text-right">
                                                     <span className="material-symbols-outlined text-slate-300">chevron_right</span>
                                                 </td>
                                             </tr>

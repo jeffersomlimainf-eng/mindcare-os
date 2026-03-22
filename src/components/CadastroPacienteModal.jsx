@@ -172,7 +172,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={paciente ? "Editar Paciente" : "Cadastrar Novo Paciente"} icon={paciente ? "edit" : "person_add"} closeOnBackdropClick={false}>
             {/* Tabs */}
-            <div className="flex border-b border-slate-200 dark:border-slate-800 px-8">
+            <div className="flex border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 overflow-x-auto scrollbar-none">
                 {TABS.map((t, i) => (
                     <button
                         key={i}
@@ -184,7 +184,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                 ))}
             </div>
 
-            <div className="p-8">
+            <div className="p-4 md:p-8">
                 {tab === 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div className="md:col-span-2">
@@ -423,7 +423,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between px-8 py-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 shrink-0">
+            <div className="flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="flex gap-2">
                         {TABS.map((_, i) => (
