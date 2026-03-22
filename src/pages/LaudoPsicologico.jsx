@@ -293,7 +293,7 @@ const LaudoPsicologico = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 pb-20 print:bg-white print:p-0">
             {/* Header */}
             <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
                 <div>
@@ -373,10 +373,13 @@ const LaudoPsicologico = () => {
                                         type="text"
                                         value={dados.solicitante}
                                         onChange={e => handleChange('solicitante', e.target.value)}
-                                        className="text-sm font-bold text-slate-700 border-b border-dotted border-slate-300 focus:border-primary outline-none bg-transparent w-full print:border-none"
+                                        className="text-sm font-bold text-slate-700 border-b border-dotted border-slate-300 focus:border-primary outline-none bg-transparent w-full print:hidden"
                                         placeholder="Ex: Dr. Marcos Rebouças (Neurologista)"
                                         readOnly={isFinalizado}
                                     />
+                                    <div className="hidden print:block text-sm font-bold text-slate-700 pt-0.5 border-b border-transparent">
+                                        {dados.solicitante || '—'}
+                                    </div>
                                 </div>
                                 <div>
                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Data de Emissão</p>
@@ -386,63 +389,75 @@ const LaudoPsicologico = () => {
                         </div>
 
                         {/* Seção I - Identificação */}
-                        <div className="mb-8">
+                        <div className="mb-8 print:mb-6 print-section">
                             <div className="flex items-center gap-2 mb-3">
-                                <div className="w-1 h-6 rounded-full bg-primary"></div>
-                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900">I. Identificação</h4>
+                                <div className="w-1 h-6 rounded-full bg-primary print:hidden"></div>
+                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-3 print:mb-2 print:border-b print:pb-2 print:border-slate-200">I. Identificação</h4>
                             </div>
                             <textarea
                                 value={dados.identificacao}
                                 onChange={e => handleChange('identificacao', e.target.value)}
-                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[80px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:p-0 print:focus:bg-transparent"
+                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[80px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
                                 placeholder={`O presente laudo refere-se ao processo de avaliação psicológica realizado com o(a) paciente ${dados.pacienteNome || '[Nome do Paciente]'}, visando a compreensão de demandas cognitivas e emocionais relatadas em consulta inicial. O processo constou de XX sessões de XX minutos cada.`}
                                 readOnly={isFinalizado}
                             />
+                            <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
+                                {dados.identificacao || 'Não informado.'}
+                            </div>
                         </div>
 
                         {/* Seção II - Descrição da Demanda */}
-                        <div className="mb-8">
+                        <div className="mb-8 print:mb-6 print-section">
                             <div className="flex items-center gap-2 mb-3">
-                                <div className="w-1 h-6 rounded-full bg-primary"></div>
-                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900">II. Descrição da Demanda</h4>
+                                <div className="w-1 h-6 rounded-full bg-primary print:hidden"></div>
+                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-3 print:mb-2 print:border-b print:pb-2 print:border-slate-200">II. Descrição da Demanda</h4>
                             </div>
                             <textarea
                                 value={dados.demanda}
                                 onChange={e => handleChange('demanda', e.target.value)}
-                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[100px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:p-0 print:focus:bg-transparent"
+                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[100px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
                                 placeholder="Descreva o motivo do encaminhamento e a queixa principal do paciente. Exemplo: O paciente buscou atendimento por encaminhamento médico especializado, relatando dificuldades persistentes de concentração, episódios de ansiedade aguda em ambiente laboral..."
                                 readOnly={isFinalizado}
                             />
+                            <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
+                                {dados.demanda || 'Não informado.'}
+                            </div>
                         </div>
 
                         {/* Seção III - Procedimento */}
-                        <div className="mb-8">
+                        <div className="mb-8 print:mb-6 print-section">
                             <div className="flex items-center gap-2 mb-3">
-                                <div className="w-1 h-6 rounded-full bg-primary"></div>
-                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900">III. Procedimento</h4>
+                                <div className="w-1 h-6 rounded-full bg-primary print:hidden"></div>
+                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-3 print:mb-2 print:border-b print:pb-2 print:border-slate-200">III. Procedimento</h4>
                             </div>
                             <textarea
                                 value={dados.procedimento}
                                 onChange={e => handleChange('procedimento', e.target.value)}
-                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[100px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:p-0 print:focus:bg-transparent"
+                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[100px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
                                 placeholder="Liste os instrumentos e técnicas utilizados. Exemplo: Foram utilizados os seguintes instrumentos e técnicas: Entrevista Clínica Semiestruturada, Observação Comportamental, Inventário de Ansiedade de Beck (BAI) e Escala de Stress Percebido (PSS-10). As sessões ocorreram entre os dias DD/MM/AAAA e DD/MM/AAAA."
                                 readOnly={isFinalizado}
                             />
+                            <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
+                                {dados.procedimento || 'Não informado.'}
+                            </div>
                         </div>
 
                         {/* Seção IV - Análise e Conclusão */}
-                        <div className="mb-10">
+                        <div className="mb-10 print:mb-6 print-section">
                             <div className="flex items-center gap-2 mb-3">
-                                <div className="w-1 h-6 rounded-full bg-primary"></div>
-                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900">IV. Análise e Conclusão</h4>
+                                <div className="w-1 h-6 rounded-full bg-primary print:hidden"></div>
+                                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-3 print:mb-2 print:border-b print:pb-2 print:border-slate-200">IV. Análise e Conclusão</h4>
                             </div>
                             <textarea
                                 value={dados.analiseConclusao}
                                 onChange={e => handleChange('analiseConclusao', e.target.value)}
-                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[120px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:p-0 print:focus:bg-transparent"
+                                className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[120px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
                                 placeholder="Apresente os resultados, diagnóstico (CID se aplicável) e recomendações clínicas. Exemplo: A partir dos dados coletados, observa-se um quadro compatível com Transtorno de Ansiedade Generalizada (CID-11: 6B00), caracterizado por preocupação excessiva e sintomas somáticos. Recomenda-se a continuidade do acompanhamento psicoterápico semanal..."
                                 readOnly={isFinalizado}
                             />
+                            <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
+                                {dados.analiseConclusao || 'Não informado.'}
+                            </div>
                         </div>
 
                         <div className="text-right mt-8 mb-4">
@@ -680,18 +695,32 @@ const LaudoPsicologico = () => {
 
             <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
+                    @page { margin: 0; size: A4; }
                     body { background: white !important; }
                     .print\\:hidden { display: none !important; }
-                    .max-w-7xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
-                    .lg\\:grid-cols-3 { grid-template-columns: 1fr !important; }
-                    .lg\\:col-span-2 { grid-column: span 1 / span 1 !important; }
-                    .bg-slate-50 { background: white !important; }
-                    .dark\\:bg-slate-950 { background: white !important; }
-                    .bg-white { background: white !important; }
-                    .border { border-color: #f1f5f9 !important; }
-                    textarea { border: none !important; height: auto !important; overflow: visible !important; }
+                    
+                    .max-w-7xl { max-width: 100% !important; margin: 0 !important; width: 100% !important; display: block !important; }
+                    .lg\\:grid-cols-3 { display: block !important; }
+                    .lg\\:col-span-2 { width: 100% !important; display: block !important; }
+                    
                     * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-                    @page { margin: 1.5cm; }
+                    
+                    #root { padding: 0 !important; margin: 0 !important; }
+
+                    .documento-laudo { 
+                        width: 100% !important;
+                        max-width: 794px !important;
+                        margin: 0 auto !important;
+                        padding: 1.5cm !important;
+                        background: white !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                        min-height: 0 !important;
+                    }
+
+                    .print-section {
+                        page-break-inside: avoid !important;
+                    }
                 }
                 .documento-laudo {
                     width: 794px; /* A4 width */
