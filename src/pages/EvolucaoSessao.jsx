@@ -971,7 +971,7 @@ const EvolucaoSessao = () => {
                                     {section.letra} — {section.subtitulo}
                                 </p>
                             </div>
-                            <div style={{ fontSize: '11px', lineHeight: 1.8, color: '#334155', whiteSpace: 'pre-wrap', paddingLeft: '12px' }}>
+                            <div style={{ fontSize: '11px', lineHeight: 1.8, color: '#334155', whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word', paddingLeft: '12px' }}>
                                 {val}
                             </div>
                         </div>
@@ -998,7 +998,7 @@ const EvolucaoSessao = () => {
                 {observacoes && (
                     <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px' }}>
                         <p style={{ fontSize: '8px', fontWeight: 900, color: '#d97706', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 4px' }}>Observações Internas (Confidencial)</p>
-                        <p style={{ fontSize: '11px', lineHeight: 1.7, color: '#92400e', whiteSpace: 'pre-wrap', margin: 0 }}>{observacoes}</p>
+                        <p style={{ fontSize: '11px', lineHeight: 1.7, color: '#92400e', whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word', margin: 0 }}>{observacoes}</p>
                     </div>
                 )}
 
