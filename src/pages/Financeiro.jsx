@@ -266,23 +266,24 @@ const Financeiro = () => {
                 </div>
 
                 <div className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 animate-settle">
-                    <table className="w-full text-left">
-                        <thead className="bg-slate-50 dark:bg-slate-800/50">
+                    <div className="overflow-x-auto w-full scrollbar-thin">
+                        <table className="w-full text-left whitespace-nowrap md:whitespace-normal min-w-[800px] md:min-w-full">
+                            <thead className="bg-slate-50 dark:bg-slate-800/50">
                             <tr>
-                                {filtroCliente !== 'todos' && <th className="px-6 py-4"></th>}
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Descrição</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Categoria</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Vencimento</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Valor</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ações</th>
+                                {filtroCliente !== 'todos' && <th className="px-4 md:px-6 py-3 md:py-4"></th>}
+                                <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Descrição</th>
+                                <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Categoria</th>
+                                <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Vencimento</th>
+                                <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</th>
+                                <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Valor</th>
+                                <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ações</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                             {dadosTabela.map((l) => (
                                 <tr key={l.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer" onDoubleClick={() => handleAbrirEdicao(l)}>
                                     {filtroCliente !== 'todos' && (
-                                        <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                                        <td className="px-4 md:px-6 py-3 md:py-4" onClick={(e) => e.stopPropagation()}>
                                             {l.tipo === 'Receita' && l.status === 'Pendente' && (
                                                 <input 
                                                     type="checkbox" 
@@ -296,7 +297,7 @@ const Financeiro = () => {
                                             )}
                                         </td>
                                     )}
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 md:px-6 py-3 md:py-4">
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-1.5">
                                                 <span className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{l.desc}</span>
@@ -310,7 +311,7 @@ const Financeiro = () => {
                                             <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{getSubcategoriaLabel(l.tipo, l.subcategoria)}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 md:px-6 py-3 md:py-4">
                                         {(() => {
                                             const cfg = FINANCE_COLORS_CFG.categorias[l.categoria?.toLowerCase()] || FINANCE_COLORS_CFG.categorias.pessoal;
                                             return (
@@ -321,13 +322,13 @@ const Financeiro = () => {
                                             );
                                         })()}
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 md:px-6 py-3 md:py-4">
                                         <div className="flex flex-col">
                                             <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{formatarData(l.dataVencimento)}</span>
                                             {getVencimentoBadge(l)}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 md:px-6 py-3 md:py-4">
                                         {(() => {
                                             const cfg = FINANCE_COLORS_CFG.status[l.status] || FINANCE_COLORS_CFG.status.Pendente;
                                             return (
@@ -338,10 +339,10 @@ const Financeiro = () => {
                                             );
                                         })()}
                                     </td>
-                                    <td className={`px-6 py-4 text-sm font-bold text-right ${(l?.valor || 0) > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                    <td className={`px-4 md:px-6 py-3 md:py-4 text-sm font-bold text-right ${(l?.valor || 0) > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                         {(l?.valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                     </td>
-                                    <td className="px-6 py-4 text-right">
+                                    <td className="px-4 md:px-6 py-3 md:py-4 text-right">
                                         <div className="flex gap-2 justify-end">
                                             {l.status === 'Pendente' && l.tipo === 'Receita' && (
                                                 <button onClick={(e) => { e.stopPropagation(); navigate(`/financeiro/cobrar/${l.id}`); }} className="size-8 flex items-center justify-center rounded-lg bg-teal-50 text-teal-600 hover:bg-teal-500 hover:text-white transition-all shadow-sm" title="Gerar Link de Cobrança">
@@ -362,7 +363,8 @@ const Financeiro = () => {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
 

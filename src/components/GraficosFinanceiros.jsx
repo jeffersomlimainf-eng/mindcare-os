@@ -197,7 +197,7 @@ const GraficosFinanceiros = ({ transacoes }) => {
         <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Fluxo de Caixa */}
-                <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 relative overflow-hidden">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-4 md:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 relative overflow-hidden">
                     <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
                         <div>
                             <div className="flex items-center gap-2 text-primary mb-1">
@@ -332,7 +332,7 @@ const GraficosFinanceiros = ({ transacoes }) => {
                 </div>
 
                 {/* Distribuição de Serviços */}
-                <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
+                <div className="bg-white dark:bg-slate-900 p-4 md:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
                     <div className="flex items-center gap-2 text-primary mb-1">
                         <span className="material-symbols-outlined text-sm">pie_chart</span>
                         <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Composição</span>
