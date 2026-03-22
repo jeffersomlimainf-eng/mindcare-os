@@ -117,8 +117,8 @@ const ProntuarioDetalhado = () => {
     return (
         <div className="space-y-6">
             {/* Header do Paciente */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
-                <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 md:p-8 shadow-sm">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start md:items-center">
                     <div className={`size-24 rounded-3xl flex items-center justify-center text-3xl font-black ${paciente.cor || 'bg-primary/10 text-primary'}`}>
                         {paciente.iniciais}
                     </div>
@@ -135,16 +135,16 @@ const ProntuarioDetalhado = () => {
                             <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">smartphone</span> {safeRender(paciente.telefone)}</span>
                         </div>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex flex-wrap w-full md:w-auto mt-4 md:mt-0 gap-3">
                         <button 
                             onClick={() => setModalEditar(true)}
-                            className="h-11 px-5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-50 transition-all flex items-center gap-2 text-sm"
+                            className="flex-1 md:flex-none justify-center h-11 px-5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-50 transition-all flex items-center gap-2 text-sm"
                         >
                             <span className="material-symbols-outlined text-xl">edit</span> Editar
                         </button>
                         <button 
                             onClick={() => setModalNovoRegistro(true)}
-                            className="h-11 px-5 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2 text-sm"
+                            className="flex-1 md:flex-none justify-center h-11 px-5 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2 text-sm"
                         >
                             <span className="material-symbols-outlined text-xl">add</span> Novo Registro
                         </button>

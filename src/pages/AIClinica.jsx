@@ -147,7 +147,7 @@ ${fullDatabaseContext}
     };
 
     return (
-        <div className="flex h-[calc(100vh-120px)] gap-6 antialiased relative">
+        <div className="flex flex-col xl:flex-row h-auto xl:h-[calc(100vh-120px)] gap-6 antialiased relative">
             {/* Overlay de Bloqueio Plano Essencial */}
             {isPlanBasic && (
                 <div className="absolute inset-0 z-[100] backdrop-blur-md bg-white/40 dark:bg-slate-900/40 flex items-center justify-center p-8">
@@ -171,7 +171,7 @@ ${fullDatabaseContext}
             )}
 
             {/* Coluna Central: Chat */}
-            <div className={`flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden ${isPlanBasic ? 'opacity-20 pointer-events-none' : ''}`}>
+            <div className={`flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm min-h-[550px] xl:min-h-0 overflow-hidden ${isPlanBasic ? 'opacity-20 pointer-events-none' : ''}`}>
                 {/* Header do Chat */}
                 <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-800/50 backdrop-blur-md sticky top-0 z-10">
                     <div className="flex items-center gap-3">
@@ -247,7 +247,7 @@ ${fullDatabaseContext}
             </div>
 
             {/* Barra Lateral Direita */}
-            <div className={`w-[450px] flex flex-col gap-6 ${isPlanBasic ? 'opacity-20 pointer-events-none' : ''}`}>
+            <div className={`w-full xl:w-[450px] shrink-0 flex flex-col gap-6 overflow-visible xl:overflow-y-auto scrollbar-hide ${isPlanBasic ? 'opacity-20 pointer-events-none' : ''}`}>
                 <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col max-h-[330px]">
                     <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30">
                         <div className="relative">

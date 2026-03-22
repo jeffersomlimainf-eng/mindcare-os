@@ -90,9 +90,9 @@ const LinhaDoTempo = () => {
     ];
 
     return (
-        <div className="flex h-[calc(100vh-120px)] gap-6 antialiased">
+        <div className="flex flex-col xl:flex-row h-auto xl:h-[calc(100vh-120px)] gap-6 antialiased">
             {/* Barra Lateral Esquerda: Seleção de Paciente */}
-            <div className="w-[300px] flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+            <div className="w-full xl:w-[300px] shrink-0 h-[350px] xl:h-auto flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                 <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                     <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 px-1">Selecionar Paciente</h2>
                     <div className="relative">
@@ -142,9 +142,9 @@ const LinhaDoTempo = () => {
             </div>
 
             {/* Conteúdo Central/Direito: Timeline e Detalhes */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col min-h-[500px] xl:min-h-0 overflow-hidden">
                 {pacienteSelecionado ? (
-                    <div className="space-y-6 overflow-y-auto h-full pr-2 scrollbar-hide">
+                    <div className="space-y-6 overflow-visible xl:overflow-y-auto h-full pr-0 xl:pr-2 scrollbar-hide">
                         {/* Card Header do Paciente */}
                         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
                             <div className="flex flex-col md:flex-row gap-6 items-center">

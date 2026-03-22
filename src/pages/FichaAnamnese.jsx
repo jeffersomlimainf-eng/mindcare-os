@@ -388,7 +388,7 @@ const FichaAnamnese = () => {
                             : `Documento ${dados.documentoId || ''} · ${dados.pacienteNome}`}
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 md:gap-3">
                     <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:border-primary transition-all shadow-sm">
                         <span className="material-symbols-outlined text-sm">print</span> Imprimir
                     </button>
@@ -412,7 +412,7 @@ const FichaAnamnese = () => {
                 {/* Formulário (2 cols) */}
                 <div className="lg:col-span-2 print:col-span-3 space-y-0" ref={documentoRef} id="documento-anamnese">
                     {/* Cabeçalho do documento */}
-                    <div className="bg-white dark:bg-slate-900 p-8 rounded-t-2xl border border-slate-200 dark:border-slate-800 border-b-0 print:border-none print:px-12 print:pt-12 print:pb-6 relative overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 p-5 md:p-8 rounded-t-2xl border border-slate-200 dark:border-slate-800 border-b-0 print:border-none print:px-12 print:pt-12 print:pb-6 relative overflow-hidden">
                         {/* Faixa decorativa no topo apenas para PDF */}
                         <div className="hidden print:block absolute top-0 left-0 right-0 h-2 bg-amber-500"></div>
 
@@ -476,7 +476,7 @@ const FichaAnamnese = () => {
                         >
                             <button
                                 onClick={() => setSecaoAberta(secaoAberta === secao.id ? null : secao.id)}
-                                className="w-full flex items-center justify-between px-8 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                                className="w-full flex items-center justify-between px-5 md:px-8 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className={`size-8 rounded-lg flex items-center justify-center ${dados[secao.id]?.trim() ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-400'}`}>
@@ -490,7 +490,7 @@ const FichaAnamnese = () => {
                                 <span className={`material-symbols-outlined text-slate-400 transition-transform print:hidden ${secaoAberta === secao.id ? 'rotate-180' : ''}`}>expand_more</span>
                             </button>
                             {secaoAberta === secao.id && (
-                                <div className="px-8 pb-6 print:hidden">
+                                <div className="px-5 md:px-8 pb-6 print:hidden">
                                     <textarea
                                         value={dados[secao.id]}
                                         onChange={e => handleChange(secao.id, e.target.value)}

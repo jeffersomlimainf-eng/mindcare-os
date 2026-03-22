@@ -271,7 +271,8 @@ const Prontuarios = () => {
                     </div>
 
                     <div className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 animate-settle">
-                        <table className="w-full text-left">
+                        <div className="overflow-x-auto w-full">
+                            <table className="w-full text-left">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
                                 <tr>
                                     <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Paciente</th>
@@ -333,6 +334,7 @@ const Prontuarios = () => {
                                 ))}
                             </tbody>
                         </table>
+                        </div>
                         {todosDocumentos.length === 0 && (
                             <div className="py-12 text-center text-slate-400 font-medium">
                                 <span className="material-symbols-outlined text-4xl mb-2">description</span>
