@@ -34,26 +34,38 @@ const AIClinica = () => {
     ]);
     const scrollRef = useRef(null);
 
-    // Consolidar toda a base de dados para o System Prompt
+    // Consolidar a base de dados para o System Prompt (Otimizado para poupar tokens/evitar limites)
     const fullDatabaseContext = useMemo(() => {
+        if (pacienteSelecionado) {
+            return JSON.stringify({
+                paciente_foco: {
+                    id: pacienteSelecionado.id,
+                    nome: pacienteSelecionado.nome,
+                    idade: pacienteSelecionado.dataNascimento,
+                    queixa: pacienteSelecionado.queixa,
+                    historico: pacienteSelecionado.historico,
+                    plano: pacienteSelecionado.plano,
+                    status: pacienteSelecionado.status
+                },
+                evolucoes: evolutions.filter(e => e.pacienteId === pacienteSelecionado.id),
+                anamneses: anamneses.filter(a => a.pacienteId === pacienteSelecionado.id),
+                laudos: laudos.filter(l => l.pacienteId === pacienteSelecionado.id),
+                declaracoes: declaracoes.filter(d => d.pacienteId === pacienteSelecionado.id),
+                atestados: atestados.filter(a => a.pacienteId === pacienteSelecionado.id),
+                encaminhamentos: encaminhamentos.filter(e => e.pacienteId === pacienteSelecionado.id)
+            });
+        }
+        
+        // Se nenhum paciente selecionado, envia apenas um resumo básico
         return JSON.stringify({
-            pacientes: patients.map(p => ({
+            aviso_sistema: "Para análise profunda de prontuário, peça ao psicólogo para selecionar um paciente na interface.",
+            pacientes_resumo: patients.map(p => ({
                 id: p.id,
                 nome: p.nome,
-                idade: p.dataNascimento,
-                queixa: p.queixa,
-                historico: p.historico,
-                plano: p.plano,
                 status: p.status
-            })),
-            evolucoes: evolutions,
-            anamneses: anamneses,
-            laudos: laudos,
-            declaracoes: declaracoes,
-            atestados: atestados,
-            encaminhamentos: encaminhamentos
+            }))
         });
-    }, [patients, evolutions, anamneses, laudos, declaracoes, atestados, encaminhamentos]);
+    }, [patients, evolutions, anamneses, laudos, declaracoes, atestados, encaminhamentos, pacienteSelecionado]);
 
     const systemPrompt = `Você é o "MindCare AI Assist", um parceiro clínico inteligente e empático para psicólogos que utilizam o MindCare OS.
 Sua persona é a de um colega de trabalho sênior, experiente, ético e colaborativo. Você não apenas analisa dados, mas conversa livremente com o psicólogo como um igual.
@@ -116,7 +128,7 @@ ${fullDatabaseContext}
             trackAIConsumption(promptTokens + completionTokens, user, updateUser);
         } catch (error) {
             console.error(error);
-            setMensagens(prev => [...prev, { role: 'assistant', text: 'Desculpe, tive um problema de conexão. Poderia tentar novamente?' }]);
+            setMensagens(prev => [...prev, { role: 'assistant', text: `Desculpe, erro: ${error.message || JSON.stringify(error)}` }]);
         } finally {
             setIsLoading(false);
         }

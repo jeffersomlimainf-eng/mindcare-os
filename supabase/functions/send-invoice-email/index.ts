@@ -21,7 +21,7 @@ serve(async (req: Request) => {
 
         // Se você não tem domínio verificado no Resend, use 'onboarding@resend.dev'
         // Mas o ideal para produção é usar 'cobrancas@seudominio.com'
-        const FROM_EMAIL = "onboarding@resend.dev"; // Padrão de teste do Resend
+        const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') || "onboarding@resend.dev"; // Padrão de teste do Resend
 
         const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',

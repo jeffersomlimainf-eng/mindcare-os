@@ -47,8 +47,8 @@ serve(async (req: Request) => {
     })
 
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
+    return new Response(JSON.stringify({ error: error.message || String(error) }), {
+      status: 200,   // Return 200 so the frontend can read the JSON payload
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
