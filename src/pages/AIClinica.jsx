@@ -70,6 +70,9 @@ const AIClinica = () => {
     const systemPrompt = `Você é o "MindCare AI Assist", um parceiro clínico inteligente e empático para psicólogos que utilizam o MindCare OS.
 Sua persona é a de um colega de trabalho sênior, experiente, ético e colaborativo. Você não apenas analisa dados, mas conversa livremente com o psicólogo como um igual.
 
+CONTEXTO DO SISTEMA:
+- Data e Hora Atual do Sistema: ${new Date().toLocaleString('pt-BR')}
+
 REGRAS DE OURO:
 1. Você tem acesso TOTAL à base de dados da clínica em tempo real (veja os dados abaixo).
 2. PACIENTE ATUALMENTE SELECIONADO NA TELA: ${pacienteSelecionado ? `${pacienteSelecionado.nome} (ID: ${pacienteSelecionado.id})` : 'NENHUM (Conversa Geral)'}.
@@ -79,7 +82,7 @@ REGRAS DE OURO:
 6. Se perguntado sobre algo que não está nos dados, responda com base no seu conhecimento geral de psicologia, mas sempre contextualizando com a prática clínica.
 7. Mantenha as respostas concisas mas profundas.
 
-DADOS DA CLÃNICA (BASE DE CONHECIMENTO):
+DADOS DA CLÍNICA (BASE DE CONHECIMENTO):
 ${fullDatabaseContext}
 `;
 
@@ -117,7 +120,10 @@ ${fullDatabaseContext}
                 }
             });
 
-            if (error) throw new Error(`Erro na Edge Function: ${error.message}`);
+            if (error) throw new Error(`Erro na conexão: ${error.message}`);
+            if (data?.error) throw new Error(`Erro da IA: ${data.error}`);
+            if (!data?.choices || !data.choices[0]) throw new Error('A resposta da IA veio em formato inesperado.');
+            
             const aiText = data.choices[0].message.content;
 
             setMensagens(prev => [...prev, { role: 'assistant', text: aiText }]);
