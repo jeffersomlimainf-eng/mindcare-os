@@ -489,7 +489,7 @@ const Configuracoes = () => {
                             {
                                 id: 'essencial',
                                 nome: 'Essencial',
-                                preco: user.plan_id?.toLowerCase() === 'essencial' ? user.plan_value?.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '49,90',
+                                preco: user.plan_id?.toLowerCase() === 'essencial' ? user.plan_value?.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '39,90',
                                 cor: 'border-slate-200 dark:border-slate-800',
                                 icon: 'auto_awesome_mosaic',
                                 vantagens: ['Agenda inteligente', 'Prontuário eletrônico', 'Pacientes ilimitados', 'Gestão financeira'],
@@ -499,7 +499,7 @@ const Configuracoes = () => {
                             {
                                 id: 'profissional',
                                 nome: 'Profissional',
-                                preco: user.plan_id?.toLowerCase() === 'profissional' ? user.plan_value?.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '99,90',
+                                preco: user.plan_id?.toLowerCase() === 'profissional' ? user.plan_value?.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '44,90',
                                 cor: 'border-primary ring-4 ring-primary/5',
                                 icon: 'rocket_launch',
                                 popular: true,
@@ -510,7 +510,7 @@ const Configuracoes = () => {
                             {
                                 id: 'premium',
                                 nome: 'Premium',
-                                preco: user.plan_id?.toLowerCase() === 'premium' ? user.plan_value?.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '149,90',
+                                preco: user.plan_id?.toLowerCase() === 'premium' ? user.plan_value?.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '72,90',
                                 cor: 'border-slate-900 dark:border-slate-700 bg-slate-900 dark:bg-slate-800 text-white',
                                 icon: 'diamond',
                                 vantagens: ['Tudo do Profissional', 'IA: Análise de Sentimento', 'Relatórios Avançados', 'Multiclínica (Sub-contas)'],

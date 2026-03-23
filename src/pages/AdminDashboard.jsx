@@ -52,7 +52,7 @@ const AdminDashboard = () => {
                     fone: profile.phone || profile.clinic_cnpj || 'N/A',
                     clinica: profile.clinic_name || 'Clínica não definida',
                     plano: profile.role === 'admin' ? 'Premium' : 'Essencial',
-                    mrr: profile.role === 'admin' ? 149.90 : 49.90,
+                    mrr: profile.role === 'admin' ? 72.90 : 39.90,
                     status: profile.plan_status || 'Ativo',
                     is_trial: profile.is_trial ?? false,
                     trial_end_date: profile.trial_end_date,
@@ -423,7 +423,7 @@ const AdminDashboard = () => {
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Assinatura</label>
                                             <select 
                                                 value={selectedClient.plano}
-                                                onChange={(e) => handleUpdateClient(selectedClient.id, { plano: e.target.value, mrr: e.target.value === 'Premium' ? 149.90 : e.target.value === 'Profissional' ? 99.90 : 49.90 })}
+                                                onChange={(e) => handleUpdateClient(selectedClient.id, { plano: e.target.value, mrr: e.target.value === 'Premium' ? 72.90 : e.target.value === 'Profissional' ? 44.90 : 39.90 })}
                                                 className="w-full h-12 px-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl outline-none focus:border-primary/30 text-xs font-bold"
                                             >
                                                 <option value="Essencial">Plano Essencial</option>
@@ -611,9 +611,9 @@ const AdminDashboard = () => {
                                     onChange={(e) => setNewClient({...newClient, plano: e.target.value})}
                                     className="w-full h-12 px-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl outline-none focus:border-primary/30 text-xs font-bold"
                                 >
-                                    <option value="Essencial">Plano Essencial (R$ 49,90)</option>
-                                    <option value="Profissional">Plano Profissional (R$ 99,90)</option>
-                                    <option value="Premium">Plano Premium (R$ 149,90)</option>
+                                    <option value="Essencial">Plano Essencial (R$ 39,90)</option>
+                                    <option value="Profissional">Plano Profissional (R$ 44,90)</option>
+                                    <option value="Premium">Plano Premium (R$ 72,90)</option>
                                 </select>
                             </div>
 
