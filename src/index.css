@@ -86,6 +86,13 @@
 
 /* ─── Impressão ─── */
 @media print {
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+  html, body {
+    overflow: visible !important;
+  }
+  
   @page {
     margin: 0;
     size: auto;
