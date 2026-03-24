@@ -166,11 +166,11 @@ export default function Vendas() {
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              Postura, <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Profissionalismo</span> e Agenda Lotada.
+              O Sistema de Gestão que Transforma seu Consultório em uma <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Clínica de Luxo</span>.
             </h1>
 
             <p className="text-lg text-slate-600 max-w-md mx-auto md:mx-0">
-              Eleve sua clínica a um novo patamar de luxo e elegância. Comunique-se como autoridade, tenha controle total e fature mais.
+              Agenda inteligente, prontuário eletrônico e finanças em um só lugar. Eleve sua postura profissional, ganhe tempo e lote sua agenda com elegância.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
