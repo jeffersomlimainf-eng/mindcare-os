@@ -36,6 +36,7 @@ import GerarCobranca from './pages/GerarCobranca';
 import VisualizarCobranca from './pages/VisualizarCobranca';
 import { useUser } from './contexts/UserContext';
 import AdminDashboard from './pages/AdminDashboard';
+import Vendas from './pages/Vendas';
 import Toast from './components/Toast';
 
 const ProtectedRoute = ({ children }) => {
@@ -96,6 +97,7 @@ function App() {
         <Router>
             <Toast />
             <Routes>
+                <Route path="/vendas" element={<Vendas />} />
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path="/cadastrar" element={<PublicRoute><Register /></PublicRoute>} />
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />

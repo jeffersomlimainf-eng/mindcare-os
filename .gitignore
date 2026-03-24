@@ -20,3 +20,8 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Backups and Temporary files
+backups/
+tmp/
+
