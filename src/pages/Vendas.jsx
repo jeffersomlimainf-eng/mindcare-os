@@ -125,6 +125,7 @@ export default function Vendas() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+      <a href="#funcionalidades" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-purple-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">Pular para o conteúdo principal</a>
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-purple-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -153,6 +154,7 @@ export default function Vendas() {
       </nav>
 
       {/* Hero Section */}
+      <main>
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden bg-gradient-to-b from-purple-50 via-white to-white">
         {/* Abstract shapes */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
@@ -161,28 +163,28 @@ export default function Vendas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 border border-purple-200 rounded-full text-purple-700 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
               SISTEMA FEITO POR PSICÓLOGOS PARA PSICÓLOGOS
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              O Sistema de Gestão que Transforma seu Consultório em uma <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Clínica de Luxo</span>.
+              Sistema Completo para <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Psicólogos e Terapeutas</span> — Prontuário, Agenda e Financeiro
             </h1>
 
             <p className="text-lg text-slate-600 max-w-md mx-auto md:mx-0">
-              Agenda inteligente, prontuário eletrônico e finanças em um só lugar. Eleve sua postura profissional, ganhe tempo e lote sua agenda com elegância.
+              Prontuário eletrônico seguro, agenda com alertas automáticos por WhatsApp e gestão financeira completa. Desenvolvido por um psicólogo clínico para profissionais de todas as abordagens. Adequado à LGPD.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-              <Link to="/cadastrar" className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-purple-200 hover:shadow-purple-300 transition-all transform hover:-translate-y-1 text-center">
+              <Link to="/cadastrar" aria-label="Testar o Meu Sistema Psi grátis por 7 dias" className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-purple-200 hover:shadow-purple-300 transition-all transform hover:-translate-y-1 text-center">
                 Experimentar Sem Compromisso
               </Link>
             </div>
 
             <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-slate-500 font-medium">
-              <Check className="w-4 h-4 text-green-500" /> Teste grátis por 7 dias
-              <span className="text-slate-300">|</span>
-              <Check className="w-4 h-4 text-green-500" /> Sem fidelidade
+              <Check className="w-4 h-4 text-green-500" aria-hidden="true" /> Teste grátis por 7 dias
+              <span className="text-slate-300" aria-hidden="true">|</span>
+              <Check className="w-4 h-4 text-green-500" aria-hidden="true" /> Sem fidelidade
             </div>
           </div>
 
@@ -190,8 +192,9 @@ export default function Vendas() {
             <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-200 border border-white/40">
               <img
                 src={heroBg}
-                alt="Consultório Elegante"
+                alt="Interface do Meu Sistema Psi mostrando o painel de gestão para psicólogos com agenda, prontuários e financeiro integrados"
                 className="w-full h-full object-cover aspect-4/3"
+                loading="eager"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent" />
             </div>
@@ -203,7 +206,7 @@ export default function Vendas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
-              Você um passo à frente da concorrência
+              Antes vs Depois: Software de Gestão para Terapeutas
             </h2>
             <p className="text-slate-600">
               Veja a diferença de gerenciar sua clínica com inteligência e classe. Atenda com postura e segurança.
@@ -267,7 +270,7 @@ export default function Vendas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-              Você um passo à frente da concorrência
+              Funcionalidades que Elevam sua Prática Clínica
             </h2>
             <p className="text-slate-600">
               Pequenos detalhes de postura fazem você cobrar o que realmente vale. O MindCare OS automatiza sem perder a elegância.
@@ -279,7 +282,7 @@ export default function Vendas() {
               <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 mb-6">
                 <MessageCircle className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">WhatsApp Profissional</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Lembretes Automáticos por WhatsApp</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
                 Chega de mandar áudios ou textos bagunçados. Lembretes de sessão e avisos chegam com visual formal e acolhedor, automatizados para você.
               </p>
@@ -289,7 +292,7 @@ export default function Vendas() {
               <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 mb-6">
                 <Mail className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">E-mails Elegantes</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Comunicação Profissional por E-mail</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
                 Recibos, lembretes de pagamento e resumos chegam em caixas de entrada com visual premium que agregam valor à sua hora/aula.
               </p>
@@ -299,7 +302,7 @@ export default function Vendas() {
               <div className="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-600 mb-6">
                 <Calendar className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Controle de Agenda</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Agenda para Psicólogos com Alertas Inteligentes</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
                 Agenda inteligente que previne furos, ajuda no agendamento recorrente e garante que seu consultório nunca fique vazio.
               </p>
@@ -312,7 +315,7 @@ export default function Vendas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-              Conheça por Dentro
+              Prontuário Eletrônico Seguro e Agenda Inteligente
             </h2>
             <p className="text-slate-600">
               Uma interface projetada para oferecer clareza e eficiência. Veja como o Meu Sistema Psi organiza sua rotina.
@@ -339,7 +342,7 @@ export default function Vendas() {
                     <span className="text-xs font-semibold text-slate-400">painel.meusistemapsi.com</span>
                   </div>
                   <div className="overflow-hidden rounded-xl border border-slate-100 shadow-inner mb-6 flex-grow">
-                    <img src={dashboardImg} alt="Painel Principal" className="w-full h-auto object-cover" />
+                    <img src={dashboardImg} alt="Tela do painel de controle do Meu Sistema Psi mostrando gráficos de faturamento e sessões do dia" className="w-full h-auto object-cover" loading="lazy" />
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-extrabold text-slate-900">Painel de Controle Inteligente</h3>
@@ -362,7 +365,7 @@ export default function Vendas() {
                     <span className="text-xs font-semibold text-slate-400">agenda.meusistemapsi.com</span>
                   </div>
                   <div className="overflow-hidden rounded-xl border border-slate-100 shadow-inner mb-6 flex-grow">
-                    <img src={agendaImg} alt="Agenda" className="w-full h-auto object-cover" />
+                    <img src={agendaImg} alt="Tela da agenda inteligente do Meu Sistema Psi com visualização semanal e alertas de WhatsApp integrados" className="w-full h-auto object-cover" loading="lazy" />
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-extrabold text-slate-900">Agenda Intuitiva</h3>
@@ -385,7 +388,7 @@ export default function Vendas() {
                     <span className="text-xs font-semibold text-slate-400">financeiro.meusistemapsi.com</span>
                   </div>
                   <div className="overflow-hidden rounded-xl border border-slate-100 shadow-inner mb-6 flex-grow">
-                    <img src={financeiroImg} alt="Financeiro" className="w-full h-auto object-cover" />
+                    <img src={financeiroImg} alt="Tela da gestão financeira do Meu Sistema Psi com fluxo de caixa visual e controle de receitas" className="w-full h-auto object-cover" loading="lazy" />
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-extrabold text-slate-900">Gestão Financeira Simplificada</h3>
@@ -400,9 +403,9 @@ export default function Vendas() {
 
             {/* Hint de Scroll / Painel de dots */}
             <div className="flex justify-center gap-2 -mt-4">
-              <button onClick={() => { setCurrentSlide(0); sliderRef.current.scrollTo({ left: 0, behavior: 'smooth' }); }} className={`h-2 rounded-full transition-all duration-300 ${currentSlide === 0 ? 'bg-purple-600 w-6' : 'bg-purple-200 w-2'}`}></button>
-              <button onClick={() => { setCurrentSlide(1); sliderRef.current.scrollTo({ left: sliderRef.current.offsetWidth, behavior: 'smooth' }); }} className={`h-2 rounded-full transition-all duration-300 ${currentSlide === 1 ? 'bg-purple-600 w-6' : 'bg-purple-200 w-2'}`}></button>
-              <button onClick={() => { setCurrentSlide(2); sliderRef.current.scrollTo({ left: sliderRef.current.offsetWidth * 2, behavior: 'smooth' }); }} className={`h-2 rounded-full transition-all duration-300 ${currentSlide === 2 ? 'bg-purple-600 w-6' : 'bg-purple-200 w-2'}`}></button>
+              <button aria-label="Ver tela do Dashboard" onClick={() => { setCurrentSlide(0); sliderRef.current.scrollTo({ left: 0, behavior: 'smooth' }); }} className={`h-2 rounded-full transition-all duration-300 ${currentSlide === 0 ? 'bg-purple-600 w-6' : 'bg-purple-200 w-2'}`}></button>
+              <button aria-label="Ver tela da Agenda" onClick={() => { setCurrentSlide(1); sliderRef.current.scrollTo({ left: sliderRef.current.offsetWidth, behavior: 'smooth' }); }} className={`h-2 rounded-full transition-all duration-300 ${currentSlide === 1 ? 'bg-purple-600 w-6' : 'bg-purple-200 w-2'}`}></button>
+              <button aria-label="Ver tela do Financeiro" onClick={() => { setCurrentSlide(2); sliderRef.current.scrollTo({ left: sliderRef.current.offsetWidth * 2, behavior: 'smooth' }); }} className={`h-2 rounded-full transition-all duration-300 ${currentSlide === 2 ? 'bg-purple-600 w-6' : 'bg-purple-200 w-2'}`}></button>
             </div>
           </div>
         </div>
@@ -413,7 +416,7 @@ export default function Vendas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-              Planos Transparentes e Sem Surpresas
+              Planos Acessíveis para Psicólogos — A Partir de R$ 39,90/mês
             </h2>
             <p className="text-slate-600">
               Escolha o plano que melhor se adapta ao momento da sua clínica. Teste grátis, sem cartão de crédito.
@@ -451,7 +454,7 @@ export default function Vendas() {
                 </li>
               </ul>
 
-              <a href="https://sun.eduzz.com/Q9N2YYZ101" className="w-full py-4 text-center bg-blue-500 hover:bg-blue-600 text-white font-black rounded-3xl shadow-md transition-all text-sm uppercase tracking-wide">
+              <a href="https://sun.eduzz.com/Q9N2YYZ101" aria-label="Assinar plano Essencial por R$ 39,90 por mês" className="w-full py-4 text-center bg-blue-500 hover:bg-blue-600 text-white font-black rounded-3xl shadow-md transition-all text-sm uppercase tracking-wide">
                 Começar Agora
               </a>
             </div>
@@ -496,7 +499,7 @@ export default function Vendas() {
                 </li>
               </ul>
 
-              <a href="https://sun.eduzz.com/G96RKK6QW1" className="w-full py-4 text-center bg-blue-500 hover:bg-blue-600 text-white font-black rounded-3xl shadow-md transition-all text-sm uppercase tracking-wide">
+              <a href="https://sun.eduzz.com/G96RKK6QW1" aria-label="Assinar plano Profissional com IA por R$ 44,90 por mês" className="w-full py-4 text-center bg-blue-500 hover:bg-blue-600 text-white font-black rounded-3xl shadow-md transition-all text-sm uppercase tracking-wide">
                 Começar Agora
               </a>
             </div>
@@ -537,7 +540,7 @@ export default function Vendas() {
                 </li>
               </ul>
 
-              <a href="https://sun.eduzz.com/89AXVVGG0D" className="w-full py-4 text-center bg-slate-100 hover:bg-white text-slate-900 font-black rounded-3xl shadow-inner transition-all text-sm uppercase tracking-wide block">
+              <a href="https://sun.eduzz.com/89AXVVGG0D" aria-label="Assinar plano Premium completo por R$ 72,90 por mês" className="w-full py-4 text-center bg-slate-100 hover:bg-white text-slate-900 font-black rounded-3xl shadow-inner transition-all text-sm uppercase tracking-wide block">
                 Começar Agora
               </a>
               <div className="text-center mt-3 text-[10px] text-slate-500 font-bold tracking-widest">
@@ -585,7 +588,7 @@ export default function Vendas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-              Quem usa, recomenda
+              Avaliado por Psicólogas de Todo o Brasil
             </h2>
             <p className="text-slate-600">
               Mais de centenas de psicólogas já modernizaram o consultório e estão economizando tempo.
@@ -671,6 +674,8 @@ export default function Vendas() {
               <div key={index} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden transition-all">
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  aria-expanded={openFaq === index}
+                  aria-controls={`faq-answer-${index}`}
                   className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
                 >
                   <span className="font-bold text-slate-800 text-sm md:text-base">{item.question}</span>
@@ -679,7 +684,7 @@ export default function Vendas() {
                   </div>
                 </button>
                 {openFaq === index && (
-                  <div className="px-6 pb-5 pt-1 text-slate-600 text-sm leading-relaxed border-t border-slate-50">
+                  <div id={`faq-answer-${index}`} role="region" aria-labelledby={`faq-question-${index}`} className="px-6 pb-5 pt-1 text-slate-600 text-sm leading-relaxed border-t border-slate-50">
                     {item.question === "Caso eu necessite de ajuda, como entro em contato?" ? (
                       <p>
                         Em caso de dúvidas ou sugestões, entre em contato com o nosso time de suporte pelo WhatsApp:{" "}
@@ -704,13 +709,13 @@ export default function Vendas() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-500 rounded-3xl p-12 text-center text-white shadow-2xl space-y-6">
             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight">
-              Pronta para elevar o nível da sua prática?
+              Pronta para Modernizar sua Clínica de Psicologia?
             </h2>
             <p className="text-purple-50 max-w-md mx-auto">
               Teste sem compromisso. É por nossa conta ver o quão sensacional o Meu Sistema Psi é.
             </p>
             <div className="flex justify-center pt-4">
-              <Link to="/cadastrar" className="px-8 py-4 bg-white hover:bg-slate-50 text-indigo-600 font-bold rounded-2xl shadow-xl transition-all transform hover:-translate-y-1">
+              <Link to="/cadastrar" aria-label="Criar conta gratuita no Meu Sistema Psi" className="px-8 py-4 bg-white hover:bg-slate-50 text-indigo-600 font-bold rounded-2xl shadow-xl transition-all transform hover:-translate-y-1">
                 Começar Agora
               </Link>
             </div>
@@ -759,6 +764,7 @@ export default function Vendas() {
           </div>
         </div>
       </footer>
+      </main>
     </div>
   );
 }

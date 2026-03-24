@@ -1,4 +1,35 @@
+# Meu Sistema Psi — robots.txt
+# Bloqueia rotas do sistema interno e libera páginas públicas
+
 User-agent: *
-Allow: /
+
+# Páginas públicas (permitidas)
+Allow: /vendas
+Allow: /login
+Allow: /cadastrar
+
+# Rotas internas do sistema (bloqueadas)
+Disallow: /dashboard
+Disallow: /pacientes
+Disallow: /agenda
+Disallow: /prontuarios
+Disallow: /financeiro
+Disallow: /relatorios
+Disallow: /configuracoes
+Disallow: /ai-clinica
+Disallow: /modelos
+Disallow: /laudos
+Disallow: /declaracoes
+Disallow: /atestados
+Disallow: /anamneses
+Disallow: /encaminhamentos
+Disallow: /tcles
+Disallow: /evolucoes
+Disallow: /linha-do-tempo
+Disallow: /super-admin
+Disallow: /onboarding
+Disallow: /self-register
+Disallow: /reset-password
+Disallow: /cobranca
 
 Sitemap: https://meusistemapsi.com.br/sitemap.xml
