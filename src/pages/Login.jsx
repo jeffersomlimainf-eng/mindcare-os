@@ -228,11 +228,11 @@ const Login = () => {
                 <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2) 0%, transparent 50%)'}} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
                     <div className="max-w-md text-center">
-                        <div className="size-24 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mx-auto mb-8 shadow-lg shadow-purple-700/20 border border-white/20">
-                            <span className="material-symbols-outlined text-6xl">psychology</span>
+                        <div className="size-24 rounded-3xl bg-white/50 backdrop-blur-sm flex items-center justify-center mx-auto mb-8 shadow-lg shadow-purple-400/20 border border-white/40">
+                            <span className="material-symbols-outlined text-6xl text-purple-700">psychology</span>
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">Cuide da sua carreira com a mesma dedicação que cuida dos seus pacientes</h2>
-                        <p className="text-white/80 text-lg font-medium leading-relaxed">
+                        <h2 className="text-3xl font-bold text-purple-900 mb-4 tracking-tight">Cuide da sua carreira com a mesma dedicação que cuida dos seus pacientes</h2>
+                        <p className="text-purple-800/70 text-lg font-medium leading-relaxed">
                             Prontuários, agenda e financeiro — tudo em um só lugar, feito para você.
                         </p>
                         <div className="grid grid-cols-3 gap-4 mt-10">
@@ -241,9 +241,9 @@ const Login = () => {
                                 { icon: 'calendar_month', label: 'Agenda' },
                                 { icon: 'description', label: 'Prontuários' },
                             ].map((f, i) => (
-                                <div key={i} className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/20 shadow-sm transition-all hover:bg-white/25">
-                                    <span className="material-symbols-outlined text-white text-3xl">{f.icon}</span>
-                                    <p className="text-[10px] font-bold text-white/80 mt-2 uppercase tracking-widest">{f.label}</p>
+                                <div key={i} className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/50 shadow-sm transition-all hover:bg-white/60">
+                                    <span className="material-symbols-outlined text-purple-700 text-3xl">{f.icon}</span>
+                                    <p className="text-[10px] font-bold text-purple-800/70 mt-2 uppercase tracking-widest">{f.label}</p>
                                 </div>
                             ))}
                         </div>
