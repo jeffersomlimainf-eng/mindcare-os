@@ -40,6 +40,13 @@ export default function Vendas() {
 
   // Auto-scroll logic for feature carrousel
   useEffect(() => {
+    // Dynamic SEO Metadata
+    document.title = "Aumente sua Produtividade Clínica | Meu Sistema Psi - 30 Dias Grátis";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Descubra como o Meu Sistema Psi ajuda psicólogos a automatizar agenda, prontuários e faturamento. Experimente agora com 30 dias de teste gratuito!');
+    }
+
     const interval = setInterval(() => {
       if (sliderRef.current) {
         const nextIndex = (currentSlide + 1) % 3; // 3 slides
