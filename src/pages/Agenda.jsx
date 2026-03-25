@@ -454,7 +454,7 @@ const Agenda = () => {
                                         <p className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase truncate">{p.nome}</p>
                                         <span className={`text-[8px] px-1.5 py-0.5 rounded font-black text-white ${p.bgBadge || 'bg-primary'}`}>{p.prioridade}</span>
                                     </div>
-                                    <p className="text-[10px] text-slate-500">{p.preferencia} Â· {p.duracao}</p>
+                                    <p className="text-[10px] text-slate-500">{p.preferencia} · {p.duracao}</p>
                                     <div className="mt-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
                                         <button onClick={() => agendarDaFila(p)} className="flex-1 py-1 text-[9px] font-bold bg-primary text-white rounded-md">Agendar</button>
                                         <button onClick={() => removeFromWaitingList(p.id)} className="px-2 py-1 text-[9px] font-bold text-slate-400 hover:text-red-500">Excluir</button>

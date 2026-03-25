@@ -184,7 +184,7 @@ const Financeiro = () => {
                         id: 'vencidas', 
                         label: 'Pendências', 
                         value: pendentesTotal.reduce((a, b) => a + Math.abs(b.valor || 0), 0), 
-                        subLabel: `${vencidas.length} vencidos Â· ${pendentesTotal.length} total`,
+                        subLabel: `${vencidas.length} vencidos · ${pendentesTotal.length} total`,
                         type: 'vencidas' 
                     },
                 ].map((card, i) => {

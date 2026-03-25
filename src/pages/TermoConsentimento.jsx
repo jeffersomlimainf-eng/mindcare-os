@@ -538,9 +538,9 @@ const TermoConsentimento = () => {
                                     </div>
                                     <select value={dados.consentimentoGravacao} onChange={(e) => handleChange('consentimentoGravacao', e.target.value)} className="h-9 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold outline-none focus:border-rose-500 transition-all">
                                         <option>Não autorizado</option>
-                                        <option>Autorizado (Ãudio)</option>
+                                        <option>Autorizado (Áudio)</option>
                                         <option>Autorizado (Vídeo)</option>
-                                        <option>Autorizado (Ãudio e Vídeo)</option>
+                                        <option>Autorizado (Áudio e Vídeo)</option>
                                     </select>
                                 </div>
                             </div>

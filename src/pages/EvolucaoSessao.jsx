@@ -442,7 +442,7 @@ const EvolucaoSessao = () => {
 
             const dataForWord = {
                 titulo: 'Evolução de Sessão — SOAP',
-                subtitulo: `Sessão #${numeroSessao || '-'} Â· ${tipoAtendimento} Â· ${duracaoSessao} min`,
+                subtitulo: `Sessão #${numeroSessao || '-'} · ${tipoAtendimento} · ${duracaoSessao} min`,
                 paciente: {
                     nome: nomePaciente,
                     cpf: pacienteSelecionado?.cpf || '—',
@@ -483,11 +483,11 @@ const EvolucaoSessao = () => {
                         {pacienteSelecionado ? (
                             <>
                                 Paciente: <span className="text-primary font-bold">{pacienteSelecionado.nome}</span>
-                                <span className="opacity-30">Â·</span>
+                                <span className="opacity-30">·</span>
                                 <span className="text-xs">{pacienteSelecionado.id}</span>
                                 {!modoEdicao && (
                                     <>
-                                        <span className="opacity-30">Â·</span>
+                                        <span className="opacity-30">·</span>
                                         <span className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md font-bold text-[11px]">
                                             <span className="material-symbols-outlined text-[14px]">event</span>
                                             {formatarDataExibicao(dataHora)}
@@ -568,7 +568,7 @@ const EvolucaoSessao = () => {
                                     <div className={`size-12 rounded-full flex items-center justify-center text-sm font-bold ${pacienteSelecionado.cor || 'bg-primary/10 text-primary'}`}>{pacienteSelecionado.iniciais}</div>
                                     <div>
                                         <p className="font-black text-slate-900 dark:text-white">{pacienteSelecionado.nome}</p>
-                                        <p className="text-xs text-slate-500">{pacienteSelecionado.id} Â· {tipoAtendimento}</p>
+                                        <p className="text-xs text-slate-500">{pacienteSelecionado.id} · {tipoAtendimento}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -948,7 +948,7 @@ const EvolucaoSessao = () => {
                         </div>
                         <div>
                             <p style={{ fontSize: '8px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>Sessão / Tipo</p>
-                            <p style={{ fontSize: '12px', fontWeight: 700, color: '#334155', margin: 0 }}>#{numeroSessao || '-'} Â· {tipoAtendimento} Â· {duracaoSessao} min</p>
+                            <p style={{ fontSize: '12px', fontWeight: 700, color: '#334155', margin: 0 }}>#{numeroSessao || '-'} · {tipoAtendimento} · {duracaoSessao} min</p>
                         </div>
                     </div>
                 </div>
