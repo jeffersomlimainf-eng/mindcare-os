@@ -56,14 +56,14 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950">
+        <div className="min-h-screen flex bg-gradient-to-br from-violet-50 via-purple-50/50 to-fuchsia-50/30 dark:bg-slate-950">
             {/* Left: Form */}
             <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-24">
                 <div className="mx-auto w-full max-w-sm">
                     {/* Logo */}
                     <div className="flex items-center gap-2 mb-8">
-                        <div className="bg-primary p-2 rounded-xl text-white shadow-md shadow-primary/10">
-                            <span className="material-symbols-outlined text-3xl">psychology</span>
+                        <div className="bg-gradient-to-br from-violet-500 to-purple-600 p-2 rounded-xl text-white shadow-md shadow-violet-300/30">
+                            <img src="/favicon.png" alt="Meu Sistema Psi" className="w-8 h-8" />
                         </div>
                         <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Meu Sistema Psi</span>
                     </div>
@@ -114,7 +114,7 @@ const Register = () => {
                                          type="text"
                                          value={nome}
                                          onChange={e => setNome(e.target.value)}
-                                         className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                         className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                          placeholder="Seu nome completo"
                                          required
                                      />
@@ -126,7 +126,7 @@ const Register = () => {
                                          type="text"
                                          value={cpfCnpj}
                                          onChange={e => setCpfCnpj(e.target.value)}
-                                         className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                         className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                          placeholder="000.000.000-00 ou CNPJ"
                                          required
                                      />
@@ -138,7 +138,7 @@ const Register = () => {
                                         type="email"
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
-                                        className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                        className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                         placeholder="seu@email.com"
                                         required
                                     />
@@ -151,14 +151,14 @@ const Register = () => {
                                             type={showPass ? 'text' : 'password'}
                                             value={senha}
                                             onChange={e => setSenha(e.target.value)}
-                                            className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 pr-12 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                            className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 pr-12 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                             placeholder="••••••••"
                                             required
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPass(!showPass)}
-                                            className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-primary transition-colors"
+                                            className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-violet-500 transition-colors"
                                         >
                                             <span className="material-symbols-outlined">{showPass ? 'visibility_off' : 'visibility'}</span>
                                         </button>
@@ -171,7 +171,7 @@ const Register = () => {
                                         type={showPass ? 'text' : 'password'}
                                         value={confirmaSenha}
                                         onChange={e => setConfirmaSenha(e.target.value)}
-                                        className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                        className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                         placeholder="••••••••"
                                         required
                                     />
@@ -180,7 +180,7 @@ const Register = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full mt-4 py-3.5 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.99] uppercase tracking-widest text-xs disabled:opacity-50"
+                                    className="w-full mt-4 py-3.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl shadow-lg shadow-violet-300/30 hover:shadow-violet-400/40 hover:from-violet-600 hover:to-purple-700 transition-all active:scale-[0.99] uppercase tracking-widest text-xs disabled:opacity-50"
                                 >
                                     {loading ? 'Cadastrando...' : 'Criar minha conta'}
                                 </button>
@@ -188,7 +188,7 @@ const Register = () => {
 
                             <p className="mt-8 text-center text-sm text-slate-500 font-medium">
                                 Já tem uma conta?{' '}
-                                <Link to="/login" className="font-bold text-primary hover:underline transition-all">Faça login</Link>
+                                <Link to="/login" className="font-bold text-violet-600 hover:underline transition-all">Faça login</Link>
                             </p>
                         </>
                     )}
@@ -196,16 +196,17 @@ const Register = () => {
             </div>
 
             {/* Right: Visual */}
-            <div className="hidden lg:block lg:flex-1 relative overflow-hidden bg-slate-100 dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
+            <div className="hidden lg:block lg:flex-1 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-400 via-purple-500 to-fuchsia-500" />
+                <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2) 0%, transparent 50%)'}} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
                     <div className="max-w-md text-center">
-                        <div className="size-24 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mx-auto mb-8 shadow-sm">
-                            <span className="material-symbols-outlined text-6xl">psychology</span>
+                        <div className="size-24 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mx-auto mb-8 shadow-lg shadow-purple-700/20 border border-white/20">
+                            <img src="/favicon.png" alt="Meu Sistema Psi" className="w-14 h-14" />
                         </div>
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight">Sistema Completo para Psicólogos</h2>
-                        <p className="text-slate-500 dark:text-slate-400 text-lg font-medium leading-relaxed">
-                            Gerencie pacientes, agenda, prontuários e financeiro em um só lugar, com segurança e eficiência.
+                        <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">Comece sua jornada com o Meu Sistema Psi</h2>
+                        <p className="text-white/80 text-lg font-medium leading-relaxed">
+                            30 dias grátis para experimentar tudo. Sem compromisso.
                         </p>
                     </div>
                 </div>
