@@ -1,6 +1,15 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 const WhatsAppButton = () => {
+  const location = useLocation();
+  const salesPages = ['/vendas', '/login', '/cadastrar'];
+
+  // Só exibe nas páginas de vendas, login e cadastro
+  if (!salesPages.includes(location.pathname)) {
+    return null;
+  }
+
   const phoneNumber = "5544988446371"; // Número extraído do FAQ
   const message = encodeURIComponent("Olá! Vim pelo site e gostaria de mais informações.");
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
