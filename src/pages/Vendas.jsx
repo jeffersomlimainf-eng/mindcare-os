@@ -302,7 +302,7 @@ export default function Vendas() {
                 <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Multiclínica</li>
                 <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Economia de 55%</li>
               </ul>
-              <a href="https://sun.eduzz.com/89AXVP5G0D" className="bg-white text-slate-900 py-3 rounded-2xl font-bold text-center hover:bg-slate-100 transition-colors">Assinar Agora</a>
+              <a href="https://chk.eduzz.com/89AXVP5G0D" className="bg-white text-slate-900 py-3 rounded-2xl font-bold text-center hover:bg-slate-100 transition-colors">Assinar Agora</a>
             </div>
           </div>
         </section>
