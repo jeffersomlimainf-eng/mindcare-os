@@ -39,6 +39,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Vendas from './pages/Vendas';
 import Toast from './components/Toast';
 import AnalyticsTracker from './components/AnalyticsTracker';
+import WhatsAppButton from './components/WhatsAppButton';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useUser();
@@ -97,6 +98,7 @@ function App() {
     return (
         <Router>
             <AnalyticsTracker />
+            <WhatsAppButton />
             <Toast />
             <Routes>
                 <Route path="/vendas" element={<Vendas />} />
