@@ -294,15 +294,15 @@ export default function Vendas() {
               <h3 className="text-xl font-bold mb-4">Plano Anual</h3>
               <div className="mb-6">
                 <div className="text-sm text-slate-400 mb-1">Por apenas:</div>
-                <div className="text-3xl font-black text-indigo-400">12x de R$ 39,70</div>
-                <div className="text-xs text-slate-500 mt-1">ou R$ 397,00 à vista</div>
+                <div className="text-3xl font-black text-indigo-400">12x de R$ 28,91</div>
+                <div className="text-xs text-slate-500 mt-1">ou R$ 346,92 à vista</div>
               </div>
               <ul className="space-y-3 mb-8 flex-grow">
                 <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Tudo do Profissional</li>
                 <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Multiclínica</li>
                 <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Economia de 55%</li>
               </ul>
-              <a href="https://sun.eduzz.com/89AXVVGG0D" className="bg-white text-slate-900 py-3 rounded-2xl font-bold text-center hover:bg-slate-100 transition-colors">Assinar Agora</a>
+              <a href="https://sun.eduzz.com/89AXVP5G0D" className="bg-white text-slate-900 py-3 rounded-2xl font-bold text-center hover:bg-slate-100 transition-colors">Assinar Agora</a>
             </div>
           </div>
         </section>
