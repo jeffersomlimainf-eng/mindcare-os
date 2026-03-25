@@ -288,15 +288,21 @@ export default function Vendas() {
               <a href="https://sun.eduzz.com/G96RKK6QW1" className="bg-indigo-600 text-white py-3 rounded-2xl font-bold text-center">Começar</a>
             </div>
 
-            {/* Premium */}
-            <div className="bg-[#0f172a] p-8 rounded-[32px] text-white flex flex-col">
-              <h3 className="text-xl font-bold mb-4">Premium</h3>
-              <div className="text-3xl font-black mb-6 text-indigo-400">R$ 72,90 <span className="text-sm font-normal text-slate-500">/mês</span></div>
+            {/* Premium / Annual */}
+            <div className="bg-[#0f172a] p-8 rounded-[32px] text-white flex flex-col relative overflow-hidden border border-slate-800">
+              <div className="absolute top-0 right-0 bg-indigo-600 px-4 py-1 text-[10px] font-bold uppercase tracking-wider">Melhor Valor</div>
+              <h3 className="text-xl font-bold mb-4">Plano Anual</h3>
+              <div className="mb-6">
+                <div className="text-sm text-slate-400 mb-1">Por apenas:</div>
+                <div className="text-3xl font-black text-indigo-400">12x de R$ 39,70</div>
+                <div className="text-xs text-slate-500 mt-1">ou R$ 397,00 à vista</div>
+              </div>
               <ul className="space-y-3 mb-8 flex-grow">
                 <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Tudo do Profissional</li>
                 <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Multiclínica</li>
+                <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Economia de 55%</li>
               </ul>
-              <a href="https://sun.eduzz.com/89AXVVGG0D" className="bg-white text-slate-900 py-3 rounded-2xl font-bold text-center">Começar</a>
+              <a href="https://sun.eduzz.com/89AXVVGG0D" className="bg-white text-slate-900 py-3 rounded-2xl font-bold text-center hover:bg-slate-100 transition-colors">Assinar Agora</a>
             </div>
           </div>
         </section>
