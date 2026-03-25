@@ -133,6 +133,7 @@ export default function Vendas() {
                   src={heroBg}
                   alt="Interface do Meu Sistema Psi"
                   className="w-full h-full object-cover aspect-4/3"
+                  loading="eager"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent" />
               </div>
@@ -239,7 +240,7 @@ export default function Vendas() {
             <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">Tudo em Um Só Lugar</h2>
           </div>
           <div className="max-w-5xl mx-auto px-4 overflow-hidden rounded-[40px] shadow-2xl border border-white">
-            <img src={dashboardImg} alt="Dashboard" className="w-full h-auto" />
+            <img src={dashboardImg} alt="Dashboard" className="w-full h-auto" loading="lazy" />
           </div>
         </section>
 
