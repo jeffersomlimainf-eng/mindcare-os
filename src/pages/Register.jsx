@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
@@ -6,6 +6,12 @@ import { showToast } from '../components/Toast';
 const Register = () => {
     const navigate = useNavigate();
     const { signUp } = useUser();
+
+    useEffect(() => {
+        document.title = "Cadastre-se Grátis | Meu Sistema Psi - 30 Dias de Teste";
+        const meta = document.querySelector('meta[name="description"]');
+        if (meta) meta.setAttribute('content', 'Crie sua conta no Meu Sistema Psi e teste grátis por 30 dias. Prontuário eletrônico, agenda inteligente e gestão financeira para psicólogos.');
+    }, []);
     
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');

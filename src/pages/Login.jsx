@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 
@@ -7,13 +7,19 @@ const Login = () => {
     const [showPass, setShowPass] = useState(false);
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const [view, setView] = useState('login'); // 'login' or 'recovery'
+    const [view, setView] = useState('login');
     const [recoveryEmail, setRecoveryEmail] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
 
     const { login, loginWithGoogle, resetPassword } = useUser();
     const [erro, setErro] = useState('');
     const [loadingGoogle, setLoadingGoogle] = useState(false);
+
+    useEffect(() => {
+        document.title = "Login | Meu Sistema Psi - Acesse sua Clínica";
+        const meta = document.querySelector('meta[name="description"]');
+        if (meta) meta.setAttribute('content', 'Acesse o Meu Sistema Psi e gerencie sua clínica de psicologia com prontuários, agenda e financeiro. Login seguro e rápido.');
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
