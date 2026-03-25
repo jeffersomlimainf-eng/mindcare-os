@@ -62,8 +62,8 @@ const Register = () => {
                 <div className="mx-auto w-full max-w-sm">
                     {/* Logo */}
                     <div className="flex items-center gap-2 mb-8">
-                        <div className="bg-gradient-to-br from-violet-500 to-purple-600 p-2 rounded-xl text-white shadow-md shadow-violet-300/30">
-                            <img src="/favicon.png" alt="Meu Sistema Psi" className="w-8 h-8" />
+                        <div className="bg-gradient-to-br from-violet-500 to-purple-600 p-2.5 rounded-xl shadow-md shadow-violet-300/30">
+                            <span className="material-symbols-outlined text-2xl text-white">psychology</span>
                         </div>
                         <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Meu Sistema Psi</span>
                     </div>
