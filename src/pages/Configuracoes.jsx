@@ -476,7 +476,12 @@ const Configuracoes = () => {
                     </h2>
                     <div className="flex items-center gap-3">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Gerencie seu acesso</span>
-                        {user.plan_status !== 'Ativo' && (
+                        {user.is_trial && (
+                            <div className="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white animate-pulse">
+                                Teste Grátis: {Math.max(0, Math.ceil((new Date(user.trial_end_date) - new Date()) / (1000 * 60 * 60 * 24)))} dias restantes
+                            </div>
+                        )}
+                        {user.plan_status !== 'Ativo' && !user.is_trial && (
                             <div className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest animate-pulse ${user.plan_status === 'Inadimplente' ? 'bg-amber-500 text-white' : 'bg-rose-500 text-white'}`}>
                                 Conta {user.plan_status}
                             </div>
@@ -508,26 +513,33 @@ const Configuracoes = () => {
                                 link: 'https://chk.eduzz.com/G96RKK6QW1'
                             },
                             {
-                                id: 'premium',
-                                nome: 'Premium',
-                                preco: user.plan_id?.toLowerCase() === 'premium' ? user.plan_value?.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '72,90',
-                                cor: 'border-slate-900 dark:border-slate-700 bg-slate-900 dark:bg-slate-800 text-white',
-                                icon: 'diamond',
-                                vantagens: ['Tudo do Profissional', 'IA: Análise de Sentimento', 'Relatórios Avançados', 'Multiclínica (Sub-contas)'],
+                                id: 'anual',
+                                nome: 'Plano Anual',
+                                preco: '28,91',
+                                preco_info: '12x de R$ 28,91 ou R$ 346,92 à vista',
+                                cor: 'border-amber-100 bg-amber-50 dark:bg-amber-900/10 text-slate-900 dark:text-white',
+                                icon: 'calendar_month',
+                                vantagens: ['Tudo do Profissional', 'Desconto Especial (55%)', '1 Ano de Acesso Total', 'Suporte Prioritário'],
+                                badge: 'Melhor Valor',
                                 ai: true,
-                                link: 'https://chk.eduzz.com/89AXVVGG0D'
+                                link: 'https://chk.eduzz.com/89AXVP5G0D'
                             }
                         ].map((p) => (
-                            <div key={p.id} className={`relative flex flex-col p-6 rounded-[2rem] border-2 transition-all hover:scale-[1.02] ${p.cor} ${p.id === 'premium' ? 'shadow-2xl shadow-slate-900/20' : ''}`}>
+                            <div key={p.id} className={`relative flex flex-col p-6 rounded-[2rem] border-2 transition-all hover:scale-[1.02] ${p.cor} ${p.id === 'anual' ? 'shadow-2xl shadow-amber-500/10' : ''}`}>
                                 {p.popular && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
                                         Mais Popular
                                     </div>
                                 )}
+                                {p.badge && (
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                                        {p.badge}
+                                    </div>
+                                )}
                                 
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className={`size-12 rounded-2xl flex items-center justify-center ${p.id === 'premium' ? 'bg-white/10' : 'bg-primary/10'}`}>
-                                        <span className={`material-symbols-outlined ${p.id === 'premium' ? 'text-white' : 'text-primary'}`}>{p.icon}</span>
+                                    <div className={`size-12 rounded-2xl flex items-center justify-center ${p.id === 'anual' ? 'bg-amber-500/10' : 'bg-primary/10'}`}>
+                                        <span className={`material-symbols-outlined ${p.id === 'anual' ? 'text-amber-500' : 'text-primary'}`}>{p.icon}</span>
                                     </div>
                                     {p.ai && (
                                         <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 dark:bg-amber-500/20 text-amber-500 rounded-lg text-[10px] font-black uppercase tracking-widest">
@@ -537,18 +549,24 @@ const Configuracoes = () => {
                                     )}
                                 </div>
 
-                                <h3 className={`text-xl font-black italic tracking-tight mb-1 ${p.id === 'premium' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{p.nome}</h3>
-                                <div className="flex items-baseline gap-1 mb-6">
-                                    <span className={`text-[10px] font-black opacity-60 ${p.id === 'premium' ? 'text-white' : 'text-slate-500'}`}>R$</span>
-                                    <span className={`text-3xl font-black tracking-tighter ${p.id === 'premium' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{p.preco}</span>
-                                    <span className={`text-[10px] font-black opacity-60 ${p.id === 'premium' ? 'text-white' : 'text-slate-500'}`}>/mês</span>
+                                <h3 className={`text-xl font-black italic tracking-tight mb-1 text-slate-900 dark:text-white`}>{p.nome}</h3>
+                                <div className="flex items-baseline gap-1 mb-1">
+                                    <span className={`text-[10px] font-black opacity-60 text-slate-500`}>R$</span>
+                                    <span className={`text-3xl font-black tracking-tighter text-slate-900 dark:text-white`}>{p.preco}</span>
+                                    <span className={`text-[10px] font-black opacity-60 text-slate-500`}>/mês</span>
                                 </div>
+                                {p.preco_info && (
+                                    <div className="text-[10px] font-bold text-slate-500 mb-6 uppercase tracking-wider">
+                                        {p.preco_info}
+                                    </div>
+                                )}
+                                {!p.preco_info && <div className="mb-6 h-4" />}
 
                                 <div className="flex-1 space-y-3 mb-8">
                                     {p.vantagens.map((v, i) => (
                                         <div key={i} className="flex items-center gap-2">
-                                            <span className={`material-symbols-outlined text-sm ${p.id === 'premium' ? 'text-emerald-400' : 'text-emerald-500'}`}>check_circle</span>
-                                            <span className={`text-xs font-bold leading-tight ${p.id === 'premium' ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>{v}</span>
+                                            <span className={`material-symbols-outlined text-sm text-emerald-500`}>check_circle</span>
+                                            <span className={`text-xs font-bold leading-tight text-slate-500 dark:text-slate-400`}>{v}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -562,8 +580,8 @@ const Configuracoes = () => {
                                     className={`w-full py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
                                         user.plan_id?.toLowerCase() === p.id && user.plan_status === 'Ativo' && !(user.is_trial && new Date(user.trial_end_date) < new Date())
                                             ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-default'
-                                            : p.id === 'premium'
-                                                ? 'bg-white text-slate-900 hover:scale-[1.02] shadow-xl'
+                                            : p.id === 'anual'
+                                                ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-xl'
                                                 : 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 hover:scale-[1.02]'
                                     }`}
                                 >

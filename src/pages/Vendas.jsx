@@ -22,7 +22,7 @@ export default function Vendas() {
     },
     {
       question: "Como tenho acesso ao Meu Sistema Psi?",
-      answer: "É simples! Basta fazer o seu cadastro no botão 'Testar Grátis' para ter 7 dias de uso gratuito, sem a necessidade de informar cartão de crédito. Assim, você conhece todas as funcionalidades da plataforma sem nenhum compromisso."
+      answer: "É simples! Basta fazer o seu cadastro no botão 'Testar Grátis' para ter 30 dias de uso gratuito, sem a necessidade de informar cartão de crédito. Assim, você conhece todas as funcionalidades da plataforma sem nenhum compromisso."
     },
     {
       question: "O Meu Sistema Psi é adequado para quem está começando na psicologia?",
@@ -128,7 +128,7 @@ export default function Vendas() {
               </div>
 
               <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-slate-500 font-medium">
-                <Check className="w-4 h-4 text-green-500" /> Teste grátis por 7 dias
+                <Check className="w-4 h-4 text-green-500" /> Teste grátis por 30 dias
                 <span className="text-slate-300">|</span>
                 <Check className="w-4 h-4 text-green-500" /> Sem fidelidade
               </div>
@@ -251,67 +251,57 @@ export default function Vendas() {
           </div>
         </section>
 
-        {/* Pricing */}
+        {/* Pricing / Trial Section */}
         <section id="precos" className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Planos que Cabem no seu Bolso</h2>
-            <p className="text-slate-600">Escolha o plano ideal para sua fase profissional.</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {/* Free Trial */}
-            <div className="bg-emerald-50 p-8 rounded-[32px] border border-emerald-100 flex flex-col shadow-sm animate-soft-float animate-pulse-glow relative">
-              <div className="absolute -top-3 -right-3 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full animate-bounce">GRÁTIS</div>
-              <h3 className="text-xl font-bold mb-4 text-emerald-900">Teste Grátis</h3>
-              <div className="text-3xl font-black mb-2 text-emerald-700">R$ 0,00</div>
-              <p className="text-sm text-emerald-600 mb-6 font-medium">Experimente por 30 dias</p>
-              <ul className="space-y-3 mb-8 flex-grow">
-                <li className="text-sm flex items-center gap-2 text-emerald-800"><Check size={16} className="text-emerald-500"/> Acesso total</li>
-                <li className="text-sm flex items-center gap-2 text-emerald-800"><Check size={16} className="text-emerald-500"/> Sem cartão agora</li>
-                <li className="text-sm flex items-center gap-2 text-emerald-800"><Check size={16} className="text-emerald-500"/> 30 dias completos</li>
-              </ul>
-              <Link to="/cadastrar" className="bg-emerald-600 text-white py-3 rounded-2xl font-bold text-center hover:bg-emerald-700 transition-colors">Experimentar</Link>
-            </div>
-            {/* Essential */}
-            <div className="bg-slate-50 p-8 rounded-[32px] border border-slate-100 flex flex-col">
-              <h3 className="text-xl font-bold mb-4">Essencial</h3>
-              <div className="text-3xl font-black mb-6">R$ 39,90 <span className="text-sm font-normal text-slate-500">/mês</span></div>
-              <ul className="space-y-3 mb-8 flex-grow">
-                <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Agenda e Prontuário</li>
-                <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Financeiro Completo</li>
-              </ul>
-              <a href="https://sun.eduzz.com/Q9N2YYZ101" className="bg-indigo-600 text-white py-3 rounded-2xl font-bold text-center">Começar</a>
-            </div>
-
-            {/* Professional */}
-            <div className="bg-white p-8 rounded-[32px] border-2 border-indigo-500 shadow-xl flex flex-col relative transform scale-105">
-              <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] font-bold px-4 py-1 rounded-full">MAIS POPULAR</span>
-              <h3 className="text-xl font-bold mb-4">Profissional</h3>
-              <div className="text-3xl font-black mb-6">R$ 44,90 <span className="text-sm font-normal text-slate-500">/mês</span></div>
-              <ul className="space-y-3 mb-8 flex-grow">
-                <li className="text-sm flex items-center gap-2 font-bold"><Check size={16} className="text-green-500"/> Tudo do Essencial</li>
-                <li className="text-sm flex items-center gap-2 font-bold"><Check size={16} className="text-green-500"/> IA para Evoluções</li>
-                <li className="text-sm flex items-center gap-2 font-bold"><Check size={16} className="text-green-500"/> Alerts WhatsApp</li>
-              </ul>
-              <a href="https://sun.eduzz.com/G96RKK6QW1" className="bg-indigo-600 text-white py-3 rounded-2xl font-bold text-center">Começar</a>
-            </div>
-
-            {/* Premium / Annual */}
-            <div className="bg-[#0f172a] p-8 rounded-[32px] text-white flex flex-col relative overflow-hidden border border-slate-800">
-              <div className="absolute top-0 right-0 bg-indigo-600 px-4 py-1 text-[10px] font-bold uppercase tracking-wider">Melhor Valor</div>
-              <h3 className="text-xl font-bold mb-4">Plano Anual</h3>
-              <div className="mb-6">
-                <div className="text-sm text-slate-400 mb-1">Por apenas:</div>
-                <div className="text-3xl font-black text-indigo-400">12x de R$ 28,91</div>
-                <div className="text-[10px] font-bold text-indigo-300 tracking-wider mb-1">SEM JUROS</div>
-                <div className="text-xs text-slate-500 mt-1">ou R$ 346,92 à vista (a cada 1 ano)</div>
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">Comece Agora, Pague Depois</h2>
+            <p className="text-lg text-slate-600 mb-12">Libere todas as funcionalidades do sistema gratuitamente por 30 dias. <br className="hidden md:block" />Sem cartão de crédito, sem compromisso.</p>
+            
+            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[48px] p-8 md:p-16 text-white shadow-2xl shadow-purple-200 relative overflow-hidden group transition-all hover:scale-[1.01]">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full -ml-32 -mb-32 blur-3xl" />
+              
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest mb-8 border border-white/10">
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  Acesso Total Liberado
+                </div>
+                
+                <h3 className="text-4xl md:text-6xl font-black mb-4">30 Dias Grátis</h3>
+                <p className="text-xl md:text-2xl text-purple-100 font-medium mb-10 max-w-lg mx-auto">
+                  Toda a inteligência do Meu Sistema Psi à sua disposição para transformar sua clínica.
+                </p>
+                
+                <div className="grid md:grid-cols-3 gap-6 mb-12 text-left bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 bg-white/20 rounded-xl flex items-center justify-center">
+                      <Check className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <span className="font-bold">Agenda & Prontuário</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 bg-white/20 rounded-xl flex items-center justify-center">
+                      <Check className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <span className="font-bold">IA para Evoluções</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 bg-white/20 rounded-xl flex items-center justify-center">
+                      <Check className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <span className="font-bold">Financeiro Completo</span>
+                  </div>
+                </div>
+                
+                <Link to="/cadastrar" className="inline-flex items-center gap-3 px-12 py-6 bg-white text-indigo-600 font-black text-xl rounded-2xl shadow-xl hover:bg-slate-100 transition-all transform hover:-translate-y-1">
+                  Criar Conta Grátis
+                  <ArrowRight className="w-6 h-6" />
+                </Link>
+                
+                <p className="mt-6 text-sm text-purple-200 font-medium">
+                  Não pedimos cartão de crédito agora. Cancele quando quiser.
+                </p>
               </div>
-              <ul className="space-y-3 mb-8 flex-grow">
-                <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Tudo do Profissional</li>
-                <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Multiclínica</li>
-                <li className="text-sm flex items-center gap-2"><Check size={16} className="text-green-500"/> Economia de 55%</li>
-              </ul>
-              <a href="https://chk.eduzz.com/89AXVP5G0D" className="bg-white text-slate-900 py-3 rounded-2xl font-bold text-center hover:bg-slate-100 transition-colors">Assinar Agora</a>
             </div>
           </div>
         </section>
@@ -355,11 +345,11 @@ export default function Vendas() {
         </section>
 
         {/* CTA Final */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-slate-50">
           <div className="max-w-4xl mx-auto px-4">
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[40px] p-12 text-center text-white shadow-2xl">
               <h2 className="text-3xl md:text-5xl font-black mb-6">Pronta para Evoluir sua Clínica?</h2>
-              <Link to="/cadastrar" className="px-10 py-5 bg-white text-indigo-600 font-bold rounded-2xl shadow-xl inline-block">Começar Teste de 7 Dias</Link>
+              <Link to="/cadastrar" className="px-10 py-5 bg-white text-indigo-600 font-bold rounded-2xl shadow-xl inline-block hover:scale-105 transition-transform">Começar Teste de 30 Dias</Link>
             </div>
           </div>
         </section>

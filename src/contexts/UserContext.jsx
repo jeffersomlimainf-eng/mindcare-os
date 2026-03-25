@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { notifyAdminNewSignup } from '../utils/notifications';
 
 const UserContext = createContext();
 
@@ -220,10 +221,22 @@ export const UserProvider = ({ children }) => {
                         full_name: nome,
                         role: 'psicologo',
                         onboarding_completed: false,
-                        cpf_cnpj: cpfCnpj
+                        cpf_cnpj: cpfCnpj,
+                        plan_id: 'trial',
+                        is_trial: true,
+                        plan_status: 'Ativo',
+                        plan_value: 0,
+                        trial_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
                     })
                     .catch(err => console.warn('[UserContext] Erro failsafe profile:', err));
             }
+
+            // Notificar administrador sobre novo cadastro
+            notifyAdminNewSignup({
+                nome,
+                email,
+                cpfCnpj
+            }).catch(err => console.warn('[UserContext] Erro ao notificar novo cadastro:', err));
 
             setLoading(false);
             return { success: true, data };
