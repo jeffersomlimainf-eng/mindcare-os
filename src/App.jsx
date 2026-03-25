@@ -38,6 +38,7 @@ import { useUser } from './contexts/UserContext';
 import AdminDashboard from './pages/AdminDashboard';
 import Vendas from './pages/Vendas';
 import Toast from './components/Toast';
+import AnalyticsTracker from './components/AnalyticsTracker';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useUser();
