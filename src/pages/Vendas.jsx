@@ -253,7 +253,8 @@ export default function Vendas() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {/* Free Trial */}
-            <div className="bg-emerald-50 p-8 rounded-[32px] border border-emerald-100 flex flex-col shadow-sm">
+            <div className="bg-emerald-50 p-8 rounded-[32px] border border-emerald-100 flex flex-col shadow-sm animate-soft-float animate-pulse-glow relative">
+              <div className="absolute -top-3 -right-3 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full animate-bounce">GRÁTIS</div>
               <h3 className="text-xl font-bold mb-4 text-emerald-900">Teste Grátis</h3>
               <div className="text-3xl font-black mb-2 text-emerald-700">R$ 0,00</div>
               <p className="text-sm text-emerald-600 mb-6 font-medium">Experimente por 30 dias</p>
