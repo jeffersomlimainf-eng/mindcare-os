@@ -251,7 +251,19 @@ export default function Vendas() {
             <p className="text-slate-600">Escolha o plano ideal para sua fase profissional.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {/* Free Trial */}
+            <div className="bg-emerald-50 p-8 rounded-[32px] border border-emerald-100 flex flex-col shadow-sm">
+              <h3 className="text-xl font-bold mb-4 text-emerald-900">Teste Grátis</h3>
+              <div className="text-3xl font-black mb-2 text-emerald-700">R$ 0,00</div>
+              <p className="text-sm text-emerald-600 mb-6 font-medium">Experimente por 30 dias</p>
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="text-sm flex items-center gap-2 text-emerald-800"><Check size={16} className="text-emerald-500"/> Acesso total</li>
+                <li className="text-sm flex items-center gap-2 text-emerald-800"><Check size={16} className="text-emerald-500"/> Sem cartão agora</li>
+                <li className="text-sm flex items-center gap-2 text-emerald-800"><Check size={16} className="text-emerald-500"/> 30 dias completos</li>
+              </ul>
+              <Link to="/cadastrar" className="bg-emerald-600 text-white py-3 rounded-2xl font-bold text-center hover:bg-emerald-700 transition-colors">Experimentar</Link>
+            </div>
             {/* Essential */}
             <div className="bg-slate-50 p-8 rounded-[32px] border border-slate-100 flex flex-col">
               <h3 className="text-xl font-bold mb-4">Essencial</h3>
