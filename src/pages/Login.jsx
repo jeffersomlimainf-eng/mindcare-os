@@ -72,7 +72,7 @@ const Login = () => {
                 <div className="mx-auto w-full max-w-sm">
                     {/* Logo */}
                     <div className="flex items-center gap-2 mb-8">
-                        <div className="bg-gradient-to-br from-violet-500 to-purple-600 p-2.5 rounded-xl shadow-md shadow-violet-300/30">
+                        <div className="bg-gradient-to-br from-violet-400 to-purple-400 p-2.5 rounded-xl shadow-md shadow-violet-200/40">
                             <span className="material-symbols-outlined text-2xl text-white">psychology</span>
                         </div>
                         <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Meu Sistema Psi</span>
@@ -145,7 +145,7 @@ const Login = () => {
                             </div>
                             <button
                                 type="submit"
-                                className="w-full py-3.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl shadow-lg shadow-violet-300/30 hover:shadow-violet-400/40 hover:from-violet-600 hover:to-purple-700 transition-all active:scale-[0.99] uppercase tracking-widest text-xs"
+                                className="w-full py-3.5 bg-gradient-to-r from-violet-400 to-purple-400 text-white font-bold rounded-xl shadow-lg shadow-violet-200/40 hover:shadow-violet-300/50 hover:from-violet-500 hover:to-purple-500 transition-all active:scale-[0.99] uppercase tracking-widest text-xs"
                             >
                                 Entrar no sistema
                             </button>
@@ -165,7 +165,7 @@ const Login = () => {
                             </div>
                             <button
                                 type="submit"
-                                className="w-full py-3.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl shadow-lg shadow-violet-300/30 hover:shadow-violet-400/40 hover:from-violet-600 hover:to-purple-700 transition-all active:scale-[0.99] uppercase tracking-widest text-xs"
+                                className="w-full py-3.5 bg-gradient-to-r from-violet-400 to-purple-400 text-white font-bold rounded-xl shadow-lg shadow-violet-200/40 hover:shadow-violet-300/50 hover:from-violet-500 hover:to-purple-500 transition-all active:scale-[0.99] uppercase tracking-widest text-xs"
                             >
                                 Enviar Link de Recuperação
                             </button>
@@ -224,7 +224,7 @@ const Login = () => {
 
             {/* Right: Visual */}
             <div className="hidden lg:block lg:flex-1 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-400 via-purple-500 to-fuchsia-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-300 via-purple-300 to-fuchsia-300" />
                 <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2) 0%, transparent 50%)'}} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
                     <div className="max-w-md text-center">
