@@ -95,6 +95,7 @@ const AdminRoute = ({ children }) => {
 function App() {
     return (
         <Router>
+            <AnalyticsTracker />
             <Toast />
             <Routes>
                 <Route path="/vendas" element={<Vendas />} />

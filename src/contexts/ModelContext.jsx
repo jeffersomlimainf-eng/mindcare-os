@@ -32,6 +32,7 @@ export const ModelProvider = ({ children }) => {
                             await db.insert('models', {
                                 ...model,
                                 userId: user.id,
+                                tenantId: user.tenantId,
                                 conteudo: '' // Iniciar vazio para o usuário preencher ou manter o padrão se necessário
                             });
                         }
@@ -54,6 +55,7 @@ export const ModelProvider = ({ children }) => {
             const newModel = await db.insert('models', {
                 ...model,
                 userId: user?.id,
+                tenantId: user?.tenantId,
                 uso: 0,
                 conteudo: model.conteudo || ''
             });
