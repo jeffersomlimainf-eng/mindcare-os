@@ -4,6 +4,7 @@ import {
   Check, Shield, Zap, Calendar, Gift, Heart, MessageCircle,
   Mail, ArrowRight, Star, Award, Users, Lock, Sparkles
 } from 'lucide-react';
+import ReviewsSection from '../components/ReviewsSection';
 import heroBg from '../assets/vendas_hero_bg.png';
 import dashboardImg from '../assets/screens/dashboard.png';
 import agendaImg from '../assets/screens/agenda.png';
@@ -577,60 +578,9 @@ export default function Vendas() {
               </p>
             </div>
 
-            <a href="#precos" className="px-6 py-4 bg-white hover:bg-slate-50 text-orange-600 font-black rounded-2xl shadow-lg transition-all transform hover:-translate-y-0.5 text-sm uppercase tracking-wide whitespace-nowrap">
-              Garantir Meus Bônus
-            </a>
-          </div>
-        </div>
-      </section>
-      {/* Seção Depoimentos (Prova Social) */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-              Avaliado por Psicólogas de Todo o Brasil
-            </h2>
-            <p className="text-slate-600">
-              Mais de centenas de psicólogas já modernizaram o consultório e estão economizando tempo.
-            </p>
-          </div>
-
-          {/* Carrossel de Depoimentos */}
-          <div className="relative">
-            <div 
-              ref={testimonialRef}
-              onScroll={handleTestimonialScroll}
-              className="flex flex-nowrap overflow-x-auto space-x-6 pb-12 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-2 scroll-smooth"
-            >
-              {testimonials.map((item, index) => (
-                <div key={index} className="flex-shrink-0 w-[85vw] md:w-[380px] snap-center bg-slate-50 p-6 rounded-3xl relative flex flex-col justify-between h-full min-h-[180px]">
-                  <div>
-                    <div className="flex gap-1 mb-4 text-amber-400">
-                      <Star className="w-4 h-4 fill-amber-400" /><Star className="w-4 h-4 fill-amber-400" /><Star className="w-4 h-4 fill-amber-400" /><Star className="w-4 h-4 fill-amber-400" /><Star className="w-4 h-4 fill-amber-400" />
-                    </div>
-                    <p className="text-slate-600 text-sm italic mb-6">
-                      "{item.text}"
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-slate-800 font-bold text-sm">{item.name}</p>
-                    <p className="text-slate-500 text-xs">{item.role}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Hint de Scroll / Painel de dots */}
-            <div className="flex justify-center gap-1.5 -mt-4">
-              {testimonials.map((_, index) => (
-                <button 
-                  key={index}
-                  onClick={() => { 
-                    setCurrentTestimonial(index); 
-                    const cardWidth = testimonialRef.current.offsetWidth / (window.innerWidth < 768 ? 1 : 3);
-                    testimonialRef.current.scrollTo({left: cardWidth * index, behavior: 'smooth'}); 
-                  }} 
-                  className={`h-1.5 rounded-full transition-all duration-300 ${currentTestimonial === index ? 'bg-purple-600 w-5' : 'bg-purple-200 w-1.5'}`}
+            <a href="#precos" className="px-6 py-4 bg-white hover:bg-slate-50 text-orange-600 font-black rounded-2xl shadow-lg transition-      {/* Seção Depoimentos (Prova Social) - Google Reviews */}
+      <ReviewsSection />
+00 ${currentTestimonial === index ? 'bg-purple-600 w-5' : 'bg-purple-200 w-1.5'}`}
                 ></button>
               ))}
             </div>
