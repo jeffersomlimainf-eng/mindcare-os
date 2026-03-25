@@ -126,7 +126,7 @@ const DeclaracoesLista = () => {
                                 <tr
                                     key={d.id}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
-                                    onDoubleClick={() => navigate(`/declaracoes/${d.id}`)}
+                                    onClick={() => navigate(`/declaracoes/${d.id}`)}
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

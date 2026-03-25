@@ -122,7 +122,7 @@ const TclesLista = () => {
                                 <tr
                                     key={t.id}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer group"
-                                    onDoubleClick={() => navigate(`/tcles/${t.id}`)}
+                                    onClick={() => navigate(`/tcles/${t.id}`)}
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

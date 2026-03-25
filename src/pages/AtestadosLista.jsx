@@ -125,7 +125,7 @@ const AtestadosLista = () => {
                                 <tr
                                     key={a.id}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
-                                    onDoubleClick={() => navigate(`/atestados/${a.id}`)}
+                                    onClick={() => navigate(`/atestados/${a.id}`)}
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

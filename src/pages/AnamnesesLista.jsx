@@ -108,7 +108,7 @@ const AnamnesesLista = () => {
                                 <tr
                                     key={a.id}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
-                                    onDoubleClick={() => navigate(`/anamneses/${a.id}`)}
+                                    onClick={() => navigate(`/anamneses/${a.id}`)}
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

@@ -317,7 +317,7 @@ const Pacientes = () => {
                         <div key={i} 
                             className="glass dark:bg-slate-800/50 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:border-primary/30 transition-all group relative cursor-pointer" 
                             style={{ animationDelay: `${i * 50}ms` }}
-                            onDoubleClick={() => handleAbrirEdicao(p)}
+                            onClick={() => handleAbrirEdicao(p)}
                         >
                             <div className="flex justify-between items-start mb-6">
                                 <div className="flex items-center gap-4">
@@ -375,7 +375,7 @@ const Pacientes = () => {
                                     {pacientesFiltrados.map((p, i) => (
                                         <tr key={i} 
                                             className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer" 
-                                            onDoubleClick={() => handleAbrirEdicao(p)}
+                                            onClick={() => handleAbrirEdicao(p)}
                                         >
                                         <td className="px-4 md:px-6 py-3 md:py-4">
                                             <div className="flex items-center gap-3">

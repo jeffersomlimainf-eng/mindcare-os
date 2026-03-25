@@ -111,7 +111,7 @@ const Modelos = () => {
                     return (
                         <div 
                             key={m.id} 
-                            onDoubleClick={() => handleEditar(m)}
+                            onClick={() => handleEditar(m)}
                             className="glass dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-primary/30 transition-all flex flex-col group overflow-hidden" 
                             style={{ animationDelay: `${i * 100}ms` }}
                         >

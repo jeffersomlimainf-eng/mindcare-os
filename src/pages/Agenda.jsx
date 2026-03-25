@@ -421,7 +421,6 @@ const Agenda = () => {
                                 return (
                                     <button key={idx} disabled={!cell.curr}
                                         onClick={() => { if (cell.curr) { selecionarData(dObj); setVisao('dia'); } }}
-                                        onDoubleClick={() => { if (cell.curr) { selecionarData(dObj); abrirNovaConsulta(null); } }}
                                         className={`h-7 w-full flex items-center justify-center rounded-lg text-xs transition-all relative group
                                             ${!cell.curr ? 'text-slate-300' : 'text-slate-700 dark:text-slate-300 hover:bg-primary/10'}
                                             ${isHoje && !isSel ? 'border border-primary text-primary font-bold' : ''}
@@ -542,7 +541,6 @@ const Agenda = () => {
                                     return (
                                         <div key={idx} 
                                             onClick={() => { if (cell.curr) { selecionarData(dateObj); setVisao('dia'); } }} 
-                                            onDoubleClick={() => { if (cell.curr) { selecionarData(dateObj); abrirNovaConsulta(null); } }}
                                             onDragOver={handleDragOver}
                                             onDrop={(e) => handleDrop(e, dateObj, null)}
                                             className={`min-h-[110px] p-2 border-r border-b border-slate-100 dark:border-slate-800 transition-colors group relative ${!cell.curr ? 'opacity-30 bg-slate-50/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 cursor-pointer'}`}
@@ -614,7 +612,7 @@ const Agenda = () => {
                                                             key={c.id} 
                                                             draggable="true"
                                                             onDragStart={(e) => handleDragStart(e, c.id)}
-                                                            onDoubleClick={() => abrirEdicao(c)} 
+                                                            onClick={(e) => { e.stopPropagation(); abrirEdicao(c); }} 
                                                             className={`absolute left-1.5 right-1.5 rounded-2xl border p-3 border-transparent shadow-sm hover:z-30 cursor-pointer overflow-hidden transition-all hover:scale-[1.02] hover:shadow-md group ${tCfg.bg} ${tCfg.text} ${sCfg.glow}`} 
                                                             style={{ top: (c.timeStart - H_INICIO) * SLOT_H + 2, height: (c.duracao / 60) * SLOT_H - 4, animationDelay: `${idx * 30}ms` }}
                                                         >

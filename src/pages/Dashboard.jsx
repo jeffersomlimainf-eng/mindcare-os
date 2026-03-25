@@ -995,14 +995,15 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             <button 
                                 key={n.id} 
                                 onClick={() => setAtivaNotaId(n.id)}
-                                onDoubleClick={() => {
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
                                     const novoTitulo = prompt("Renomear nota para:", n.titulo);
                                     if (novoTitulo && novoTitulo.trim()) {
                                         setNotas(prev => prev.map(no => no.id === n.id ? { ...no, titulo: novoTitulo.trim() } : no));
                                     }
                                 }}
                                 className={`px-2.5 py-1 text-[9px] font-bold rounded-lg border transition-all flex items-center gap-1 shrink-0 hover:scale-95 ${ativaNotaId === n.id ? `bg-primary/10 border-primary/20 text-primary` : 'bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-500 hover:bg-slate-100'}`}
-                                title="Dois cliques para renomear"
+                                title="Clique para selecionar • Botão direito para renomear"
                             >
                                 <span className={`material-symbols-outlined text-[11px] ${n.cor === 'red' ? 'text-red-500' : n.cor === 'green' ? 'text-green-500' : n.cor === 'orange' ? 'text-orange-500' : n.cor === 'purple' ? 'text-purple-500' : n.cor === 'pink' ? 'text-pink-500' : n.cor === 'cyan' ? 'text-cyan-500' : n.cor === 'yellow' ? 'text-yellow-500' : ''}`}>description</span>
                                 <span className="truncate max-w-[65px]">{n.titulo}</span>
@@ -1147,7 +1148,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                         todosDocumentosRecentes.map((doc, i) => (
                                             <tr 
                                                 key={i} 
-                                                onDoubleClick={() => handleNavegacaoDocumento(doc, navigate)} 
+                                                onClick={() => handleNavegacaoDocumento(doc, navigate)} 
                                                 className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer group"
                                             >
                                                 <td className="px-4 md:px-6 py-3 md:py-4">

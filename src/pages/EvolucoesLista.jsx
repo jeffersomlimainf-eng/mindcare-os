@@ -120,7 +120,7 @@ const EvolucoesLista = () => {
                                 <tr
                                     key={e.id}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer group"
-                                    onDoubleClick={() => navigate(`/prontuarios/evolucao/${e.id}`)}
+                                    onClick={() => navigate(`/prontuarios/evolucao/${e.id}`)}
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

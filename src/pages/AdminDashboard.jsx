@@ -701,7 +701,7 @@ const AdminDashboard = () => {
                                 <tr 
                                     key={c.id} 
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group cursor-pointer"
-                                    onDoubleClick={() => { setSelectedClient(c); setIsModalOpen(true); setActiveTab('config'); }}
+                                    onClick={() => { setSelectedClient(c); setIsModalOpen(true); setActiveTab('config'); }}
                                 >
                                     <td className="px-8 py-6">
                                         <div className="flex flex-col">

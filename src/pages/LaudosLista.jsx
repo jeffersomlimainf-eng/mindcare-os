@@ -132,7 +132,7 @@ const LaudosLista = () => {
                                 <tr
                                     key={l.id}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
-                                    onDoubleClick={() => navigate(`/laudos/${l.id}`)}
+                                    onClick={() => navigate(`/laudos/${l.id}`)}
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Quote } from 'lucide-react';
 
 const reviews = [
@@ -86,12 +86,12 @@ const ReviewsSection = () => {
         </div>
 
         <div className="mt-16 text-center">
-          <a 
-            href="#precos" 
+          <Link 
+            to="/cadastrar" 
             className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 transition-all transform hover:scale-105 shadow-lg shadow-indigo-200"
           >
             Quero ter resultados como estes
-          </a>
+          </Link>
         </div>
       </div>
     </section>

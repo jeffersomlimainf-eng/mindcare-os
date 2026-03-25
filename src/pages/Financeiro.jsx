@@ -281,7 +281,7 @@ const Financeiro = () => {
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                             {dadosTabela.map((l) => (
-                                <tr key={l.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer" onDoubleClick={() => handleAbrirEdicao(l)}>
+                                <tr key={l.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer" onClick={() => handleAbrirEdicao(l)}>
                                     {filtroCliente !== 'todos' && (
                                         <td className="px-4 md:px-6 py-3 md:py-4" onClick={(e) => e.stopPropagation()}>
                                             {l.tipo === 'Receita' && l.status === 'Pendente' && (

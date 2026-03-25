@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Check, Shield, Zap, Calendar, Gift, Heart, MessageCircle,
-  Mail, ArrowRight, Star, Award, Users, Lock, Sparkles
+  Check, Shield, Heart, MessageCircle,
+  Mail, ArrowRight, Star, Sparkles
 } from 'lucide-react';
 import ReviewsSection from '../components/ReviewsSection';
 import heroBg from '../assets/vendas_hero_bg.png';
@@ -314,7 +314,7 @@ export default function Vendas() {
                 <h3 className="text-2xl font-black italic mb-2">Bônus Exclusivo!</h3>
                 <p className="text-sm font-medium">Assinando hoje você ganha Modelos de Contrato + Guia de Captação.</p>
               </div>
-              <a href="#precos" className="px-6 py-4 bg-white text-orange-600 font-black rounded-2xl shadow-lg">Garantir Meu Bônus</a>
+              <Link to="/cadastrar" className="px-6 py-4 bg-white text-orange-600 font-black rounded-2xl shadow-lg">Garantir Meu Bônus</Link>
             </div>
           </div>
         </section>

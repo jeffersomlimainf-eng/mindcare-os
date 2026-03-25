@@ -227,7 +227,6 @@ const LinhaDoTempo = () => {
                                                     <div className={`absolute left-[-24px] top-1.5 size-4 rounded-full border-4 border-slate-50 dark:border-slate-950 shadow-sm z-10 transition-transform group-hover:scale-125 ${doc?.cor?.split(' ')[0] || ''}`} />
                                                     <div 
                                                         onClick={() => handleNavegacaoDocumento(doc, navigate)}
-                                                        onDoubleClick={() => handleNavegacaoDocumento(doc, navigate)}
                                                         className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-all cursor-pointer select-none"
                                                     >
                                                         <div className="flex justify-between items-start mb-3">
@@ -367,7 +366,6 @@ const LinhaDoTempo = () => {
                                         {documentos.filter(d => d.tipo === 'Evolução').map((doc, idx) => (
                                             <div key={idx} 
                                                 onClick={() => navigate(`/prontuarios/evolucao/${doc.id.toString().replace('#', '')}`)} 
-                                                onDoubleClick={() => navigate(`/prontuarios/evolucao/${doc.id.toString().replace('#', '')}`)} 
                                                 className="p-6 border border-slate-100 dark:border-slate-800 rounded-3xl hover:border-emerald-200 transition-all group cursor-pointer select-none"
                                             >
                                                 <div className="flex justify-between items-start mb-4">
