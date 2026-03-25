@@ -73,7 +73,7 @@ const Login = () => {
                     {/* Logo */}
                     <div className="flex items-center gap-2 mb-8">
                         <div className="bg-gradient-to-br from-violet-500 to-purple-600 p-2 rounded-xl text-white shadow-md shadow-violet-300/30">
-                            <span className="material-symbols-outlined text-3xl">psychology</span>
+                            <img src="/favicon.png" alt="Meu Sistema Psi" className="w-8 h-8" />
                         </div>
                         <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Meu Sistema Psi</span>
                     </div>
@@ -111,7 +111,7 @@ const Login = () => {
                                     type="email"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                    className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                     placeholder="seu@email.com"
                                     required
                                 />
@@ -123,14 +123,14 @@ const Login = () => {
                                         type={showPass ? 'text' : 'password'}
                                         value={senha}
                                         onChange={e => setSenha(e.target.value)}
-                                        className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 pr-12 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                        className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 pr-12 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                         placeholder="••••••••"
                                         required
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPass(!showPass)}
-                                        className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-primary transition-colors"
+                                        className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-violet-500 transition-colors"
                                     >
                                         <span className="material-symbols-outlined">{showPass ? 'visibility_off' : 'visibility'}</span>
                                     </button>
@@ -138,10 +138,10 @@ const Login = () => {
                             </div>
                             <div className="flex items-center justify-between">
                                 <label className="flex items-center gap-2 cursor-pointer group">
-                                    <input type="checkbox" defaultChecked className="rounded border-slate-300 text-primary focus:ring-primary/20" />
+                                    <input type="checkbox" defaultChecked className="rounded border-slate-300 text-violet-500 focus:ring-violet-500/20" />
                                     <span className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">Lembrar de mim</span>
                                 </label>
-                                <button type="button" onClick={() => setView('recovery')} className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">Esqueci minha senha</button>
+                                <button type="button" onClick={() => setView('recovery')} className="text-sm font-bold text-violet-600 hover:text-violet-500 transition-colors">Esqueci minha senha</button>
                             </div>
                             <button
                                 type="submit"
@@ -158,7 +158,7 @@ const Login = () => {
                                     type="email"
                                     value={recoveryEmail}
                                     onChange={e => setRecoveryEmail(e.target.value)}
-                                    className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                                    className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
                                     placeholder="seu@email.com"
                                     required
                                 />
@@ -179,7 +179,7 @@ const Login = () => {
                                 <div className="w-full border-t border-slate-200 dark:border-slate-800"></div>
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-slate-50 dark:bg-slate-950 px-4 text-slate-500 font-bold tracking-widest">Ou continue com</span>
+                                <span className="bg-gradient-to-br from-violet-50 via-purple-50/50 to-fuchsia-50/30 dark:bg-slate-950 px-4 text-slate-500 font-bold tracking-widest">Ou continue com</span>
                             </div>
                         </div>
 
@@ -190,7 +190,7 @@ const Login = () => {
                             className="mt-6 w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
                         >
                             {loadingGoogle ? (
-                                <span className="animate-spin size-5 border-2 border-primary border-t-transparent rounded-full"></span>
+                                <span className="animate-spin size-5 border-2 border-violet-500 border-t-transparent rounded-full"></span>
                             ) : (
                                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                                     <path
@@ -217,7 +217,7 @@ const Login = () => {
 
                     <p className="mt-8 text-center text-sm text-slate-500 font-medium">
                         Não tem uma conta?{' '}
-                        <Link to="/cadastrar" className="font-bold text-primary hover:underline transition-all">Cadastre-se</Link>
+                        <Link to="/cadastrar" className="font-bold text-violet-600 hover:underline transition-all">Cadastre-se</Link>
                     </p>
                 </div>
             </div>
