@@ -34,16 +34,51 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     // 1. Carregar perfil estendido do banco
-    const fetchProfile = async (userId) => {
+    const fetchProfile = async (sessionUserOrId) => {
         try {
-            const { data, error } = await supabase
+            const userId = typeof sessionUserOrId === 'string' ? sessionUserOrId : sessionUserOrId.id;
+            
+            let { data, error } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
-                .single();
+                .maybeSingle();
 
             if (error) {
                 throw error;
+            }
+
+            // Se o perfil não existe, cria um automaticamente (Google Auth / Race condition do email signup)
+            if (!data && typeof sessionUserOrId === 'object' && sessionUserOrId !== null) {
+                console.log('[UserContext] Perfil não encontrado. Criando dinamicamente...');
+                const sessionUser = sessionUserOrId;
+                const newProfile = {
+                    id: userId,
+                    full_name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || '',
+                    email: sessionUser.email || '',
+                    role: 'psicologo',
+                    onboarding_completed: false,
+                    cpf_cnpj: sessionUser.user_metadata?.cpf_cnpj || '',
+                    plan_id: 'trial',
+                    is_trial: true,
+                    plan_status: 'Ativo',
+                    plan_value: 0,
+                    trial_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                };
+
+                const { data: insertedData, error: insertError } = await supabase
+                    .from('profiles')
+                    .upsert(newProfile)
+                    .select()
+                    .single();
+
+                if (insertError) {
+                    console.error("Erro ao inserir perfil automático:", insertError);
+                    throw insertError;
+                }
+                data = insertedData;
+            } else if (!data) {
+                throw new Error("Perfil retornado vazio. Usuário não encontrado na tabela profiles.");
             }
 
             if (data) {
@@ -120,7 +155,7 @@ export const UserProvider = ({ children }) => {
             setLoading(true);
 
             try {
-                await fetchProfile(session.user.id);
+                await fetchProfile(session.user);
             } catch (err) {
                 console.error('[UserContext] Erro fatal ao carregar perfil:', err);
                 setUser(defaultUser);
