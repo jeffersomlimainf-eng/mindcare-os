@@ -41,10 +41,10 @@ export default function Vendas() {
   // Auto-scroll logic for feature carrousel
   useEffect(() => {
     // Dynamic SEO Metadata
-    document.title = "Aumente sua Produtividade Clínica | Meu Sistema Psi - 30 Dias Grátis";
+    document.title = "Sistema para Psicólogos — Prontuário, Agenda e Financeiro | Meu Sistema Psi";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Descubra como o Meu Sistema Psi ajuda psicólogos a automatizar agenda, prontuários e faturamento. Experimente agora com 30 dias de teste gratuito!');
+      metaDesc.setAttribute('content', 'Sistema completo para psicólogos: prontuário eletrônico seguro (LGPD), agenda com lembretes por WhatsApp, gestão financeira e IA para evoluções clínicas. Criado por psicólogo. Teste grátis 30 dias.');
     }
 
     const interval = setInterval(() => {
@@ -114,11 +114,11 @@ export default function Vendas() {
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
-                Sistema Completo para <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Psicólogos e Terapeutas</span> — Prontuário, Agenda e Financeiro
+                Sistema para <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Psicólogos</span> — Prontuário Eletrônico, Agenda com WhatsApp e Gestão Financeira
               </h1>
 
               <p className="text-lg text-slate-600 max-w-md mx-auto md:mx-0">
-                Prontuário eletrônico seguro, agenda com alertas automáticos por WhatsApp e gestão financeira completa. Desenvolvido por um psicólogo clínico para profissionais de todas as abordagens. Adequado à LGPD.
+                Software de psicologia completo: prontuário eletrônico seguro e adequado à LGPD, agenda inteligente com lembretes automáticos por WhatsApp e gestão financeira para consultório de psicologia. Criado por psicólogo clínico, com inteligência artificial para evoluções de sessão. O melhor sistema para psicólogos do Brasil.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
@@ -138,9 +138,11 @@ export default function Vendas() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-200 border border-white/40">
                 <img
                   src={heroBg}
-                  alt="Interface do Meu Sistema Psi"
+                  alt="Sistema para psicólogos Meu Sistema Psi — interface do prontuário eletrônico com agenda e financeiro"
                   className="w-full h-full object-cover aspect-4/3"
                   loading="eager"
+                  width="800"
+                  height="600"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent" />
               </div>
@@ -153,7 +155,7 @@ export default function Vendas() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
               <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
-                Antes vs Depois: Vida Digital do Psicólogo
+                Antes vs Depois: Gestão do Consultório de Psicologia
               </h2>
               <p className="text-slate-600">
                 Veja a diferença de gerenciar sua clínica com inteligência e classe.
@@ -209,7 +211,7 @@ export default function Vendas() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-                Funcionalidades que Elevam sua Prática Clínica
+                Funcionalidades do Sistema de Gestão para Consultório de Psicologia
               </h2>
             </div>
 
@@ -218,24 +220,24 @@ export default function Vendas() {
                 <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 mb-6">
                   <MessageCircle className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">WhatsApp Automático</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Lembretes automáticos que reduzem faltas em até 40%.</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Agenda com Lembretes Automáticos por WhatsApp</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">Agenda para psicólogo com lembretes automáticos via WhatsApp que reduzem faltas em até 40%. Agendamento online integrado ao prontuário do paciente.</p>
               </div>
 
               <div className="bg-gradient-to-b from-purple-50/50 to-white p-8 rounded-3xl border border-purple-50 transition-all hover:shadow-lg">
                 <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 mb-6">
                   <Shield className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Segurança LGPD</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Dados criptografados e prontuário seguro conforme exigências legais.</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Prontuário Eletrônico Seguro — LGPD</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">Prontuário psicológico eletrônico com dados criptografados, adequado à LGPD. Armazene evoluções, anamneses e laudos com total segurança e sigilo profissional.</p>
               </div>
 
               <div className="bg-gradient-to-b from-purple-50/50 to-white p-8 rounded-3xl border border-purple-50 transition-all hover:shadow-lg">
                 <div className="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-600 mb-6">
                   <Sparkles className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Inteligência Artificial</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">IA que ajuda nos resumos e evoluções clínicas em segundos.</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Inteligência Artificial para Evoluções Clínicas</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">Software de psicologia com IA integrada que gera resumos de sessão e evoluções clínicas em segundos. Economize tempo e mantenha registros profissionais detalhados.</p>
               </div>
             </div>
           </div>
@@ -244,18 +246,18 @@ export default function Vendas() {
         {/* Conheça por Dentro */}
         <section className="py-20 bg-slate-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">Tudo em Um Só Lugar</h2>
+            <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">Software para Psicólogo: Tudo em Um Só Lugar</h2>
           </div>
           <div className="max-w-5xl mx-auto px-4 overflow-hidden rounded-[40px] shadow-2xl border border-white">
-            <img src={dashboardImg} alt="Dashboard" className="w-full h-auto" loading="lazy" />
+            <img src={dashboardImg} alt="Dashboard do sistema para psicólogos — visão geral com agenda, pacientes e financeiro" className="w-full h-auto" loading="lazy" width="1200" height="675" />
           </div>
         </section>
 
         {/* Pricing / Trial Section */}
         <section id="precos" className="py-20 bg-white">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">Comece Agora, Pague Depois</h2>
-            <p className="text-lg text-slate-600 mb-12">Libere todas as funcionalidades do sistema gratuitamente por 30 dias. <br className="hidden md:block" />Sem cartão de crédito, sem compromisso.</p>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">Sistema para Psicólogos: Comece Agora, Pague Depois</h2>
+            <p className="text-lg text-slate-600 mb-12">Teste grátis o melhor software de gestão para psicólogos por 30 dias. <br className="hidden md:block" />Sem cartão de crédito, sem fidelidade, sem compromisso.</p>
             
             <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[48px] p-8 md:p-16 text-white shadow-2xl shadow-purple-200 relative overflow-hidden group transition-all hover:scale-[1.01]">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
@@ -348,7 +350,7 @@ export default function Vendas() {
         <section className="py-20 bg-slate-50">
           <div className="max-w-4xl mx-auto px-4">
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[40px] p-12 text-center text-white shadow-2xl">
-              <h2 className="text-3xl md:text-5xl font-black mb-6">Pronta para Evoluir sua Clínica?</h2>
+              <h2 className="text-3xl md:text-5xl font-black mb-6">Pronta para Transformar a Gestão do seu Consultório de Psicologia?</h2>
               <Link to="/cadastrar" className="px-10 py-5 bg-white text-indigo-600 font-bold rounded-2xl shadow-xl inline-block hover:scale-105 transition-transform">Começar Teste de 30 Dias</Link>
             </div>
           </div>

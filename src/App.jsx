@@ -114,7 +114,8 @@ function App() {
             <Toast />
             <Suspense fallback={<LoadingFallback />}>
                 <Routes>
-                    <Route path="/vendas" element={<Vendas />} />
+                    <Route path="/" element={<PublicRoute><Vendas /></PublicRoute>} />
+                    <Route path="/vendas" element={<Navigate to="/" replace />} />
                     <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                     <Route path="/cadastrar" element={<PublicRoute><Register /></PublicRoute>} />
                     <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
@@ -151,7 +152,6 @@ function App() {
                         <Route path="/encaminhamentos/:id" element={<EncaminhamentoProfissional />} />
                         <Route path="/tcles" element={<TclesLista />} />
                         <Route path="/tcles/:id" element={<TermoConsentimento />} />
-                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     </Route>
                 </Routes>
             </Suspense>
