@@ -11,6 +11,15 @@ const Register = () => {
         document.title = "Cadastre-se Grátis | Meu Sistema Psi - 30 Dias de Teste";
         const meta = document.querySelector('meta[name="description"]');
         if (meta) meta.setAttribute('content', 'Crie sua conta no Meu Sistema Psi e teste grátis por 30 dias. Prontuário eletrônico, agenda inteligente e gestão financeira para psicólogos.');
+
+        // Add canonical tag
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonical);
+        }
+        canonical.setAttribute('href', window.location.origin + '/cadastrar');
     }, []);
     
     const [nome, setNome] = useState('');
@@ -93,7 +102,7 @@ const Register = () => {
                         <>
                             <div className="mb-8">
                                 <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                                    Crie sua conta
+                                    Cadastro — Criar sua conta grátis
                                 </h1>
                                 <p className="text-slate-500 dark:text-slate-400 font-medium">
                                     Comece a gerenciar sua clínica de forma inteligente.

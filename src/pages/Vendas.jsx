@@ -47,6 +47,15 @@ export default function Vendas() {
       metaDesc.setAttribute('content', 'Sistema completo para psicólogos: prontuário eletrônico seguro (LGPD), agenda com lembretes por WhatsApp, gestão financeira e IA para evoluções clínicas. Criado por psicólogo. Teste grátis 30 dias.');
     }
 
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', window.location.origin + '/');
+
     const interval = setInterval(() => {
       if (sliderRef.current) {
         const nextIndex = (currentSlide + 1) % 3; // 3 slides
@@ -138,8 +147,9 @@ export default function Vendas() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-200 border border-white/40">
                 <img
                   src={heroBg}
-                  alt="Sistema para psicólogos Meu Sistema Psi — interface do prontuário eletrônico com agenda e financeiro"
+                  alt="Sistema para psicólogos — Interface do prontuário eletrônico seguro, agenda com WhatsApp e financeiro integrado"
                   className="w-full h-full object-cover aspect-4/3"
+                  fetchpriority="high"
                   loading="eager"
                   width="800"
                   height="600"
@@ -331,12 +341,20 @@ export default function Vendas() {
             <div className="space-y-4">
               {faqItems.map((item, index) => (
                 <div key={index} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                  <button onClick={() => setOpenFaq(openFaq === index ? null : index)} className="w-full px-6 py-5 flex items-center justify-between text-left">
+                  <button 
+                    onClick={() => setOpenFaq(openFaq === index ? null : index)} 
+                    className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    aria-expanded={openFaq === index}
+                    aria-controls={`faq-answer-${index}`}
+                  >
                     <span className="font-bold text-slate-800">{item.question}</span>
                     <span className="text-indigo-600 font-bold text-xl">{openFaq === index ? '−' : '+'}</span>
                   </button>
                   {openFaq === index && (
-                    <div className="px-6 pb-5 pt-1 text-slate-600 text-sm leading-relaxed border-t border-slate-50">
+                    <div 
+                      id={`faq-answer-${index}`}
+                      className="px-6 pb-5 pt-1 text-slate-600 text-sm leading-relaxed border-t border-slate-50 animate-in fade-in slide-in-from-top-1"
+                    >
                       {item.answer}
                     </div>
                   )}
@@ -366,8 +384,8 @@ export default function Vendas() {
           </div>
           <p className="text-slate-500 text-xs text-center">© 2026 Meu Sistema Psi. Todos os direitos reservados.</p>
           <div className="flex gap-4 text-xs font-medium text-slate-500">
-            <a href="#" className="hover:text-purple-600">Privacidade</a>
-            <a href="#" className="hover:text-purple-600">Termos</a>
+            <a href="#" className="hover:text-purple-600 transition-colors" aria-label="Ver Política de Privacidade">Privacidade</a>
+            <a href="#" className="hover:text-purple-600 transition-colors" aria-label="Ver Termos de Uso">Termos</a>
           </div>
         </div>
       </footer>

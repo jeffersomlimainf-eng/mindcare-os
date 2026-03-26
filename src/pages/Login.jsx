@@ -19,6 +19,15 @@ const Login = () => {
         document.title = "Login | Meu Sistema Psi - Acesse sua Clínica";
         const meta = document.querySelector('meta[name="description"]');
         if (meta) meta.setAttribute('content', 'Acesse o Meu Sistema Psi e gerencie sua clínica de psicologia com prontuários, agenda e financeiro. Login seguro e rápido.');
+        
+        // Add canonical tag
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonical);
+        }
+        canonical.setAttribute('href', window.location.origin + '/login');
     }, []);
 
     const handleLogin = async (e) => {
@@ -80,7 +89,7 @@ const Login = () => {
 
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                            {view === 'login' ? 'Bem-vindo de volta!' : 'Recupere sua conta'}
+                            {view === 'login' ? 'Login — Bem-vindo de volta!' : 'Recuperar Acesso'}
                         </h1>
                         <p className="text-slate-500 dark:text-slate-400 font-medium">
                             {view === 'login' 

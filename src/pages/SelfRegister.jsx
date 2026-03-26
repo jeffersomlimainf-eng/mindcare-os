@@ -74,6 +74,21 @@ const SelfRegister = () => {
     const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
 
     useEffect(() => {
+        document.title = "Cadastro de Paciente | Ambiente Seguro — Meu Sistema Psi";
+        const meta = document.querySelector('meta[name="description"]');
+        if (meta) meta.setAttribute('content', 'Página de cadastro seguro para pacientes. Preencha seus dados para iniciar o atendimento psicológico. Ambiente criptografado e em conformidade com a LGPD.');
+
+        // Add canonical tag
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonical);
+        }
+        canonical.setAttribute('href', window.location.origin + '/self-register');
+    }, []);
+
+    useEffect(() => {
         const cepLimpo = form.cep.replace(/\D/g, '');
         if (cepLimpo.length === 8) {
             setLoadingCEP(true);
@@ -176,7 +191,7 @@ const SelfRegister = () => {
                         <span className="material-symbols-outlined text-primary text-base">verified_user</span>
                         <span className="text-[11px] font-black uppercase tracking-widest text-primary">Ambiente seguro e criptografado</span>
                     </div>
-                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Primeiro Acesso</h1>
+                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Cadastro de Paciente — Primeiro Acesso</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-3 text-lg font-medium">Preencha seus dados para agilizar seu atendimento.</p>
                 </div>
 

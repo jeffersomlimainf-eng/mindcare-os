@@ -3,6 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const PasswordReset = () => {
+    useEffect(() => {
+        document.title = "Redefinir Senha | Meu Sistema Psi";
+        const meta = document.querySelector('meta[name="description"]');
+        if (meta) meta.setAttribute('content', 'Redefina sua senha de acesso ao Meu Sistema Psi com segurança.');
+        
+        // Add canonical tag
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonical);
+        }
+        canonical.setAttribute('href', window.location.origin + '/reset-password');
+    }, []);
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -45,8 +59,10 @@ const PasswordReset = () => {
                         <div className="bg-primary p-2 rounded-xl text-white shadow-md">
                             <span className="material-symbols-outlined text-3xl">lock_reset</span>
                         </div>
-                        <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Nova Senha</span>
+                        <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Meu Sistema Psi</span>
                     </div>
+
+                    <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 text-center mb-2">Redefinir sua Senha</h1>
 
                     <p className="text-slate-500 dark:text-slate-400 text-center mb-8">
                         Digite sua nova senha de acesso abaixo.

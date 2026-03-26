@@ -26,6 +26,26 @@ const VisualizarCobranca = () => {
     const [abaAtiva, setAbaAtiva] = useState('pix');
 
     useEffect(() => {
+        document.title = "Visualizar Cobrança | Meu Sistema Psi";
+        
+        // Noindex for privacy
+        let rob = document.querySelector('meta[name="robots"]');
+        if (!rob) {
+            rob = document.createElement('meta');
+            rob.setAttribute('name', 'robots');
+            document.head.appendChild(rob);
+        }
+        rob.setAttribute('content', 'noindex, nofollow');
+
+        // Canonical
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonical);
+        }
+        canonical.setAttribute('href', window.location.origin + window.location.pathname);
+
         const carregar = async () => {
             setLoading(true);
             try {
