@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Check, Shield, Heart, MessageCircle,
-  Mail, ArrowRight, Star, Sparkles
+  Mail, ArrowRight, Star, Sparkles, CreditCard, Clock, Lock
 } from 'lucide-react';
 import ReviewsSection from '../components/ReviewsSection';
 import heroBg from '../assets/vendas_hero_bg.png';
@@ -254,65 +254,98 @@ export default function Vendas() {
         </section>
 
         {/* Conheça por Dentro */}
-        <section className="py-20 bg-slate-50">
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
             <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">Software para Psicólogo: Tudo em Um Só Lugar</h2>
           </div>
-          <div className="max-w-5xl mx-auto px-4 overflow-hidden rounded-[40px] shadow-2xl border border-white">
+          <div className="max-w-5xl mx-auto px-4 overflow-hidden rounded-[40px] shadow-2xl border border-slate-100">
             <img src={dashboardImg} alt="Dashboard do sistema para psicólogos — visão geral com agenda, pacientes e financeiro" className="w-full h-auto" loading="lazy" width="1200" height="675" />
           </div>
         </section>
 
         {/* Pricing / Trial Section */}
-        <section id="precos" className="py-20 bg-white">
+        <section id="precos" className="py-20 bg-slate-50">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">Sistema para Psicólogos: Comece Agora, Pague Depois</h2>
-            <p className="text-lg text-slate-600 mb-12">Teste grátis o melhor software de gestão para psicólogos por 30 dias. <br className="hidden md:block" />Sem cartão de crédito, sem fidelidade, sem compromisso.</p>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">30 Dias para Transformar sua Gestão — 100% Grátis</h2>
+            <p className="text-lg text-slate-500 mb-12 font-medium">Experimente o melhor software para psicólogos do Brasil. <br className="hidden md:block" />Sem cartão de crédito agora e sem compromisso de permanência.</p>
             
-            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[48px] p-8 md:p-16 text-white shadow-2xl shadow-purple-200 relative overflow-hidden group transition-all hover:scale-[1.01]">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full -ml-32 -mb-32 blur-3xl" />
+            <div className="bg-white rounded-[40px] p-8 md:p-16 border border-slate-200 shadow-2xl shadow-slate-200/50 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-50 rounded-full -mr-40 -mt-40 blur-3xl opacity-60" />
+              <div className="absolute bottom-0 left-0 w-80 h-80 bg-slate-100 rounded-full -ml-40 -mb-40 blur-3xl opacity-60" />
               
-              <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest mb-8 border border-white/10">
-                  <Sparkles className="w-4 h-4 text-amber-300" />
-                  Acesso Total Liberado
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-8 border border-indigo-100 text-indigo-600">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Teste Gratuito com Acesso Total
                 </div>
                 
-                <h3 className="text-4xl md:text-6xl font-black mb-4">30 Dias Grátis</h3>
-                <p className="text-xl md:text-2xl text-purple-100 font-medium mb-10 max-w-lg mx-auto">
-                  Toda a inteligência do Meu Sistema Psi à sua disposição para transformar sua clínica.
+                <h3 className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight text-slate-900">Experimente Grátis</h3>
+                <p className="text-xl md:text-2xl text-slate-500 font-medium mb-10 max-w-lg mx-auto leading-relaxed">
+                  Toda a inteligência do sistema à sua disposição para organizar sua clínica hoje mesmo.
                 </p>
                 
-                <div className="grid md:grid-cols-3 gap-6 mb-12 text-left bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 bg-white/20 rounded-xl flex items-center justify-center">
-                      <Check className="w-6 h-6 text-emerald-400" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 text-left w-full">
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 backdrop-blur-sm">
+                    <div className="size-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                      <Check className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <span className="font-bold">Agenda & Prontuário</span>
+                    <span className="font-bold text-sm text-slate-700">Agenda & Prontuário</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 bg-white/20 rounded-xl flex items-center justify-center">
-                      <Check className="w-6 h-6 text-emerald-400" />
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 backdrop-blur-sm">
+                    <div className="size-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                      <Check className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <span className="font-bold">IA para Evoluções</span>
+                    <span className="font-bold text-sm text-slate-700">IA para Evoluções</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 bg-white/20 rounded-xl flex items-center justify-center">
-                      <Check className="w-6 h-6 text-emerald-400" />
+                  <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 backdrop-blur-sm">
+                    <div className="size-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                      <Check className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <span className="font-bold">Financeiro Completo</span>
+                    <span className="font-bold text-sm text-slate-700">Financeiro Completo</span>
                   </div>
                 </div>
                 
-                <Link to="/cadastrar" className="inline-flex items-center gap-3 px-12 py-6 bg-white text-indigo-600 font-black text-xl rounded-2xl shadow-xl hover:bg-slate-100 transition-all transform hover:-translate-y-1">
-                  Criar Conta Grátis
-                  <ArrowRight className="w-6 h-6" />
-                </Link>
+                <div className="relative group">
+                  <Link to="/cadastrar" className="relative inline-flex items-center gap-3 px-10 md:px-14 py-6 bg-indigo-600 text-white font-bold text-xl md:text-2xl rounded-2xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all transform hover:-translate-y-1 active:scale-[0.98]">
+                    Criar Minha Conta Grátis
+                    <ArrowRight className="w-6 h-6" />
+                  </Link>
+                </div>
                 
-                <p className="mt-6 text-sm text-purple-200 font-medium">
-                  Não pedimos cartão de crédito agora. Cancele quando quiser.
+                <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-4">
+                  <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                    <CreditCard className="w-4 h-4 text-indigo-400" />
+                    Não pede cartão agora
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                    <Clock className="w-4 h-4 text-indigo-400" />
+                    Cadastro em 1 minuto
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                    <Lock className="w-4 h-4 text-indigo-400" />
+                    Sem fidelidade
+                  </div>
+                </div>
+                
+                <p className="mt-8 text-xs text-slate-400 font-medium italic">
+                  * Sua conta apenas expira após 30 dias se você não escolher um plano. Sem cobranças surpresas.
                 </p>
+              </div>
+            </div>
+            
+            {/* Objection Killers */}
+            <div className="mt-12 grid md:grid-cols-3 gap-6 text-center">
+              <div className="p-4">
+                <p className="text-slate-800 font-bold text-sm mb-1">O que acontece depois?</p>
+                <p className="text-slate-500 text-xs leading-relaxed">Sua conta é "congelada" e os dados ficam salvos. Nada é cobrado automaticamente.</p>
+              </div>
+              <div className="p-4">
+                <p className="text-slate-800 font-bold text-sm mb-1">Preciso instalar algo?</p>
+                <p className="text-slate-500 text-xs leading-relaxed">Não. Use direto no seu computador, tablet ou celular. 100% online.</p>
+              </div>
+              <div className="p-4">
+                <p className="text-slate-800 font-bold text-sm mb-1">Meus dados estão seguros?</p>
+                <p className="text-slate-500 text-xs leading-relaxed">Sim! Usamos criptografia de nível militar e backups diários para sua segurança.</p>
               </div>
             </div>
           </div>
@@ -365,11 +398,11 @@ export default function Vendas() {
         </section>
 
         {/* CTA Final */}
-        <section className="py-20 bg-slate-50">
+        <section className="py-20 bg-white">
           <div className="max-w-4xl mx-auto px-4">
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[40px] p-12 text-center text-white shadow-2xl">
-              <h2 className="text-3xl md:text-5xl font-black mb-6">Pronta para Transformar a Gestão do seu Consultório de Psicologia?</h2>
-              <Link to="/cadastrar" className="px-10 py-5 bg-white text-indigo-600 font-bold rounded-2xl shadow-xl inline-block hover:scale-105 transition-transform">Começar Teste de 30 Dias</Link>
+            <div className="bg-slate-50 rounded-[40px] p-12 text-center border border-slate-100 shadow-xl">
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-slate-900 tracking-tight">Pronta para Transformar a Gestão do seu Consultório?</h2>
+              <Link to="/cadastrar" className="px-10 py-5 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 inline-block hover:scale-105 transition-transform">Começar Teste de 30 Dias</Link>
             </div>
           </div>
         </section>
