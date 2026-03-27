@@ -254,11 +254,11 @@ export default function Vendas() {
         </section>
 
         {/* Conheça por Dentro */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-slate-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
             <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">Software para Psicólogo: Tudo em Um Só Lugar</h2>
           </div>
-          <div className="max-w-5xl mx-auto px-4 overflow-hidden rounded-[40px] shadow-2xl border border-slate-100">
+          <div className="max-w-5xl mx-auto px-4 overflow-hidden rounded-[40px] shadow-2xl border border-white">
             <img src={dashboardImg} alt="Dashboard do sistema para psicólogos — visão geral com agenda, pacientes e financeiro" className="w-full h-auto" loading="lazy" width="1200" height="675" />
           </div>
         </section>
@@ -398,11 +398,11 @@ export default function Vendas() {
         </section>
 
         {/* CTA Final */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-slate-50">
           <div className="max-w-4xl mx-auto px-4">
-            <div className="bg-slate-50 rounded-[40px] p-12 text-center border border-slate-100 shadow-xl">
-              <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-slate-900 tracking-tight">Pronta para Transformar a Gestão do seu Consultório?</h2>
-              <Link to="/cadastrar" className="px-10 py-5 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 inline-block hover:scale-105 transition-transform">Começar Teste de 30 Dias</Link>
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[40px] p-12 text-center text-white shadow-2xl">
+              <h2 className="text-3xl md:text-5xl font-black mb-6">Pronta para Transformar a Gestão do seu Consultório de Psicologia?</h2>
+              <Link to="/cadastrar" className="px-10 py-5 bg-white text-indigo-600 font-bold rounded-2xl shadow-xl inline-block hover:scale-105 transition-transform">Começar Teste de 30 Dias</Link>
             </div>
           </div>
         </section>

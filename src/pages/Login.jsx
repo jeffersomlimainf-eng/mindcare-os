@@ -75,14 +75,14 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950">
+        <div className="min-h-screen flex bg-gradient-to-br from-violet-50 via-purple-50/50 to-fuchsia-50/30 dark:bg-slate-950">
             {/* Left: Form */}
             <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-24">
                 <div className="mx-auto w-full max-w-sm">
                     {/* Logo */}
                     <div className="flex items-center gap-2 mb-8">
-                        <div className="bg-white border border-slate-200 p-2.5 rounded-xl shadow-sm text-indigo-600">
-                            <span className="material-symbols-outlined text-2xl">psychology</span>
+                        <div className="bg-gradient-to-br from-violet-400 to-purple-400 p-2.5 rounded-xl shadow-md shadow-violet-200/40">
+                            <span className="material-symbols-outlined text-2xl text-white">psychology</span>
                         </div>
                         <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Meu Sistema Psi</span>
                     </div>
@@ -154,7 +154,7 @@ const Login = () => {
                             </div>
                             <button
                                 type="submit"
-                                className="flex w-full justify-center rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-bold leading-6 text-white shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-[0.98] group items-center gap-2"
+                                className="flex w-full justify-center rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3.5 text-sm font-bold leading-6 text-white shadow-xl shadow-purple-100 hover:from-purple-700 hover:to-indigo-700 transition-all active:scale-[0.98] group items-center gap-2"
                             >
                                 Acessar Sistema
                                 <span className="material-symbols-outlined text-transparent group-hover:text-white group-hover:translate-x-1 transition-all text-sm font-bold">arrow_forward</span>
@@ -234,8 +234,8 @@ const Login = () => {
 
             {/* Right: Visual */}
             <div className="hidden lg:block lg:flex-1 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300" />
-                <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(0,0,0,0.05) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(0,0,0,0.03) 0%, transparent 50%)'}} />
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-300 via-purple-300 to-fuchsia-300" />
+                <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2) 0%, transparent 50%)'}} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
                     <div className="max-w-md text-center">
                         <div className="size-24 rounded-3xl bg-white/50 backdrop-blur-sm flex items-center justify-center mx-auto mb-8 shadow-lg shadow-purple-400/20 border border-white/40">
