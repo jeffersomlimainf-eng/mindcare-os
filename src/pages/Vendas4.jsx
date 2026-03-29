@@ -240,47 +240,40 @@ export default function Vendas4() {
         </div>
       </section>
 
-      {/* Strategic Pricing */}
-      <section id="planos" className="py-24 lg:py-40 bg-slate-900 text-white rounded-[4rem] lg:rounded-[10rem] mx-4 my-8 overflow-hidden relative">
+      {/* Strategic CTA (No Pricing) */}
+      <section id="planos" className="py-24 lg:py-40 bg-slate-900 text-white rounded-[4rem] lg:rounded-[10rem] mx-4 my-8 overflow-hidden relative text-center">
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]" />
         
-        <div className="max-w-4xl mx-auto px-6 text-center">
+        <div className="max-w-4xl mx-auto px-6 relative z-10">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
-            <motion.h2 variants={fadeUp} className="text-5xl lg:text-7xl font-serif font-black mb-10 tracking-tighter">
-              Economize horas, <br/> multiplique <span className="italic text-purple-400">resultados.</span>
+            <motion.h2 variants={fadeUp} className="text-5xl lg:text-8xl font-serif font-black mb-10 tracking-tighter">
+              Eleve o nível do seu <br/> <span className="italic text-purple-400 text-6xl lg:text-7xl block mt-4">atendimento hoje.</span>
             </motion.h2>
             
-            <motion.div variants={fadeUp} className="bg-white/5 backdrop-blur-3xl border border-white/5 p-12 lg:p-20 rounded-[4rem] shadow-2xl">
-              <div className="mb-12">
-                <span className="text-purple-400 text-xs font-black uppercase tracking-[0.4em] block mb-4">Plano Exclusivo</span>
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-2xl font-bold mb-8">R$</span>
-                  <span className="text-9xl font-black tracking-tighter">29</span>
-                  <div className="text-left mb-6">
-                    <span className="text-4xl font-bold">,90</span>
-                    <span className="text-slate-400 block text-xs font-black tracking-widest uppercase">Por Mês</span>
-                  </div>
-                </div>
-              </div>
+            <motion.div variants={fadeUp} className="bg-white/5 backdrop-blur-3xl border border-white/5 p-12 lg:p-24 rounded-[4rem] shadow-2xl">
+              <span className="text-purple-400 text-[10px] font-black uppercase tracking-[0.5em] block mb-8">Acesso Exclusivo</span>
+              
+              <p className="text-xl lg:text-2xl font-light text-slate-300 mb-16 leading-relaxed max-w-2xl mx-auto">
+                Deixe a burocracia para trás e foque no que realmente importa: **seus pacientes.** Experimente a gestão de elite por 30 dias.
+              </p>
 
-              <div className="grid md:grid-cols-2 gap-6 text-left mb-16 max-w-lg mx-auto">
-                {['Pacientes Ilimitados', 'IA de Evolução Integrada', 'Lembretes por Zap', 'Segurança LGPD CFP'].map(it => (
-                  <div key={it} className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-slate-400">
-                    <div className="w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center">
-                      <Check className="w-3 h-3 text-white" />
-                    </div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-16">
+                {['Prontuário de Elite', 'IA de Evolução', 'Sigilo Absoluto'].map(it => (
+                  <div key={it} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-400">
+                    <Check className="w-4 h-4 text-purple-500" />
                     {it}
                   </div>
                 ))}
               </div>
 
-              <Link to="/cadastrar" className="inline-flex items-center gap-4 px-14 py-7 bg-white text-slate-900 font-black text-xs uppercase tracking-[0.3em] rounded-full hover:bg-purple-50 hover:scale-105 active:scale-95 transition-all outline-none">
-                Criar Minha Clínica de Elite <Sparkles className="w-5 h-5" />
+              <Link to="/cadastrar" className="group inline-flex items-center gap-6 px-16 py-8 bg-white text-slate-900 font-black text-xs uppercase tracking-[0.3em] rounded-full hover:bg-purple-50 hover:scale-105 active:scale-95 transition-all outline-none">
+                Iniciar Experiência Ouro <ArrowRight className="w-5 h-5 group-hover:translate-x-3 transition-transform" />
               </Link>
               
-              <p className="mt-10 text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">
-                Primeiros 30 dias totalmente grátis. Cancele com um clique.
-              </p>
+              <div className="mt-12 flex justify-center gap-8 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 italic">
+                <span>✓ Sem cartão de crédito</span>
+                <span>✓ 30 dias de presente</span>
+              </div>
             </motion.div>
           </motion.div>
         </div>
