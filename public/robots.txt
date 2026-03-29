@@ -1,46 +1,23 @@
-# Robots.txt — Meu Sistema Psi
-# https://meusistemapsi.com.br
-
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
-Allow: /login
-Allow: /cadastrar
+Allow: /vendas2
+Allow: /vendas3
+Allow: /blog
+Allow: /blog/
+Allow: /melhor-sistema-para-psicologos
 
-# Bloquear áreas internas do sistema (não indexar)
+# Evitar indexação de áreas administrativas e privadas
 Disallow: /dashboard
 Disallow: /pacientes
 Disallow: /agenda
 Disallow: /prontuarios
 Disallow: /financeiro
-Disallow: /relatorios
 Disallow: /configuracoes
+Disallow: /ai-clinica
 Disallow: /super-admin
 Disallow: /onboarding
-Disallow: /ai-clinica
-Disallow: /evolucoes
-Disallow: /modelos
-Disallow: /laudos
-Disallow: /declaracoes
-Disallow: /atestados
-Disallow: /anamneses
-Disallow: /encaminhamentos
-Disallow: /tcles
-Disallow: /linha-do-tempo
-Disallow: /self-register
-Disallow: /cobranca
 
-# Bing Bot
-User-agent: bingbot
-Allow: /
-Allow: /login
-Allow: /cadastrar
-Disallow: /dashboard
-Disallow: /pacientes
-Disallow: /agenda
-Disallow: /prontuarios
-Disallow: /financeiro
-Disallow: /relatorios
-Disallow: /configuracoes
-
-# Sitemap
+# Host e Sitemap
+Host: https://meusistemapsi.com.br
 Sitemap: https://meusistemapsi.com.br/sitemap.xml
