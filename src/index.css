@@ -33,8 +33,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: #F9F9FB;
+    color: #2D2D44;
   }
 
   .dark body,

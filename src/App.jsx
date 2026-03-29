@@ -43,6 +43,12 @@ const GerarCobranca = lazy(() => import('./pages/GerarCobranca'));
 const VisualizarCobranca = lazy(() => import('./pages/VisualizarCobranca'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Vendas = lazy(() => import('./pages/Vendas'));
+const Vendas2 = lazy(() => import('./pages/Vendas2'));
+const Vendas3 = lazy(() => import('./pages/Vendas3'));
+const Blog = lazy(() => import('./pages/Blog'));
+const Artigo = lazy(() => import('./pages/Artigo'));
+const PorQueNos = lazy(() => import('./pages/PorQueNos'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 const LoadingFallback = () => (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -116,6 +122,11 @@ function App() {
                 <Routes>
                     <Route path="/" element={<PublicRoute><Vendas /></PublicRoute>} />
                     <Route path="/vendas" element={<Navigate to="/" replace />} />
+                    <Route path="/vendas2" element={<PublicRoute><Vendas2 /></PublicRoute>} />
+                    <Route path="/vendas3" element={<PublicRoute><Vendas3 /></PublicRoute>} />
+                    <Route path="/blog" element={<PublicRoute><Blog /></PublicRoute>} />
+                    <Route path="/blog/:slug" element={<PublicRoute><Artigo /></PublicRoute>} />
+                    <Route path="/melhor-sistema-para-psicologos" element={<PublicRoute><PorQueNos /></PublicRoute>} />
                     <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                     <Route path="/cadastrar" element={<PublicRoute><Register /></PublicRoute>} />
                     <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
@@ -153,6 +164,7 @@ function App() {
                         <Route path="/tcles" element={<TclesLista />} />
                         <Route path="/tcles/:id" element={<TermoConsentimento />} />
                     </Route>
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </Suspense>
         </Router>
