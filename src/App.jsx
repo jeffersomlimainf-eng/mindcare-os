@@ -45,6 +45,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Vendas = lazy(() => import('./pages/Vendas'));
 const Vendas2 = lazy(() => import('./pages/Vendas2'));
 const Vendas3 = lazy(() => import('./pages/Vendas3'));
+const Vendas4 = lazy(() => import('./pages/Vendas4'));
 const Blog = lazy(() => import('./pages/Blog'));
 const Artigo = lazy(() => import('./pages/Artigo'));
 const PorQueNos = lazy(() => import('./pages/PorQueNos'));
@@ -124,6 +125,7 @@ function App() {
                     <Route path="/vendas" element={<Navigate to="/" replace />} />
                     <Route path="/vendas2" element={<PublicRoute><Vendas2 /></PublicRoute>} />
                     <Route path="/vendas3" element={<PublicRoute><Vendas3 /></PublicRoute>} />
+                    <Route path="/vendas4" element={<PublicRoute><Vendas4 /></PublicRoute>} />
                     <Route path="/blog" element={<PublicRoute><Blog /></PublicRoute>} />
                     <Route path="/blog/:slug" element={<PublicRoute><Artigo /></PublicRoute>} />
                     <Route path="/melhor-sistema-para-psicologos" element={<PublicRoute><PorQueNos /></PublicRoute>} />
