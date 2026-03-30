@@ -65,7 +65,7 @@ export default function Vendas3() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', window.location.origin + '/');
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas3');
 
     const interval = setInterval(() => {
       if (sliderRef.current) {
@@ -318,6 +318,22 @@ export default function Vendas3() {
                 </motion.div>
               ))}
             </div>
+
+            {/* FAQ Schema Markup */}
+            <script type="application/ld+json">
+              {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": faqItems.map(item => ({
+                  "@type": "Question",
+                  "name": item.question,
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": item.answer
+                  }
+                }))
+              })}
+            </script>
           </div>
         </section>
 

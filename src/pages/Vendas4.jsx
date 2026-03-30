@@ -33,6 +33,15 @@ export default function Vendas4() {
     };
     updateMeta('description', 'Aumente sua autoridade clínica e ganhe tempo precioso. O software de elite para psicólogos que buscam uma gestão de alto padrão e segurança absoluta.');
     
+    // Canonical
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas4');
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

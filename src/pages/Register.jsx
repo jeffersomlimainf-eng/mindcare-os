@@ -19,7 +19,7 @@ const Register = () => {
             canonical.setAttribute('rel', 'canonical');
             document.head.appendChild(canonical);
         }
-        canonical.setAttribute('href', window.location.origin + '/cadastrar');
+        canonical.setAttribute('href', 'https://meusistemapsi.com.br/cadastrar');
     }, []);
     
     const [email, setEmail] = useState('');

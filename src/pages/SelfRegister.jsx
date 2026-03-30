@@ -85,7 +85,7 @@ const SelfRegister = () => {
             canonical.setAttribute('rel', 'canonical');
             document.head.appendChild(canonical);
         }
-        canonical.setAttribute('href', window.location.origin + '/self-register');
+        canonical.setAttribute('href', 'https://meusistemapsi.com.br/self-register');
     }, []);
 
     useEffect(() => {

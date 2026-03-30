@@ -41,7 +41,7 @@ export default function Vendas2() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', window.location.origin + '/vendas2');
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/');
 
     // Schema.org
     const script = document.createElement('script');
@@ -407,8 +407,30 @@ export default function Vendas2() {
                   "@context": "https://schema.org",
                   "@type": "FAQPage",
                   "mainEntity": [
-                    { "@type": "Question", "name": "O sistema é seguro e segue a LGPD?", "acceptedAnswer": { "@type": "Answer", "text": "Sim, utilizamos criptografia AES-256 e nossos servidores seguem todos os protocolos de segurança." } },
-                    { "@type": "Question", "name": "Posso testar sem informar cartão?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. 30 dias grátis sem necessidade de cartão de crédito." } }
+                    { 
+                      "@type": "Question", 
+                      "name": "O sistema é seguro e segue a LGPD?", 
+                      "acceptedAnswer": { 
+                        "@type": "Answer", 
+                        "text": "Sim, utilizamos criptografia AES-256 e nossos servidores seguem todos os protocolos de segurança exigidos pela LGPD e pelo Conselho Federal de Psicologia." 
+                      } 
+                    },
+                    { 
+                      "@type": "Question", 
+                      "name": "Posso testar sem informar cartão?", 
+                      "acceptedAnswer": { 
+                        "@type": "Answer", 
+                        "text": "Com certeza. Você cria sua conta em 30 segundos e usa todos os recursos por 30 dias grátis, sem qualquer compromisso financeiro anterior." 
+                      } 
+                    },
+                    { 
+                      "@type": "Question", 
+                      "name": "O Bio-Painel funciona em tablets?", 
+                      "acceptedAnswer": { 
+                        "@type": "Answer", 
+                        "text": "Sim, o MindCare OS é 100% responsivo. Você pode usar no computador do consultório, no seu iPad ou no seu smartphone com a mesma fluidez." 
+                      } 
+                    }
                   ]
                 })}
               </script>

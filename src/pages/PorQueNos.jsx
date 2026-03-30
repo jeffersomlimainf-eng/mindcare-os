@@ -26,6 +26,15 @@ export default function PorQueNos() {
     updateMeta('description', 'Descubra por que psicólogos modernos precisam de um sistema de gestão integrado. Conheça as vantagens da agenda, financeiro e prontuário digital com o Meu Sistema Psi.');
     updateMeta('keywords', 'melhor sistema para psicólogos, software de gestão psicologia, agenda online psicologia, controle financeiro consultório');
 
+    // Canonical
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/melhor-sistema-para-psicologos');
+
     window.scrollTo(0, 0);
   }, []);
 

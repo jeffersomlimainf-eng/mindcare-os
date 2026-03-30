@@ -30,6 +30,15 @@ export default function Blog() {
     updateMeta('description', 'Portal completo de psicologia: Ansiedade, Burnout, TDAH, TCC, Psicanálise e especialidades. Conteúdo científico e acolhedor para sua saúde mental.');
     updateMeta('keywords', 'psicologia, saúde mental, TCC, psicanálise, neuropsicologia, ansiedade, burnout, bem-estar, sintropia');
 
+    // Canonical
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/blog');
+
     window.scrollTo(0, 0);
   }, []);
 

@@ -44,7 +44,7 @@ const VisualizarCobranca = () => {
             canonical.setAttribute('rel', 'canonical');
             document.head.appendChild(canonical);
         }
-        canonical.setAttribute('href', window.location.origin + window.location.pathname);
+        canonical.setAttribute('href', 'https://meusistemapsi.com.br' + window.location.pathname);
 
         const carregar = async () => {
             setLoading(true);

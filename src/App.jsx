@@ -121,9 +121,9 @@ function App() {
             <Toast />
             <Suspense fallback={<LoadingFallback />}>
                 <Routes>
-                    <Route path="/" element={<PublicRoute><Vendas /></PublicRoute>} />
-                    <Route path="/vendas" element={<Navigate to="/" replace />} />
-                    <Route path="/vendas2" element={<PublicRoute><Vendas2 /></PublicRoute>} />
+                    <Route path="/" element={<PublicRoute><Vendas2 /></PublicRoute>} />
+                    <Route path="/vendas" element={<PublicRoute><Vendas /></PublicRoute>} />
+                    <Route path="/vendas2" element={<Navigate to="/" replace />} />
                     <Route path="/vendas3" element={<PublicRoute><Vendas3 /></PublicRoute>} />
                     <Route path="/vendas4" element={<PublicRoute><Vendas4 /></PublicRoute>} />
                     <Route path="/blog" element={<PublicRoute><Blog /></PublicRoute>} />

@@ -29,6 +29,15 @@ export default function Artigo() {
       updateMeta('description', post.seoDescription);
       updateMeta('keywords', post.seoKeywords);
 
+      // Canonical
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute('href', `https://meusistemapsi.com.br/blog/${post.slug}`);
+
       // Scroll to top
       window.scrollTo(0, 0);
     }

@@ -27,7 +27,7 @@ const Login = () => {
             canonical.setAttribute('rel', 'canonical');
             document.head.appendChild(canonical);
         }
-        canonical.setAttribute('href', window.location.origin + '/login');
+        canonical.setAttribute('href', 'https://meusistemapsi.com.br/login');
     }, []);
 
     const handleLogin = async (e) => {

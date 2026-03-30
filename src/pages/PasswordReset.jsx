@@ -15,7 +15,7 @@ const PasswordReset = () => {
             canonical.setAttribute('rel', 'canonical');
             document.head.appendChild(canonical);
         }
-        canonical.setAttribute('href', window.location.origin + '/reset-password');
+        canonical.setAttribute('href', 'https://meusistemapsi.com.br/reset-password');
     }, []);
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
