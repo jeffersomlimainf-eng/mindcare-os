@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo ==========================================
-echo    Iniciando Servidor MindCare OS
+echo    Iniciando Servidor Meu Sistema PSI
 echo ==========================================
 echo.
 
@@ -32,3 +32,4 @@ if %ERRORLEVEL% neq 0 (
 )
 
 pause
+

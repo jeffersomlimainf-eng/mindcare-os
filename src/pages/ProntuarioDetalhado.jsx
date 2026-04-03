@@ -235,7 +235,7 @@ const ProntuarioDetalhado = () => {
                                                         <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
                                                             {typeof doc?.conteudo === 'object' 
                                                                 ? (doc.conteudo?.subjetivo || doc.conteudo?.S || 'Registro clínico estruturado...') 
-                                                                : (doc?.conteudo || 'Registro clínico realizado via sistema MindCare OS...')}
+                                                                : (doc?.conteudo || 'Registro clínico realizado via sistema Meu Sistema PSI...')}
                                                         </p>
                                                         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button 
@@ -509,3 +509,5 @@ const ProntuarioDetalhado = () => {
 };
 
 export default ProntuarioDetalhado;
+
+

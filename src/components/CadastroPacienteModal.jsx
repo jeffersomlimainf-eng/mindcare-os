@@ -487,3 +487,5 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
 };
 
 export default CadastroPacienteModal;
+
+

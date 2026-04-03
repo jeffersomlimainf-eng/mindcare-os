@@ -25,8 +25,18 @@ const defaultUser = {
     clinic_name: '',
     clinic_cnpj: '',
     isInadimplente: false,
+    isClinicBlocked: false,
     consumoIA: { tokensTotal: 0, limiteMensal: 0, requisicoes: 0 },
-    configuracoes: { notifEmail: true, notifWhatsapp: false, notifLembrete: true }
+    configuracoes: { 
+        notifEmail: true, 
+        notifWhatsapp: false, 
+        notifLembrete: true, 
+        reminders_enabled: true, 
+        reminders_before_minutes: 60,
+        debt_reminders_enabled: true,
+        debt_reminder_stages: { day0: true, day1: true, day3: true, recurring: true },
+        permissoes: null 
+    }
 };
 
 export const UserProvider = ({ children }) => {
@@ -56,7 +66,7 @@ export const UserProvider = ({ children }) => {
                     id: userId,
                     full_name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || '',
                     email: sessionUser.email || '',
-                    role: 'psicologo',
+                    role: 'admin',
                     onboarding_completed: false,
                     cpf_cnpj: sessionUser.user_metadata?.cpf_cnpj || '',
                     plan_id: 'trial',
@@ -82,6 +92,32 @@ export const UserProvider = ({ children }) => {
             }
 
             if (data) {
+                // Se NÃO for admin, verifique se o ADMIN dele (o tenant_id) está com o plano ativo
+                let isClinicBlocked = false;
+                let effectivePlanStatus = data.plan_status;
+
+                const blockedStatuses = ['Inadimplente', 'Suspenso', 'Bloqueado', 'Cancelado'];
+
+                if (data.role !== 'admin' && data.tenant_id) {
+                    const { data: adminData, error: adminError } = await supabase
+                        .from('profiles')
+                        .select('plan_status')
+                        .eq('id', data.tenant_id)
+                        .maybeSingle();
+                    
+                    if (!adminError && adminData) {
+                        if (blockedStatuses.includes(adminData.plan_status)) {
+                            isClinicBlocked = true;
+                            effectivePlanStatus = adminData.plan_status;
+                        }
+                    }
+                } else if (data.role === 'admin') {
+                    // Se for admin, o próprio status manda
+                    if (blockedStatuses.includes(data.plan_status)) {
+                        isClinicBlocked = true;
+                    }
+                }
+
                 const profileObj = {
                     id: data.id,
                     tenantId: data.tenant_id,
@@ -96,8 +132,9 @@ export const UserProvider = ({ children }) => {
                     plan_start_date: data.plan_start_date,
                     plan_billing_type: data.plan_billing_type,
                     plan_payment_method: data.plan_payment_method,
-                    plan_status: data.plan_status,
-                    is_trial: data.is_trial ?? true, // Padrão true se não houver
+                    plan_status: effectivePlanStatus,
+                    isClinicBlocked: isClinicBlocked,
+                    is_trial: data.is_trial ?? true, 
                     trial_end_date: data.trial_end_date,
                     onboardingCompleted: data.onboarding_completed ?? true,
                     cpf_cnpj: data.cpf_cnpj || '',
@@ -238,7 +275,7 @@ export const UserProvider = ({ children }) => {
                     emailRedirectTo: window.location.origin + '/dashboard',
                     data: {
                         full_name: nome,
-                        role: 'psicologo',
+                        role: 'admin',
                         onboarding_completed: false,
                         cpf_cnpj: cpfCnpj
                     }
@@ -254,7 +291,7 @@ export const UserProvider = ({ children }) => {
                     .upsert({
                         id: data.user.id,
                         full_name: nome,
-                        role: 'psicologo',
+                        role: 'admin',
                         onboarding_completed: false,
                         cpf_cnpj: cpfCnpj,
                         plan_id: 'trial',
@@ -406,6 +443,13 @@ export const UserProvider = ({ children }) => {
         }
     };
 
+    const hasPermission = (moduleName) => {
+        if (user?.role === 'admin') return true; // Admins veem tudo
+        // Se `permissoes` é null/undefined, significa que é uma conta antiga ou psicólogo isolado (default = tudo liberado exceto áreas restritas de admin)
+        if (!user?.configuracoes?.permissoes) return true; 
+        return user.configuracoes.permissoes.includes(moduleName);
+    };
+
     return (
         <UserContext.Provider value={{
             user,
@@ -418,8 +462,8 @@ export const UserProvider = ({ children }) => {
             changePassword,
             logout,
             updateUser,
-
             updateConfigs,
+            hasPermission,
             isAuthenticated: !!user?.id
         }}>
             {children}
@@ -434,3 +478,5 @@ export const useUser = () => {
     }
     return context;
 };
+
+

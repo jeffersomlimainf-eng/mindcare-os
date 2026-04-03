@@ -4,7 +4,7 @@ import { useUser } from '../contexts/UserContext';
 const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user, logout } = useUser();
+    const { user, logout, hasPermission } = useUser();
 
     const menuItems = [
         { title: 'Painel', icon: 'dashboard', path: '/dashboard', activeColor: 'text-primary bg-primary/5 border-primary' },
@@ -26,7 +26,13 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     ];
 
-    const filteredItems = menuItems.filter(item => !item.adminOnly || user.role === 'admin');
+    const filteredItems = menuItems.filter(item => {
+        if (item.adminOnly && user.role !== 'admin') return false;
+        
+        // Verifica se o usuário tem permissão para acessar este módulo
+        const moduleName = item.path.replace('/', '');
+        return hasPermission ? hasPermission(moduleName) : true;
+    });
 
     return (
         <>
@@ -112,3 +118,5 @@ const Sidebar = ({ isOpen, onClose }) => {
 };
 
 export default Sidebar;
+
+

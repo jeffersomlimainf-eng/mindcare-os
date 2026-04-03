@@ -30,7 +30,7 @@ const AIClinica = () => {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [mensagens, setMensagens] = useState([
-        { role: 'assistant', text: 'Olá! Sou seu parceiro clínico MindCare AI. Estou aqui para conversar sobre casos, analisar prontuários ou simplesmente trocar uma ideia sobre sua prática. Selecione um paciente ao lado para focarmos em um caso específico ou comece a falar aqui mesmo!' }
+        { role: 'assistant', text: 'Olá! Sou seu parceiro clínico Meu Sistema PSI AI. Estou aqui para conversar sobre casos, analisar prontuários ou simplesmente trocar uma ideia sobre sua prática. Selecione um paciente ao lado para focarmos em um caso específico ou comece a falar aqui mesmo!' }
     ]);
     const scrollRef = useRef(null);
 
@@ -67,7 +67,7 @@ const AIClinica = () => {
         });
     }, [patients, evolutions, anamneses, laudos, declaracoes, atestados, encaminhamentos, pacienteSelecionado]);
 
-    const systemPrompt = `Você é o "MindCare AI Assist", um parceiro clínico inteligente e empático para psicólogos que utilizam o MindCare OS.
+    const systemPrompt = `Você é o "Meu Sistema PSI AI Assist", um parceiro clínico inteligente e empático para psicólogos que utilizam o Meu Sistema PSI.
 Sua persona é a de um colega de trabalho sênior, experiente, ético e colaborativo. Você não apenas analisa dados, mas conversa livremente com o psicólogo como um igual.
 
 CONTEXTO DO SISTEMA:
@@ -173,7 +173,7 @@ ${fullDatabaseContext}
                         <div className="size-24 rounded-[2.5rem] bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white mx-auto mb-8 shadow-xl shadow-amber-500/20">
                             <span className="material-symbols-outlined text-5xl">lock</span>
                         </div>
-                        <h2 className="text-3xl font-black italic tracking-tight text-slate-900 dark:text-white mb-4">MindCare AI Assist</h2>
+                        <h2 className="text-3xl font-black italic tracking-tight text-slate-900 dark:text-white mb-4">Meu Sistema PSI AI Assist</h2>
                         <p className="text-slate-500 font-bold mb-8 leading-relaxed">
                             {aiAccess.reason}
                         </p>
@@ -197,7 +197,7 @@ ${fullDatabaseContext}
                             <span className="material-symbols-outlined">smart_toy</span>
                         </div>
                         <div>
-                            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">MindCare AI Assist</h2>
+                            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">Meu Sistema PSI AI Assist</h2>
                             <div className="flex items-center gap-1.5">
                                 <span className={`size-2 rounded-full ${isLoading ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`}></span>
                                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
@@ -259,7 +259,7 @@ ${fullDatabaseContext}
                         </button>
                     </form>
                     <p className="text-[9px] text-slate-400 text-center mt-3 font-bold uppercase tracking-[0.2em] opacity-60">
-                        Inteligência Artificial MindCare v3.0 • Ambiente Seguro • Dados Não Treinam a IA
+                        Inteligência Artificial Meu Sistema PSI v3.0 • Ambiente Seguro • Dados Não Treinam a IA
                     </p>
                 </div>
             </div>
@@ -442,3 +442,5 @@ ${fullDatabaseContext}
 };
 
 export default AIClinica;
+
+

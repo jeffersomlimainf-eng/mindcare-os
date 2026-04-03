@@ -137,7 +137,7 @@ export default function Vendas2() {
                 {
                   icon: <AlertCircle className="w-8 h-8 text-red-500" />,
                   title: "Risco Legal e Sigilo",
-                  desc: "Agendas de papel podem ser perdidas ou acessadas por terceiros. No MindCare OS, seus dados são criptografados com padrão bancário."
+                  desc: "Agendas de papel podem ser perdidas ou acessadas por terceiros. No Meu Sistema PSI, seus dados são criptografados com padrão bancário."
                 },
                 {
                   icon: <Clock className="w-8 h-8 text-orange-500" />,
@@ -180,7 +180,7 @@ export default function Vendas2() {
                  </div>
                  <h2 className="text-4xl md:text-5xl font-serif text-slate-900 mb-6">Sua agenda nunca mais será<br/> um fardo.</h2>
                  <p className="text-lg text-slate-600 font-light mb-8 italic">
-                   "Diga adeus ao trabalho manual de confirmar sessões. O MindCare OS cuida da logística para você focar no que importa: o humano."
+                   "Diga adeus ao trabalho manual de confirmar sessões. O Meu Sistema PSI cuida da logística para você focar no que importa: o humano."
                  </p>
                  <ul className="space-y-4">
                    {['Confirmação automática via WhatsApp com 1 clique', 'Cancelamentos e remarcações sincronizadas', 'Lista de espera inteligente para horários vagos'].map((item, i) => (
@@ -231,7 +231,7 @@ export default function Vendas2() {
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-2 md:order-1">
                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md text-purple-300 rounded-lg text-sm font-bold mb-6 border border-white/10 uppercase tracking-widest">
-                    <Activity className="w-4 h-4" /> Inovação MindCare
+                    <Activity className="w-4 h-4" /> Inovação Meu Sistema PSI
                  </div>
                  <h2 className="text-4xl md:text-5xl font-serif mb-6 leading-tight text-white">Bio-Painel: A visão além da sessão.</h2>
                  <p className="text-xl text-purple-100 font-light mb-8 leading-relaxed">
@@ -336,7 +336,7 @@ export default function Vendas2() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <span className="text-blue-600 font-bold text-sm tracking-widest uppercase block mb-4">Recomendado por Especialistas</span>
-              <h2 className="text-4xl md:text-5xl font-serif text-slate-900 mb-6">Quem usa, confirma: O MindCare OS<br className="hidden md:block"/> mudou seu jeito de clinicar.</h2>
+              <h2 className="text-4xl md:text-5xl font-serif text-slate-900 mb-6">Quem usa, confirma: O Meu Sistema PSI<br className="hidden md:block"/> mudou seu jeito de clinicar.</h2>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 mb-20">
@@ -344,7 +344,7 @@ export default function Vendas2() {
                 {
                   name: "Dra. Ana Silveira",
                   role: "Psicóloga TCC",
-                  text: "Saí das agendas de papel para o MindCare e recuperei 5 horas da minha semana. O envio automático de links de vídeo é vida."
+                  text: "Saí das agendas de papel para o Meu Sistema PSI e recuperei 5 horas da minha semana. O envio automático de links de vídeo é vida."
                 },
                 {
                   name: "Marcos Oliveira",
@@ -387,7 +387,7 @@ export default function Vendas2() {
                  {[
                    { q: "O sistema é seguro e segue a LGPD?", a: "Sim, utilizamos criptografia AES-256 e nossos servidores seguem todos os protocolos de segurança exigidos pela LGPD e pelo Conselho Federal de Psicologia." },
                    { q: "Posso testar sem informar cartão?", a: "Com certeza. Você cria sua conta em 30 segundos e usa todos os recursos por 30 dias grátis, sem qualquer compromisso financeiro anterior." },
-                   { q: "O Bio-Painel funciona em tablets?", a: "Sim, o MindCare OS é 100% responsivo. Você pode usar no computador do consultório, no seu iPad ou no seu smartphone com a mesma fluidez." }
+                   { q: "O Bio-Painel funciona em tablets?", a: "Sim, o Meu Sistema PSI é 100% responsivo. Você pode usar no computador do consultório, no seu iPad ou no seu smartphone com a mesma fluidez." }
                  ].map((faq, i) => (
                    <details key={i} className="group p-6 bg-white rounded-3xl border border-slate-200 cursor-pointer overflow-hidden transition-all">
                       <summary className="flex items-center justify-between font-bold text-slate-900 list-none">
@@ -428,7 +428,7 @@ export default function Vendas2() {
                       "name": "O Bio-Painel funciona em tablets?", 
                       "acceptedAnswer": { 
                         "@type": "Answer", 
-                        "text": "Sim, o MindCare OS é 100% responsivo. Você pode usar no computador do consultório, no seu iPad ou no seu smartphone com a mesma fluidez." 
+                        "text": "Sim, o Meu Sistema PSI é 100% responsivo. Você pode usar no computador do consultório, no seu iPad ou no seu smartphone com a mesma fluidez." 
                       } 
                     }
                   ]
@@ -484,3 +484,5 @@ export default function Vendas2() {
     </div>
   );
 }
+
+

@@ -238,3 +238,5 @@ export const INSIGHTS_PSICOLOGICOS = [
   { autor: "Winnicott", frase: "O self verdadeiro é aquele que pode ser criativo." },
   { autor: "Rogers", frase: "Compreender o outro é o maior presente que podemos dar." }
 ];
+
+

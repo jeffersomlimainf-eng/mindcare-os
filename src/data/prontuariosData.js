@@ -5,3 +5,5 @@ export const prontuariosData = [
     { id: '#MC-1245', paciente: 'Emily Watson', iniciais: 'EW', cor: 'bg-amber-100 text-amber-600', tipo: 'Declaração de Presença', data: 'Ontem', status: 'Pendente', statusCor: 'bg-amber-100 text-amber-700' },
     { id: '#MC-5530', paciente: 'Carlos Mendes', iniciais: 'CM', cor: 'bg-rose-100 text-rose-600', tipo: 'Encaminhamento', data: '15 Out, 2023', status: 'Assinado', statusCor: 'bg-green-100 text-green-700' },
 ];
+
+

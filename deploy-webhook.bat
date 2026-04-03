@@ -1,9 +1,9 @@
 @echo off
-title MindCare OS - Deploy Eduzz Webhook
+title Meu Sistema PSI - Deploy Eduzz Webhook
 cls
 
 echo =======================================================
-echo   MindCare OS - Deploy Eduzz Webhook Edge Function
+echo   Meu Sistema PSI - Deploy Eduzz Webhook Edge Function
 echo =======================================================
 echo.
 echo Executando deploy...
@@ -18,3 +18,4 @@ echo   Copie a URL e cole no painel da Eduzz.
 echo =======================================================
 echo.
 pause
+

@@ -179,7 +179,7 @@ const VisualizarCobranca = () => {
         valor: dados.value,
         recebedor: dados.professional_name || 'Profissional',
         cidade: 'MARINGA', // Fallback estático para preenchimento obrigatório
-        txid: 'MINDCARE'
+        txid: 'Meu Sistema PSI'
     });
 
     const tipoLabel = {
@@ -354,3 +354,5 @@ const VisualizarCobranca = () => {
 };
 
 export default VisualizarCobranca;
+
+

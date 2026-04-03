@@ -6,6 +6,8 @@ import { showToast } from '../components/Toast';
 import GraficosFinanceiros from '../components/GraficosFinanceiros';
 import ReciboModal from '../components/ReciboModal';
 import { usePatients } from '../contexts/PatientContext';
+import HelpModal from '../components/HelpModal';
+import { HELP_CONTENT } from '../constants/helpContent';
 
 const FINANCE_COLORS_CFG = {
     categorias: {
@@ -40,6 +42,8 @@ const Financeiro = () => {
     const [mostrarGraficos, setMostrarGraficos] = useState(false);
     const [reciboAberto, setReciboAberto] = useState(false);
     const [transacaoRecibo, setTransacaoRecibo] = useState(null);
+    const [tipoPadrao, setTipoPadrao] = useState('receita');
+    const [helpOpen, setHelpOpen] = useState(false);
 
     const safe = Array.isArray(transactions) ? transactions.filter(Boolean) : [];
     const filtered = filtroCategoria === 'todas' ? safe : safe.filter(t => t.categoria === filtroCategoria);
@@ -97,7 +101,8 @@ const Financeiro = () => {
     };
 
     const handleAbrirEdicao = (l) => { setLancamentoEditando(l); setModalAberto(true); };
-    const handleNovoLancamento = () => { setLancamentoEditando(null); setModalAberto(true); };
+    const handleNovaReceita = () => { setLancamentoEditando(null); setTipoPadrao('receita'); setModalAberto(true); };
+    const handleNovaDespesa = () => { setLancamentoEditando(null); setTipoPadrao('despesa'); setModalAberto(true); };
 
     const formatarData = (dataStr) => {
         if (!dataStr || typeof dataStr !== 'string') return '—';
@@ -123,29 +128,51 @@ const Financeiro = () => {
 
     return (
         <div className="space-y-6">
+            <HelpModal 
+                isOpen={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+                content={HELP_CONTENT.financeiro} 
+            />
+
             <NovoLancamentoModal
                 isOpen={modalAberto}
                 onClose={() => { setModalAberto(false); setLancamentoEditando(null); }}
                 onSave={handleSalvar}
                 lancamentoEditando={lancamentoEditando}
+                initialType={tipoPadrao}
             />
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
                 <div>
-                    <div className="flex items-center gap-2 text-primary mb-1">
-                        <span className="material-symbols-outlined text-sm">account_balance_wallet</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Financeiro</span>
+                    <div className="flex items-center gap-3 mb-1">
+                        <div className="flex items-center gap-2 text-primary">
+                            <span className="material-symbols-outlined text-sm">account_balance_wallet</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Financeiro</span>
+                        </div>
+                        <button 
+                            onClick={() => setHelpOpen(true)}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                        >
+                            <span className="material-symbols-outlined text-[14px]">help_outline</span>
+                            <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
+                        </button>
                     </div>
                     <h1 className="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">Gestão Financeira</h1>
                     <p className="text-slate-500 font-medium mt-1">Controle de receitas e despesas.</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                     <button
-                        onClick={handleNovoLancamento}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+                        onClick={handleNovaReceita}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition-all active:scale-95"
                     >
-                        <span className="material-symbols-outlined text-lg">add_circle</span> Novo Lançamento
+                        <span className="material-symbols-outlined text-lg">add_circle</span> Nova Receita
+                    </button>
+                    <button
+                        onClick={handleNovaDespesa}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-rose-500 text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all active:scale-95"
+                    >
+                        <span className="material-symbols-outlined text-lg">do_not_disturb_on</span> Nova Despesa
                     </button>
                 </div>
             </div>
@@ -250,18 +277,36 @@ const Financeiro = () => {
                         ))}
                     </div>
                     
-                    <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Filtrar Paciente</span>
-                        <select 
-                            value={filtroCliente}
-                            onChange={(e) => { setFiltroCliente(e.target.value); setSelecionados([]); }}
-                            className="text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm focus:ring-1 focus:ring-primary outline-none"
-                        >
-                            <option value="todos">Todos os Pacientes</option>
-                            {patients.map(p => (
-                                <option key={p.id} value={p.id}>{p.nome || p.name || 'Sem Nome'}</option>
-                            ))}
-                        </select>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Filtrar Paciente</span>
+                            <select 
+                                value={filtroCliente}
+                                onChange={(e) => { setFiltroCliente(e.target.value); setSelecionados([]); }}
+                                className="text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm focus:ring-1 focus:ring-primary outline-none transition-all"
+                            >
+                                <option value="todos">Todos os Pacientes</option>
+                                {patients.map(p => (
+                                    <option key={p.id} value={p.id}>{p.nome || p.name || 'Sem Nome'}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {(abaAtiva !== 'geral' || filtroCategoria !== 'todas' || filtroCliente !== 'todos') && (
+                            <button 
+                                onClick={() => {
+                                    setAbaAtiva('geral');
+                                    setFiltroCategoria('todas');
+                                    setFiltroCliente('todos');
+                                    setSelecionados([]);
+                                    showToast('Filtros limpos', 'info');
+                                }}
+                                className="text-[10px] font-black text-rose-500 hover:text-rose-600 uppercase tracking-widest flex items-center gap-1 transition-all"
+                            >
+                                <span className="material-symbols-outlined text-[14px]">filter_alt_off</span>
+                                Limpar Filtros
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -279,9 +324,19 @@ const Financeiro = () => {
                                 <th className="px-4 md:px-6 py-3 md:py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                            {dadosTabela.map((l) => (
-                                <tr key={l.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer" onClick={() => handleAbrirEdicao(l)}>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                {dadosTabela.map((l) => {
+                                    const isReceita = l.tipo === 'Receita';
+                                    const rowClass = isReceita 
+                                        ? 'bg-emerald-50/10 hover:bg-emerald-50/30' 
+                                        : 'bg-rose-50/10 hover:bg-rose-50/30';
+
+                                    return (
+                                        <tr 
+                                            key={l.id} 
+                                            className={`${rowClass} transition-all cursor-pointer border-l-4 ${isReceita ? 'border-l-emerald-400' : 'border-l-rose-400'}`} 
+                                            onClick={() => handleAbrirEdicao(l)}
+                                        >
                                     {filtroCliente !== 'todos' && (
                                         <td className="px-4 md:px-6 py-3 md:py-4" onClick={(e) => e.stopPropagation()}>
                                             {l.tipo === 'Receita' && l.status === 'Pendente' && (
@@ -361,7 +416,8 @@ const Financeiro = () => {
                                     </td>
 
                                 </tr>
-                            ))}
+                            );
+                        })}
                         </tbody>
                         </table>
                     </div>
@@ -391,3 +447,5 @@ const Financeiro = () => {
 };
 
 export default Financeiro;
+
+

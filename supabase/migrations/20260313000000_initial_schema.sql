@@ -1,4 +1,4 @@
--- Initial Schema for MindCare OS
+-- Initial Schema for Meu Sistema PSI
 -- Based on the local database structure (db.js)
 
 -- Enable RLS
@@ -219,3 +219,4 @@ ALTER TABLE docs_encaminhamento ENABLE ROW LEVEL SECURITY;
 
 -- Basic Policies (Isolation by tenant_id)
 -- Note: Simplified for migration script (admin access might be needed for initial upload)
+

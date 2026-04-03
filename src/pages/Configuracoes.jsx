@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase';
 import { showToast } from '../components/Toast';
 import { useNavigate } from 'react-router-dom';
 import { exportData, importData } from '../utils/backup';
+import Toggle from '../components/Toggle';
+import { referralInviteTemplate } from '../constants/emailTemplates';
 
 const maskCpfCnpj = (value) => {
     let r = value.replace(/\D/g, '');
@@ -73,6 +75,10 @@ const Configuracoes = () => {
         chavePix: user.configuracoes?.chavePix || '',
     });
 
+    // Estado para Indique e Ganhe
+    const [referralContact, setReferralContact] = useState('');
+    const [submittingReferral, setSubmittingReferral] = useState(false);
+
     useEffect(() => {
         setFormData({
             nome: user.nome,
@@ -105,9 +111,11 @@ const Configuracoes = () => {
     };
 
     const handleConfigToggle = (key, value) => {
-        const newConfigs = { ...configs, [key]: value };
-        setConfigs(newConfigs);
-        updateConfigs({ [key]: value });
+        setConfigs(prev => {
+            const newConfigs = { ...prev, [key]: value };
+            updateConfigs({ [key]: value });
+            return newConfigs;
+        });
     };
 
     const handleChangePassword = async () => {
@@ -137,6 +145,68 @@ const Configuracoes = () => {
             setPasswordData({ senhaAtual: '', novaSenha: '', confirmarSenha: '' });
         } else {
             showToast(result.message || 'Erro ao alterar senha.', 'error');
+        }
+    };
+
+    const handleReferral = async () => {
+        if (!referralContact) {
+            showToast('Por favor, informe um e-mail ou WhatsApp do indicado.', 'error');
+            return;
+        }
+
+        setSubmittingReferral(true);
+        try {
+            const { error: dbError } = await supabase
+                .from('referrals')
+                .insert([{
+                    referrer_id: user.id,
+                    referral_contact: referralContact,
+                    status: 'Pendente'
+                }]);
+
+            if (dbError) throw dbError;
+
+            // Se for e-mail, enviar via Resend usando Edge Function
+            if (referralContact.includes('@')) {
+                const subject = `Convite Especial: Conheça o Meu Sistema PSI 🚀`;
+                const profNome = user.clinic_name || user.nome || 'Um colega psicólogo';
+                
+                const { data, error: functionError } = await supabase.functions.invoke('send-invoice-email', {
+                    body: {
+                        to: referralContact,
+                        subject: subject,
+                        replyTo: user.email,
+                        fromName: profNome,
+                        html: referralInviteTemplate({
+                            profNome: profNome,
+                            referralLink: 'https://meusistemapsi.com.br'
+                        })
+                    }
+                });
+
+                if (functionError) throw functionError;
+                if (data?.success === false) throw new Error(data.error?.message || 'Erro no Resend');
+
+                showToast('Indicação enviada com sucesso por e-mail!', 'success');
+            } 
+            // Se for número de telefone, oferecer abrir WhatsApp
+            else if (referralContact.match(/^\+?[0-9\s-]{8,}$/)) {
+                const message = encodeURIComponent(`Olá! Estou usando o Meu Sistema PSI para gerenciar minha clínica e recomendo muito. Dá uma olhada: https://meusistemapsi.com.br`);
+                const phone = referralContact.replace(/\D/g, '');
+                window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+                showToast('Indicação registrada! Abrindo WhatsApp...', 'success');
+            } else {
+                showToast('Contato inválido. Informe um e-mail ou telefone válido.', 'error');
+                setSubmittingReferral(false);
+                return;
+            }
+
+            setReferralContact('');
+        } catch (error) {
+            console.error('Erro ao enviar indicação:', error.message);
+            showToast(`Erro: ${error.message}`, 'error');
+        } finally {
+            setSubmittingReferral(false);
         }
     };
 
@@ -381,8 +451,8 @@ const Configuracoes = () => {
                     <div className="p-4 md:p-8 space-y-6">
                         {[
                             { label: 'E-mail Clínico', desc: 'Avisos de novas consultas', key: 'notifEmail' },
-                            { label: 'WhatsApp', desc: 'Lembretes para pacientes', key: 'notifWhatsapp' },
-                            { label: 'Lembrete Inteligente', desc: 'Aviso 24h antes da sessão', key: 'notifLembrete' },
+                            { label: 'Lembrete de Sessão', desc: 'Enviar lembretes por e-mail para pacientes', key: 'reminders_enabled' },
+                            { label: 'Cobrança Automática', desc: 'Régua de cobrança para débitos pendentes', key: 'debt_reminders_enabled' },
                         ].map((n) => (
                             <div key={n.key} className="flex items-center justify-between">
                                 <div>
@@ -392,6 +462,70 @@ const Configuracoes = () => {
                                 <Toggle value={configs[n.key]} onChange={(val) => handleConfigToggle(n.key, val)} />
                             </div>
                         ))}
+
+                        {configs.debt_reminders_enabled && (
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                                    Fases da Régua de Cobrança
+                                </p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {[
+                                        { label: 'No Vencimento', key: 'day0' },
+                                        { label: '1 Dia Depois', key: 'day1' },
+                                        { label: '3 Dias Depois', key: 'day3' },
+                                        { label: 'Recorrente (3/3d)', key: 'recurring' },
+                                    ].map((stage) => (
+                                        <button
+                                            key={stage.key}
+                                            onClick={() => {
+                                                const currentStages = configs.debt_reminder_stages || { day0: true, day1: true, day3: true, recurring: true };
+                                                const newStages = { ...currentStages, [stage.key]: !currentStages[stage.key] };
+                                                handleConfigToggle('debt_reminder_stages', newStages);
+                                            }}
+                                            className={`h-11 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 flex items-center justify-center gap-2 ${
+                                                configs.debt_reminder_stages?.[stage.key]
+                                                    ? 'border-teal-500 bg-teal-500/5 text-teal-600 shadow-sm'
+                                                    : 'border-slate-100 dark:border-slate-800 text-slate-400 hover:border-teal-500/30'
+                                            }`}
+                                        >
+                                            <span className="material-symbols-outlined text-sm">
+                                                {configs.debt_reminder_stages?.[stage.key] ? 'check_circle' : 'radio_button_unchecked'}
+                                            </span>
+                                            {stage.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {configs.reminders_enabled && (
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                                    Enviar Lembrete Quanto Tempo Antes?
+                                </p>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    {[
+                                        { label: '30 min', value: 30 },
+                                        { label: '1 hora', value: 60 },
+                                        { label: '2 horas', value: 120 },
+                                        { label: '12 horas', value: 720 },
+                                        { label: '24 horas', value: 1440 },
+                                    ].map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            onClick={() => handleConfigToggle('reminders_before_minutes', opt.value)}
+                                            className={`h-11 rounded-xl text-xs font-black uppercase tracking-widest transition-all border-2 ${
+                                                configs.reminders_before_minutes === opt.value
+                                                    ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                                                    : 'border-slate-100 dark:border-slate-800 text-slate-400 hover:border-primary/30'
+                                            }`}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -464,6 +598,110 @@ const Configuracoes = () => {
                 </div>
             </div>
 
+
+            {/* Indique e Ganhe */}
+            <div className="bg-gradient-to-br from-indigo-500 to-primary rounded-[2rem] p-6 md:p-8 text-white relative overflow-hidden shadow-2xl shadow-primary/30">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-20 -mb-20"></div>
+                
+                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="flex-1 text-center md:text-left">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+                            <span className="material-symbols-outlined text-sm">redeem</span>
+                            Programa de Recompensas
+                        </div>
+                        <h2 className="text-3xl font-black italic tracking-tighter mb-2">Indique e Ganhe</h2>
+                        <p className="text-white/80 font-bold max-w-md leading-relaxed">
+                            Indique o Meu Sistema PSI para colegas e ganhe 1 mês de desconto em sua mensalidade por cada indicação que assinar o plano profissional!
+                        </p>
+                    </div>
+                    
+                    <div className="w-full md:w-[380px] bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20">
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/60 ml-1">
+                                E-mail ou WhatsApp do indicado
+                            </label>
+                            <div className="flex flex-col gap-3">
+                                <input
+                                    type="text"
+                                    value={referralContact}
+                                    onChange={(e) => setReferralContact(e.target.value)}
+                                    placeholder="ex: (11) 99999-9999 ou email@exemplo.com"
+                                    className="w-full h-12 px-4 rounded-xl bg-white text-slate-900 font-bold focus:ring-4 focus:ring-white/20 outline-none transition-all placeholder:text-slate-400"
+                                />
+                                <button
+                                    onClick={handleReferral}
+                                    disabled={submittingReferral}
+                                    className="w-full h-12 bg-white text-primary rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    <span className={`material-symbols-outlined text-sm ${submittingReferral ? 'animate-spin' : ''}`}>
+                                        {submittingReferral ? 'sync' : 'send'}
+                                    </span>
+                                    {submittingReferral ? 'Enviando...' : 'Indicar Agora'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Gestão de Equipe */}
+            <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden mb-6">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                    <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
+                        <div className="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-blue-500 text-xl">manage_accounts</span>
+                        </div>
+                        Equipe e Acessos
+                    </h2>
+                    {user.role === 'admin' ? (
+                        <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Administrador</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Acesso Restrito</span>
+                        </div>
+                    )}
+                </div>
+                <div className="p-4 md:p-8 space-y-6 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                         <span className="material-symbols-outlined text-4xl text-slate-300">group_add</span>
+                    </div>
+                    <p className="font-medium text-slate-500 text-sm max-w-sm mx-auto">
+                        Convide secretárias ou outros psicólogos para colaborar na sua clínica com diferentes níveis de acesso.
+                    </p>
+                    
+                    {user.role !== 'admin' ? (
+                        <p className="text-xs text-rose-500 font-bold bg-rose-50 dark:bg-rose-900/10 inline-block px-4 py-2 rounded-lg">
+                            Você não tem permissão para gerenciar a equipe.
+                        </p>
+                    ) : (['profissional', 'anual', 'premium'].includes(user.plan_id?.toLowerCase())) ? (
+                        <button
+                            onClick={() => navigate('/equipe')}
+                            className="py-3 px-6 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 mx-auto"
+                        >
+                            <span className="material-symbols-outlined text-sm">settings_account_box</span>
+                            Gerenciar Minha Equipe
+                        </button>
+                    ) : (
+                        <div className="space-y-4">
+                            <p className="text-xs text-amber-600 font-bold bg-amber-50 dark:bg-amber-900/10 inline-block px-4 py-2 rounded-lg">
+                                Funcionalidade exclusiva para planos Profissional, Premium e Anual.
+                            </p>
+                            <button
+                                onClick={() => {
+                                    showToast('Redirecionando para as opções de upgrade...', 'info');
+                                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                                }}
+                                className="block py-3 px-6 bg-amber-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all hover:scale-[1.02] mx-auto text-sm"
+                            >
+                                Fazer Upgrade de Plano
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
 
             {/* Planos e Assinatura */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden mb-6">
@@ -679,3 +917,5 @@ const Configuracoes = () => {
 };
 
 export default Configuracoes;
+
+

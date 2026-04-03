@@ -5,6 +5,8 @@ import { usePatients } from '../contexts/PatientContext';
 import { useAppointments } from '../contexts/AppointmentContext';
 import { supabase } from '../lib/supabase';
 import { useUser } from '../contexts/UserContext';
+import Toggle from './Toggle';
+import { appointmentReminderTemplate } from '../constants/emailTemplates';
 
 // HORAS estáticas removidas (agora dinâmicas via contexto)
 
@@ -66,6 +68,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
     const [diaSel, setDiaSel] = useState(hoje.getDate());
     const [sucesso, setSucesso] = useState(false);
     const [enviandoEmail, setEnviandoEmail] = useState(false);
+    const [lembreteAtivo, setLembreteAtivo] = useState(true);
     const inputRef = useRef(null);
 
     // Sugestões filtradas (usando pacientes reais do contexto)
@@ -133,6 +136,8 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
                     setDiaSel(dia);
                 }
             }
+
+            setLembreteAtivo(consultaEditando.reminderEnabled !== false);
         } else if (pacientePreSelecionado) {
             setPacienteBusca(pacientePreSelecionado.nome);
             setPacienteSelecionado(pacientePreSelecionado);
@@ -164,6 +169,8 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
                 setCalAno(dSel.getFullYear());
                 if (dataPreSelecionada?.hora) setHora(dataPreSelecionada.hora);
             }
+            // Inicializar lembrete baseado na conf global
+            setLembreteAtivo(user?.configuracoes?.reminders_enabled !== false);
         }
     }, [isOpen, consultaEditando, pacientePreSelecionado, dataPreSelecionada]);
 
@@ -207,6 +214,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
             dia: diaSel,
             mes: calMes,
             ano: calAno,
+            reminderEnabled: lembreteAtivo
         });
 
         if (!consultaEditando) {
@@ -271,39 +279,15 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
                 body: {
                     to: pacienteSelecionado.email,
                     subject: `Consulta Confirmada - ${nomeProf}`,
-                    html: `
-                        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1e293b; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <div style="text-align: center; margin-bottom: 24px;">
-                                <h2 style="color: #4f46e5; margin: 0; font-size: 22px; font-weight: 800;">Consulta Agendada!</h2>
-                                <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Olá, <strong>${pacienteSelecionado.nome}</strong>.</p>
-                            </div>
-                            
-                            <p style="font-size: 15px; line-height: 1.6;">Sua próxima sessão está confirmada. Seguem os detalhes para que você possa se organizar:</p>
-                            
-                            <div style="background-color: #f8fafc; padding: 16px; border-radius: 12px; margin: 20px 0; border: 1px solid #f1f5f9;">
-                                <p style="margin: 0 0 8px 0; font-size: 14px;">📅 <strong>Data:</strong> ${dataFormatadaShort}</p>
-                                <p style="margin: 0 0 8px 0; font-size: 14px;">⏰ <strong>Horário:</strong> ${horaStr}</p>
-                                <p style="margin: 0; font-size: 14px;">📍 <strong>Tipo:</strong> ${tipo === 'presencial' ? 'Presencial (No Consultório)' : 'Teleconsulta (Videochamada)'}</p>
-                            </div>
-
-                            ${tipo === 'teleconsulta' 
-                                ? `<p style="font-size: 14px; background-color: #eff6ff; color: #1d4ed8; padding: 12px; border-radius: 8px; font-weight: 500;">
-                                    💻 O link da videochamada será enviado pelo seu profissional minutos antes do horário ou estará disponível no painel.
-                                   </p>` 
-                                : ''
-                            }
-                            
-                            <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 13px; color: #64748b;">
-                                <p style="margin: 0 0 4px 0; font-weight: 700; color: #334155; font-size: 14px;">${nomeProf}</p>
-                                ${crp ? `<p style="margin: 0 0 4px 0;">CRP: ${crp}</p>` : ''}
-                                ${telefoneProf ? `<p style="margin: 0 0 4px 0;">📞 Contato: ${telefoneProf}</p>` : ''}
-                            </div>
-                            
-                            <div style="text-align: center; margin-top: 30px; font-size: 11px; color: #94a3b8;">
-                                E-mail automático enviado pelo seu profissional de saúde.
-                            </div>
-                        </div>
-                    `,
+                    html: appointmentReminderTemplate({
+                        pacienteNome: pacienteSelecionado.nome,
+                        data: dataFormatadaShort,
+                        hora: horaStr,
+                        tipo: tipo === 'presencial' ? 'Presencial (No Consultório)' : 'Teleconsulta (Videochamada)',
+                        profissionalNome: nomeProf,
+                        profissionalCrp: crp,
+                        profissionalTelefone: telefoneProf
+                    }),
                     fromName: nomeProf
                 }
             });
@@ -699,11 +683,18 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
                 </div>
             </div>
 
-            {/* Footer */}
             <div className="flex items-center justify-between px-7 py-5 border-t border-slate-100 bg-slate-50 shrink-0">
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <span className="material-symbols-outlined text-sm">info</span>
-                    <span>O paciente será notificado por e-mail e WhatsApp</span>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <Toggle value={lembreteAtivo} onChange={setLembreteAtivo} />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lembrete Automático</span>
+                    </div>
+                    {lembreteAtivo && (
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 animate-in fade-in zoom-in duration-300">
+                            <span className="material-symbols-outlined text-[10px] font-bold">mail</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest">Ativado</span>
+                        </div>
+                    )}
                 </div>
                 <div className="flex gap-3">
                     {consultaEditando && (
@@ -737,3 +728,5 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
 };
 
 export default NovoAgendamentoModal;
+
+

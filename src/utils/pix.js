@@ -16,7 +16,7 @@ export function formatarTamanho(valor) {
     return len.toString().padStart(2, '0') + valor;
 }
 
-export function gerarCadeiaPix({ chave, valor, recebedor, cidade = "MARINGA", txid = "MINDCARE" }) {
+export function gerarCadeiaPix({ chave, valor, recebedor, cidade = "MARINGA", txid = "Meu Sistema PSI" }) {
     if (!chave) return '';
     
     // Remove espaços, traços, etc da chave.
@@ -49,3 +49,5 @@ export function gerarCadeiaPix({ chave, valor, recebedor, cidade = "MARINGA", tx
     
     return payload + calcularCRC16(payload);
 }
+
+

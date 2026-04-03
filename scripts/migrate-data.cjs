@@ -4,7 +4,7 @@ const path = require('path');
 const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
 
-const BACKUP_PATH = path.join(__dirname, '..', 'backups', 'backup_mindcare_2026-03-09.json');
+const BACKUP_PATH = path.join(__dirname, '..', 'backups', 'backup_Meu Sistema PSI_2026-03-09.json');
 
 async function supabaseRequest(table, method, body = null) {
     const url = `${SUPABASE_URL}/rest/v1/${table}`;
@@ -48,13 +48,13 @@ async function migrate() {
         if (existingTenants.length > 0) {
             tenantId = existingTenants[0].id;
         } else {
-            const tenant = await supabaseRequest('tenants', 'POST', { name: 'MindCare Primary Tenant' });
+            const tenant = await supabaseRequest('tenants', 'POST', { name: 'Meu Sistema PSI Primary Tenant' });
             tenantId = tenant[0].id;
         }
         console.log(`✅ Tenant: ${tenantId}`);
 
         // 2. Migrar Pacientes
-        const patientsRaw = parseSafely(rawBackup.mindcare_patients);
+        const patientsRaw = parseSafely(rawBackup.Meu Sistema PSI_patients);
         if (patientsRaw.length > 0) {
             console.log(`👥 Migrando ${patientsRaw.length} pacientes...`);
             const patients = patientsRaw.map(p => ({
@@ -91,7 +91,7 @@ async function migrate() {
         }
 
         // 3. Migrar Agendamentos
-        const appointmentsRaw = parseSafely(rawBackup.mindcare_appointments);
+        const appointmentsRaw = parseSafely(rawBackup.Meu Sistema PSI_appointments);
         if (appointmentsRaw.length > 0) {
             console.log(`📅 Migrando ${appointmentsRaw.length} agendamentos...`);
             const appointments = appointmentsRaw.map(a => ({
@@ -111,7 +111,7 @@ async function migrate() {
         }
 
         // 4. Migrar Evoluções
-        const evolutionsRaw = parseSafely(rawBackup.mindcare_evolutions);
+        const evolutionsRaw = parseSafely(rawBackup.Meu Sistema PSI_evolutions);
         if (evolutionsRaw.length > 0) {
             console.log(`📝 Migrando ${evolutionsRaw.length} evoluções...`);
             const evolutions = evolutionsRaw.map(e => ({
@@ -140,7 +140,7 @@ async function migrate() {
         }
 
         // 5. Migrar Financeiro
-        const transactionsRaw = parseSafely(rawBackup.mindcare_transactions);
+        const transactionsRaw = parseSafely(rawBackup.Meu Sistema PSI_transactions);
         if (transactionsRaw.length > 0) {
             console.log(`💰 Migrando ${transactionsRaw.length} registros financeiros...`);
             const finance = transactionsRaw.map(f => ({
@@ -168,27 +168,27 @@ async function migrate() {
 
         // 6. Migrar Documentos
         const docMappings = [
-            { key: 'mindcare_laudos', table: 'docs_laudo', mapper: (d) => ({
+            { key: 'Meu Sistema PSI_laudos', table: 'docs_laudo', mapper: (d) => ({
                 id: String(d.id), documento_id: d.documentoId || null, tenant_id: tenantId, patient_id: d.pacienteId || null, patient_name: d.pacienteNome || null, status: d.status || 'Rascunho',
                 solicitante: d.solicitante || null, identificacao: d.identificacao || null, demanda: d.demanda || null, procedimento: d.procedimento || null,
                 analise_conclusao: d.analiseConclusao || null, professional_name: d.profissionalNome || null, created_at: d.criadoEm || new Date().toISOString(), updated_at: d.atualizadoEm || new Date().toISOString()
             })},
-            { key: 'mindcare_atestados', table: 'docs_atestado', mapper: (d) => ({
+            { key: 'Meu Sistema PSI_atestados', table: 'docs_atestado', mapper: (d) => ({
                 id: String(d.id), documento_id: d.documentoId || null, tenant_id: tenantId, patient_id: d.pacienteId || null, patient_name: d.pacienteNome || null, status: d.status || 'Rascunho',
                 finalidade: d.finalidade || null, dias_afastamento: String(d.diasAfastamento || ''), cid: d.cid || null, parecer: d.parecer || null,
                 professional_name: d.profissionalNome || null, created_at: d.criadoEm || new Date().toISOString(), updated_at: d.atualizadoEm || new Date().toISOString()
             })},
-            { key: 'mindcare_declaracoes', table: 'docs_declaracao', mapper: (d) => ({
+            { key: 'Meu Sistema PSI_declaracoes', table: 'docs_declaracao', mapper: (d) => ({
                 id: String(d.id), documento_id: d.documentoId || null, tenant_id: tenantId, patient_id: d.pacienteId || null, patient_name: d.pacienteNome || null, status: d.status || 'Rascunho',
                 data_atendimento: d.dataAtendimento || null, hora_inicio: d.horaInicio || null, hora_fim: d.horaFim || null, finalidade: d.finalidade || null,
                 professional_name: d.profissionalNome || null, created_at: d.criadoEm || new Date().toISOString(), updated_at: d.atualizadoEm || new Date().toISOString()
             })},
-            { key: 'mindcare_anamneses', table: 'docs_anamnese', mapper: (d) => ({
+            { key: 'Meu Sistema PSI_anamneses', table: 'docs_anamnese', mapper: (d) => ({
                 id: String(d.id), documento_id: d.documentoId || null, tenant_id: tenantId, patient_id: d.pacienteId || null, patient_name: d.pacienteNome || null, status: d.status || 'Rascunho',
                 queixa_principal: d.queixaPrincipal || null, historico_familiar: d.historicoFamiliar || null, expectativas: d.expectativas || null,
                 observacoes_gerais: d.observacoesGerais || null, professional_name: d.profissionalNome || null, created_at: d.criadoEm || new Date().toISOString(), updated_at: d.atualizadoEm || new Date().toISOString()
             })},
-            { key: 'mindcare_encaminhamentos', table: 'docs_encaminhamento', mapper: (d) => ({
+            { key: 'Meu Sistema PSI_encaminhamentos', table: 'docs_encaminhamento', mapper: (d) => ({
                 id: String(d.id), documento_id: d.documentoId || null, tenant_id: tenantId, patient_id: d.pacienteId || null, patient_name: d.pacienteNome || null, status: d.status || 'Rascunho',
                 especialidade_destino: d.especialidadeDestino || null, profissional_destino: d.profissionalDestino || null,
                 clinica_destino: d.clinicaDestino || null, motivo: d.motivo || null, resumo_clinico: d.resumoClinico || null, objetivo: d.objetivo || null,
@@ -215,3 +215,4 @@ async function migrate() {
 }
 
 migrate();
+

@@ -180,3 +180,5 @@ const ReciboModal = ({ isOpen, onClose, transacao }) => {
 };
 
 export default ReciboModal;
+
+

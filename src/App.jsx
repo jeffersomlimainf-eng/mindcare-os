@@ -19,6 +19,7 @@ const Financeiro = lazy(() => import('./pages/Financeiro'));
 const Relatorios = lazy(() => import('./pages/Relatorios'));
 const Modelos = lazy(() => import('./pages/Modelos'));
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
+const GerenciamentoEquipe = lazy(() => import('./pages/GerenciamentoEquipe'));
 const Recibo = lazy(() => import('./pages/Recibo'));
 const LaudosLista = lazy(() => import('./pages/LaudosLista'));
 const LaudoPsicologico = lazy(() => import('./pages/LaudoPsicologico'));
@@ -49,6 +50,7 @@ const Vendas4 = lazy(() => import('./pages/Vendas4'));
 const Blog = lazy(() => import('./pages/Blog'));
 const Artigo = lazy(() => import('./pages/Artigo'));
 const PorQueNos = lazy(() => import('./pages/PorQueNos'));
+const SuspendedClinic = lazy(() => import('./pages/SuspendedClinic'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const LoadingFallback = () => (
@@ -73,6 +75,18 @@ const ProtectedRoute = ({ children }) => {
 
     if (!user?.id) {
         return <Navigate to="/login" replace />;
+    }
+
+    // Se a clínica estiver bloqueada e não for uma rota de "escape" (como configurações para o admin pagar)
+    const isConfigRoute = window.location.pathname.startsWith('/configuracoes');
+    const isSuspendedRoute = window.location.pathname === '/suspenso';
+
+    if (user.isClinicBlocked && !isSuspendedRoute) {
+        // Bloqueia tudo exceto se for o Admin tentando ir para configurações regularizar
+        if (user.role === 'admin' && isConfigRoute) {
+            return children;
+        }
+        return <Navigate to="/suspenso" replace />;
     }
 
     return children;
@@ -135,6 +149,7 @@ function App() {
                     <Route path="/self-register" element={<SelfRegister />} />
                     <Route path="/reset-password" element={<PublicRoute><PasswordReset /></PublicRoute>} />
                     <Route path="/cobranca/:id" element={<VisualizarCobranca />} />
+                    <Route path="/suspenso" element={<ProtectedRoute><SuspendedClinic /></ProtectedRoute>} />
                     <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/pacientes" element={<Pacientes />} />
@@ -152,6 +167,7 @@ function App() {
                         <Route path="/evolucoes" element={<EvolucoesLista />} />
                         <Route path="/modelos" element={<Modelos />} />
                         <Route path="/configuracoes" element={<Configuracoes />} />
+                        <Route path="/equipe" element={<GerenciamentoEquipe />} />
                         <Route path="/super-admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                         <Route path="/laudos" element={<LaudosLista />} />
                         <Route path="/laudos/:id" element={<LaudoPsicologico />} />
@@ -174,3 +190,5 @@ function App() {
 }
 
 export default App;
+
+

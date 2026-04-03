@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const Modal = ({ isOpen, onClose, title, icon, children, maxWidth = 'max-w-2xl', closeOnBackdropClick = true }) => {
+const Modal = ({ isOpen, onClose, title, icon, children, footer, maxWidth = 'max-w-2xl', closeOnBackdropClick = true }) => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -37,9 +37,18 @@ const Modal = ({ isOpen, onClose, title, icon, children, maxWidth = 'max-w-2xl',
                 <div className="overflow-y-auto flex-1">
                     {children}
                 </div>
+
+                {/* Footer */}
+                {footer && (
+                    <div className="shrink-0 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 rounded-b-2xl">
+                        {footer}
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
 export default Modal;
+
+

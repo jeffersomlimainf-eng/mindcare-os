@@ -213,7 +213,7 @@ const HistoricoEvolucoes = () => {
                 </div>
 
                 <div style={{ marginTop: '50px', textAlign: 'center', fontSize: '10pt', color: '#999' }}>
-                    Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')} via MindCare OS
+                    Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')} via Meu Sistema PSI
                 </div>
             </div>
         </div>
@@ -221,3 +221,5 @@ const HistoricoEvolucoes = () => {
 };
 
 export default HistoricoEvolucoes;
+
+

@@ -18,7 +18,7 @@ function walk(dir) {
     return results;
 }
 
-const files = walk('c:/Users/Jeferson Lima/Desktop/trabalho/MindCare OS/src');
+const files = walk('c:/Users/Jeferson Lima/Desktop/trabalho/Meu Sistema PSI/src');
 const searchTerms = ['CRP', 'TELEFONE', 'GERAL', 'HISTÓRICO', 'PAGTO'];
 
 files.forEach(f => {
@@ -36,3 +36,4 @@ files.forEach(f => {
         });
     }
 });
+

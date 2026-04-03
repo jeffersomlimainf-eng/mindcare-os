@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const file = 'c:\\Users\\Jeferson Lima\\Desktop\\trabalho\\MindCare OS\\src\\pages\\Register.jsx';
+const file = 'c:\\Users\\Jeferson Lima\\Desktop\\trabalho\\Meu Sistema PSI\\src\\pages\\Register.jsx';
 let content = fs.readFileSync(file, 'utf8');
 
 // Regex highly flexible to find the multi-line Nome Completo field div
@@ -38,3 +38,4 @@ if (regex.test(content)) {
 } else {
     console.log('Error: Target string not found with regex');
 }
+

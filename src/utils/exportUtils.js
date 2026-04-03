@@ -550,3 +550,5 @@ export const exportRelatorioToWord = async (stats, filename = 'relatorio_desempe
   const blob = await Packer.toBlob(doc);
   saveAs(blob, filename);
 };
+
+

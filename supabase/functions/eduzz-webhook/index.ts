@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 /**
- * MindCare OS - Eduzz Webhook Postback Handler
+ * Meu Sistema PSI - Eduzz Webhook Postback Handler
  * --------------------------------------------------
  * Mapeamento de produtos Eduzz para Planos do Sistema.
  */
@@ -107,7 +107,7 @@ serve(async (req: Request) => {
 
             const { data: authData, error: authError } = await supabase.auth.admin.createUser({
                 email: cusEmail,
-                password: 'MindCare@123', // Senha padrão de acesso inicial
+                password: 'Meu Sistema PSI@123', // Senha padrão de acesso inicial
                 email_confirm: true,
                 user_metadata: { full_name: cusName }
             });
@@ -148,3 +148,4 @@ serve(async (req: Request) => {
         return new Response(JSON.stringify({ error: err.message }), { status: 500 });
     }
 });
+

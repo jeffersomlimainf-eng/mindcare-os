@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
 export const exportData = async () => {
     const data = {
         _export_date: new Date().toISOString(),
-        _source: 'MindCare OS Online Backup',
+        _source: 'Meu Sistema PSI Online Backup',
         tables: {}
     };
 
@@ -33,14 +33,14 @@ export const exportData = async () => {
 
         const json = JSON.stringify(data, null, 2);
         const dataAtual = new Date().toISOString().split('T')[0];
-        const fileName = `backup_mindcare_online_${dataAtual}.json`;
+        const fileName = `backup_Meu Sistema PSI_online_${dataAtual}.json`;
 
         if ('showSaveFilePicker' in window) {
             try {
                 const handle = await window.showSaveFilePicker({
                     suggestedName: fileName,
                     types: [{
-                        description: 'Arquivo de Backup MindCare',
+                        description: 'Arquivo de Backup Meu Sistema PSI',
                         accept: { 'application/json': ['.json'] },
                     }],
                 });
@@ -77,3 +77,5 @@ export const importData = async (file) => {
         resolve(false);
     });
 };
+
+

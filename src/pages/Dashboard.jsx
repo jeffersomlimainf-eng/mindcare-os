@@ -19,18 +19,20 @@ import { safeRender } from '../utils/render';
 import { supabase } from '../lib/supabase';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import { INSIGHTS_PSICOLOGICOS } from '../data/insights';
+import HelpModal from '../components/HelpModal';
+import { HELP_CONTENT } from '../constants/helpContent';
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [notas, setNotas] = useState(() => {
-        const salva = localStorage.getItem('mindcare_dashboard_notes_v2');
+        const salva = localStorage.getItem('Meu Sistema PSI_dashboard_notes_v2');
         if (salva) {
             try { return JSON.parse(salva); } catch(e) { console.error(e); }
         }
         return [{ id: '1', titulo: 'Geral', texto: '' }];
     });
     const [ativaNotaId, setAtivaNotaId] = useState(() => {
-        const salva = localStorage.getItem('mindcare_dashboard_notes_v2');
+        const salva = localStorage.getItem('Meu Sistema PSI_dashboard_notes_v2');
         if (salva) {
             try { return JSON.parse(salva)[0]?.id || '1'; } catch(e) {}
         }
@@ -38,7 +40,7 @@ const Dashboard = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem('mindcare_dashboard_notes_v2', JSON.stringify(notas));
+        localStorage.setItem('Meu Sistema PSI_dashboard_notes_v2', JSON.stringify(notas));
     }, [notas]);
 
     const ativoNota = notas.find(n => n.id === ativaNotaId) || notas[0] || { texto: '' };
@@ -65,7 +67,7 @@ const Dashboard = () => {
             setLoadingClima(true);
             try {
                 const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cidade)}&format=json`, {
-                    headers: { 'User-Agent': 'MindCareOS/1.0' }
+                    headers: { 'User-Agent': 'Meu Sistema PSIOS/1.0' }
                 });
                 const geoData = await geoRes.json();
                 if (geoData && geoData.length > 0) {
@@ -137,7 +139,7 @@ const Dashboard = () => {
 
         setLoadingInsight(true);
         try {
-            const systemPrompt = `Você é o "MindCare AI Assist", um consultor clínico para psicólogos. 
+            const systemPrompt = `Você é o "Meu Sistema PSI AI Assist", um consultor clínico para psicólogos. 
 Seu trabalho é ler as notas rápidas (rascunhos) que o psicólogo anotou sobre uma sessão ou paciente e estruturar insights clínicos úteis.
 Retorne SEMPRE no seguinte formato (Markdown):
 
@@ -202,6 +204,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
     });
     const [novaTarefa, setNovaTarefa] = useState('');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [helpOpen, setHelpOpen] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('tarefasManuais', JSON.stringify(tarefasManuais));
@@ -213,8 +216,11 @@ Retorne SEMPRE no seguinte formato (Markdown):
 
     // Fechar modais locais do Dashboard com Esc
     useGlobalShortcuts({
-        isModalOpen: modalDoc,
-        closeModal: () => setModalDoc(false),
+        isModalOpen: modalDoc || helpOpen,
+        closeModal: () => {
+            setModalDoc(false);
+            setHelpOpen(false);
+        },
         priority: 1
     });
 
@@ -565,12 +571,37 @@ Retorne SEMPRE no seguinte formato (Markdown):
     };
 
     return (
-        <div className="space-y-10 pb-20">
+        <div className="space-y-6 pb-20">
+            <HelpModal 
+                isOpen={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+                content={HELP_CONTENT.dashboard} 
+            />
+
             <NovoDocumentoModal
                 isOpen={modalDoc}
                 onClose={() => setModalDoc(false)}
                 tipoInicial={tipoDocInicial}
             />
+
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                        <div className="flex items-center gap-2 text-primary">
+                            <span className="material-symbols-outlined text-sm">space_dashboard</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Visão Geral</span>
+                        </div>
+                        <button 
+                            onClick={() => setHelpOpen(true)}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                        >
+                            <span className="material-symbols-outlined text-[14px]">help_outline</span>
+                            <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             {/* Welcome Area Re-designed */}
             <div className="flex flex-col gap-8 px-1">
@@ -1197,3 +1228,5 @@ Retorne SEMPRE no seguinte formato (Markdown):
 };
 
 export default Dashboard;
+
+

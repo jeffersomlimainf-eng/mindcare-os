@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { teamWelcomeTemplate } from '../constants/emailTemplates';
 
 /**
  * Notifica o administrador sobre um novo cadastro no sistema.
@@ -13,11 +14,11 @@ export const notifyAdminNewSignup = async (userData) => {
             body: {
                 to: adminEmail,
                 subject: `🚀 Novo Cadastro: ${nome}`,
-                fromName: 'MindCare OS Alertas',
+                fromName: 'Meu Sistema PSI Alertas',
                 html: `
                     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 12px; padding: 24px;">
                         <h2 style="color: #4F46E5;">Novo Psicólogo Cadastrado! 🚀</h2>
-                        <p>Um novo usuário acaba de criar uma conta no <strong>MindCare OS</strong>.</p>
+                        <p>Um novo usuário acaba de criar uma conta no <strong>Meu Sistema PSI</strong>.</p>
                         
                         <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin: 20px 0;">
                             <p style="margin: 4px 0;"><strong>Nome:</strong> ${nome}</p>
@@ -42,6 +43,40 @@ export const notifyAdminNewSignup = async (userData) => {
         return { success: true, data };
     } catch (err) {
         console.error('[Notification] Erro crítico na notificação:', err);
+        return { success: false, error: err };
+    }
+};
+
+
+/**
+ * Envia um e-mail de boas-vindas para o novo membro da equipe.
+ * @param {Object} userData - Nome, e-mail e senha do novo membro
+ * @param {string} clinicName - Nome da clínica do Admin
+ */
+export const sendTeamWelcomeEmail = async (userData, clinicName) => {
+    const { nome, email, senha } = userData;
+    const loginUrl = `${window.location.origin}/login`;
+
+    try {
+        const { data, error } = await supabase.functions.invoke('send-invoice-email', {
+            body: {
+                to: email,
+                subject: `Seja Bem-vindo(a) à Equipe ${clinicName}! 🏥`,
+                fromName: 'Meu Sistema PSI',
+                html: teamWelcomeTemplate({
+                    nome: nome,
+                    email: email,
+                    senha: senha,
+                    clinicName: clinicName,
+                    loginUrl: loginUrl
+                })
+            }
+        });
+
+        if (error) throw error;
+        return { success: true, data };
+    } catch (err) {
+        console.error('[WelcomeEmail] Erro:', err);
         return { success: false, error: err };
     }
 };

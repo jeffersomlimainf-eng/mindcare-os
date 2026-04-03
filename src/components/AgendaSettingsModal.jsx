@@ -110,3 +110,5 @@ const AgendaSettingsModal = ({ isOpen, onClose }) => {
 };
 
 export default AgendaSettingsModal;
+
+

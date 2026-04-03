@@ -21,7 +21,7 @@ function walk(dir) {
     return results;
 }
 
-const files = walk('c:/Users/Jeferson Lima/Desktop/trabalho/MindCare OS');
+const files = walk('c:/Users/Jeferson Lima/Desktop/trabalho/Meu Sistema PSI');
 console.log(`Searching in ${files.length} files...`);
 
 files.forEach(f => {
@@ -39,3 +39,4 @@ files.forEach(f => {
         }
     } catch (e) {}
 });
+

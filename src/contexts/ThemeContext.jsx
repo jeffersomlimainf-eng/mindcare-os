@@ -12,12 +12,12 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
     const [darkMode, setDarkMode] = useState(() => {
-        const saved = localStorage.getItem('mindcare_darkmode');
+        const saved = localStorage.getItem('Meu Sistema PSI_darkmode');
         return saved ? JSON.parse(saved) : false;
     });
 
     useEffect(() => {
-        localStorage.setItem('mindcare_darkmode', JSON.stringify(darkMode));
+        localStorage.setItem('Meu Sistema PSI_darkmode', JSON.stringify(darkMode));
         if (darkMode) {
             document.documentElement.classList.add('dark');
         } else {
@@ -40,3 +40,5 @@ export const ThemeProvider = ({ children }) => {
         </ThemeContext.Provider>
     );
 };
+
+

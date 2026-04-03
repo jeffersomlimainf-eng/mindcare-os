@@ -372,3 +372,5 @@ const GraficosFinanceiros = ({ transacoes }) => {
 };
 
 export default GraficosFinanceiros;
+
+

@@ -46,3 +46,5 @@ export const useGlobalShortcuts = (options = {}) => {
         return () => window.removeEventListener('keydown', handleKeyDown, useCapture);
     }, [navigate, location, isModalOpen, closeModal, priority]);
 };
+
+

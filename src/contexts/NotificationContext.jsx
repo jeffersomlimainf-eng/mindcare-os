@@ -12,11 +12,11 @@ export const useNotifications = () => {
 
 export const NotificationProvider = ({ children }) => {
     const [notifications, setNotifications] = useState(() => {
-        const saved = localStorage.getItem('mindcare_notifications');
+        const saved = localStorage.getItem('Meu Sistema PSI_notifications');
         return saved ? JSON.parse(saved) : [
             {
                 id: 1,
-                title: 'Bem-vindo ao MindCare OS',
+                title: 'Bem-vindo ao Meu Sistema PSI',
                 message: 'Explore as novas funcionalidades de prontuário e agenda.',
                 date: new Date().toISOString(),
                 read: false,
@@ -36,7 +36,7 @@ export const NotificationProvider = ({ children }) => {
     });
 
     useEffect(() => {
-        localStorage.setItem('mindcare_notifications', JSON.stringify(notifications));
+        localStorage.setItem('Meu Sistema PSI_notifications', JSON.stringify(notifications));
     }, [notifications]);
 
     const addNotification = (notif) => {
@@ -83,3 +83,5 @@ export const NotificationProvider = ({ children }) => {
         </NotificationContext.Provider>
     );
 };
+
+

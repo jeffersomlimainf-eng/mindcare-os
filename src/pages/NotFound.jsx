@@ -60,7 +60,7 @@ export default function NotFound() {
           <motion.div {...bounce} className="relative z-10">
             <img 
               src={creative404} 
-              alt="Mente Criativa 404 MindCare OS" 
+              alt="Mente Criativa 404 Meu Sistema PSI" 
               className="w-full h-auto rounded-[60px] shadow-[0_0_80px_-20px_rgba(168,85,247,0.4)] border border-white/10"
             />
           </motion.div>
@@ -132,3 +132,5 @@ export default function NotFound() {
     </div>
   );
 }
+
+

@@ -340,7 +340,7 @@ const LaudoPsicologico = () => {
                                     <span className="material-symbols-outlined text-2xl">psychology</span>
                                 </div>
                                 <div>
-                                    {/* Removido branding MindCare OS do cabeçalho de visualização conforme solicitado */}
+                                    {/* Removido branding Meu Sistema PSI do cabeçalho de visualização conforme solicitado */}
                                     <h2 className="font-black text-lg leading-tight text-primary invisible">Meu Sistema Psi</h2>
                                     <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 invisible">Clínica de Psicologia Especializada</p>
                                     <p className="text-[9px] text-slate-400">Contato: {user.telefone || '(41) 99999-9999'}</p>
@@ -733,3 +733,5 @@ const LaudoPsicologico = () => {
 };
 
 export default LaudoPsicologico;
+
+

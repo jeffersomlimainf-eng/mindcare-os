@@ -9,6 +9,8 @@ import { useAnamneses } from '../contexts/AnamneseContext';
 import { useEncaminhamentos } from '../contexts/EncaminhamentoContext';
 import { showToast } from '../components/Toast';
 import { handleNavegacaoDocumento } from '../utils/navigation';
+import HelpModal from '../components/HelpModal';
+import { HELP_CONTENT } from '../constants/helpContent';
 
 const TIPO_COLORS_CFG = {
     'Evolução de Sessão': { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-100 dark:border-blue-800', icon: 'clinical_notes' },
@@ -30,6 +32,7 @@ const Prontuarios = () => {
 
     const [busca, setBusca] = useState('');
     const [modalAberto, setModalAberto] = useState(false);
+    const [helpOpen, setHelpOpen] = useState(false);
     
     const totalDocumentos = (evolutions?.length || 0) + (laudos?.length || 0) + (atestados?.length || 0) + (declaracoes?.length || 0) + (anamneses?.length || 0) + (encaminhamentos?.length || 0);
     
@@ -185,6 +188,12 @@ const Prontuarios = () => {
 
     return (
         <>
+            <HelpModal 
+                isOpen={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+                content={HELP_CONTENT.prontuarios} 
+            />
+
             <NovoDocumentoModal
                 isOpen={modalAberto}
                 onClose={() => { setModalAberto(false); setModeloNav(null); }}
@@ -195,9 +204,18 @@ const Prontuarios = () => {
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
                     <div>
-                        <div className="flex items-center gap-2 text-primary mb-1">
-                            <span className="material-symbols-outlined text-sm">description</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Acervo Digital</span>
+                        <div className="flex items-center gap-3 mb-1">
+                            <div className="flex items-center gap-2 text-primary">
+                                <span className="material-symbols-outlined text-sm">description</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Acervo Digital</span>
+                            </div>
+                            <button 
+                                onClick={() => setHelpOpen(true)}
+                                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                            >
+                                <span className="material-symbols-outlined text-[14px]">help_outline</span>
+                                <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
+                            </button>
                         </div>
                         <h1 className="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">Prontuários</h1>
                         <p className="text-slate-500 font-medium mt-1">Gestão segura de documentos clínicos com isolamento Multi-Tenant.</p>
@@ -349,3 +367,5 @@ const Prontuarios = () => {
 };
 
 export default Prontuarios;
+
+

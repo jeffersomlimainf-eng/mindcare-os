@@ -10,6 +10,8 @@ import { formatPatientIdForUrl } from '../utils/navigation';
 import { safeRender } from '../utils/render';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import Modal from '../components/Modal';
+import HelpModal from '../components/HelpModal';
+import { HELP_CONTENT } from '../constants/helpContent';
 
 const maskPhone = (value) => {
     let r = value.replace(/\D/g, '');
@@ -118,14 +120,16 @@ const Pacientes = () => {
     const [pacienteParaExcluir, setPacienteParaExcluir] = useState(null);
     const [vista, setVista] = useState('tabela'); 
     const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
+    const [helpOpen, setHelpOpen] = useState(false);
 
     // Fechar modais locais com Esc primeiro
     useGlobalShortcuts({
-        isModalOpen: modalAberto || modalAgendaAberto || !!pacienteParaExcluir,
+        isModalOpen: modalAberto || modalAgendaAberto || !!pacienteParaExcluir || helpOpen,
         closeModal: () => {
             if (modalAberto) setModalAberto(false);
             if (modalAgendaAberto) setModalAgendaAberto(false);
             if (pacienteParaExcluir) setPacienteParaExcluir(null);
+            if (helpOpen) setHelpOpen(false);
         },
         priority: 1
     });
@@ -212,6 +216,12 @@ const Pacientes = () => {
 
     return (
         <div className="space-y-6">
+            <HelpModal 
+                isOpen={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+                content={HELP_CONTENT.pacientes} 
+            />
+
             <CadastroPacienteModal
                 isOpen={modalAberto}
                 onClose={() => setModalAberto(false)}
@@ -251,9 +261,18 @@ const Pacientes = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
                 <div>
-                    <div className="flex items-center gap-2 text-primary mb-1">
-                        <span className="material-symbols-outlined text-sm">group</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Diretório</span>
+                    <div className="flex items-center gap-3 mb-1">
+                        <div className="flex items-center gap-2 text-primary">
+                            <span className="material-symbols-outlined text-sm">group</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Diretório</span>
+                        </div>
+                        <button 
+                            onClick={() => setHelpOpen(true)}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                        >
+                            <span className="material-symbols-outlined text-[14px]">help_outline</span>
+                            <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
+                        </button>
                     </div>
                     <h1 className="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">Pacientes</h1>
                     <p className="text-slate-500 font-medium mt-1">Gestão de prontuários e vínculos clínicos.</p>
@@ -422,3 +441,5 @@ const Pacientes = () => {
 };
 
 export default Pacientes;
+
+

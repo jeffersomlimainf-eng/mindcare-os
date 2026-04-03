@@ -417,3 +417,5 @@ const Recibo = () => {
 };
 
 export default Recibo;
+
+

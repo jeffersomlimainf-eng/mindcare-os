@@ -56,3 +56,5 @@ export const trackAIConsumption = (tokensUsed, user, updateUser) => {
         showToast('Você atingiu 80% do seu limite mensal de IA.', 'warning');
     }
 };
+
+

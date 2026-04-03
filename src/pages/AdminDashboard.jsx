@@ -231,7 +231,7 @@ const AdminDashboard = () => {
                 userData: {
                     nome: newClient.nome,
                     email: newClient.email,
-                    password: 'MindCare@123', // Senha padrão temporária
+                    password: 'Meu Sistema PSI@123', // Senha padrão temporária
                     fone: newClient.fone,
                     clinica: newClient.clinica,
                     plano: newClient.plano,
@@ -777,3 +777,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+

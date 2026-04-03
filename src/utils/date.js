@@ -31,3 +31,5 @@ export const calcularIdade = (dataNasc) => {
         return '--';
     }
 };
+
+

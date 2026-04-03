@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAnamneses } from '../contexts/AnamneseContext';
+import HelpModal from '../components/HelpModal';
+import { HELP_CONTENT } from '../constants/helpContent';
 
 const AnamnesesLista = () => {
     const navigate = useNavigate();
@@ -8,6 +10,7 @@ const AnamnesesLista = () => {
     const [busca, setBusca] = useState('');
     const [filtroStatus, setFiltroStatus] = useState('Todos');
     const [confirmDelete, setConfirmDelete] = useState(null);
+    const [helpOpen, setHelpOpen] = useState(false);
 
     const statusFiltros = ['Todos', 'Rascunho', 'Finalizado'];
 
@@ -39,12 +42,26 @@ const AnamnesesLista = () => {
 
     return (
         <div className="space-y-6">
+            <HelpModal 
+                isOpen={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+                content={HELP_CONTENT.prontuarios} 
+            />
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
                 <div>
-                    <div className="flex items-center gap-2 text-primary mb-1">
-                        <span className="material-symbols-outlined text-sm">assignment</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Anamneses</span>
+                    <div className="flex items-center gap-3 mb-1">
+                        <div className="flex items-center gap-2 text-primary">
+                            <span className="material-symbols-outlined text-sm">assignment</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Anamneses</span>
+                        </div>
+                        <button 
+                            onClick={() => setHelpOpen(true)}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                        >
+                            <span className="material-symbols-outlined text-[14px]">help_outline</span>
+                            <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
+                        </button>
                     </div>
                     <h1 className="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">Fichas de Anamnese</h1>
                     <p className="text-slate-500 font-medium mt-1">Gestão de histórico clínico e triagem.</p>
@@ -92,54 +109,56 @@ const AnamnesesLista = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
-                    <table className="w-full text-left">
-                        <thead className="bg-slate-50 dark:bg-slate-800/50">
-                            <tr>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Paciente</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Documento</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Data</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                            {filtrados.map((a) => (
-                                <tr
-                                    key={a.id}
-                                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
-                                    onClick={() => navigate(`/anamneses/${a.id}`)}
-                                >
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`size-9 rounded-full flex items-center justify-center text-xs font-bold ${a.pacienteCor || 'bg-primary/10 text-primary'}`}>{a.pacienteIniciais || '?'}</div>
-                                            <div className="flex flex-col">
-                                                <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{a.pacienteNome || 'Sem paciente'}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-widest">ID: {a.pacienteId}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{a.documentoId}</p>
-                                    </td>
-                                    <td className="px-6 py-4 text-xs font-bold text-slate-500">{formatDate(a.criadoEm)}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${statusConfig[a.status] || 'bg-slate-100 text-slate-600'}`}>{a.status}</span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex gap-2 justify-end">
-                                            <button onClick={() => navigate(`/anamneses/${a.id}`)} className="size-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all">
-                                                <span className="material-symbols-outlined text-lg">visibility</span>
-                                            </button>
-                                            <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(a.id); }} className="size-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-red-500 hover:text-white transition-all">
-                                                <span className="material-symbols-outlined text-lg">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-left whitespace-nowrap md:whitespace-normal">
+                            <thead className="bg-slate-50 dark:bg-slate-800/50">
+                                <tr>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Paciente</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Documento</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">Data</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">Status</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ações</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                {filtrados.map((a) => (
+                                    <tr
+                                        key={a.id}
+                                        className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer"
+                                        onClick={() => navigate(`/anamneses/${a.id}`)}
+                                    >
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`size-9 rounded-full flex items-center justify-center text-xs font-bold ${a.pacienteCor || 'bg-primary/10 text-primary'}`}>{a.pacienteIniciais || '?'}</div>
+                                                <div className="flex flex-col">
+                                                    <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{a.pacienteNome || 'Sem paciente'}</p>
+                                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">ID: {a.pacienteId}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{a.documentoId}</p>
+                                        </td>
+                                        <td className="px-6 py-4 text-center text-xs font-bold text-slate-500">{formatDate(a.criadoEm)}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${statusConfig[a.status] || 'bg-slate-100 text-slate-600'}`}>{a.status}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex gap-2 justify-end">
+                                                <button onClick={() => navigate(`/anamneses/${a.id}`)} className="size-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all">
+                                                    <span className="material-symbols-outlined text-lg">visibility</span>
+                                                </button>
+                                                <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(a.id); }} className="size-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-red-500 hover:text-white transition-all">
+                                                    <span className="material-symbols-outlined text-lg">delete</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {filtrados.length === 0 && (
@@ -170,3 +189,5 @@ const AnamnesesLista = () => {
 };
 
 export default AnamnesesLista;
+
+

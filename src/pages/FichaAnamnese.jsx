@@ -422,7 +422,7 @@ const FichaAnamnese = () => {
                                     <span className="material-symbols-outlined text-3xl">assignment</span>
                                 </div>
                                 <div>
-                                    <h2 className="font-black text-2xl leading-none text-slate-900 dark:text-white print:text-slate-900">MindCare OS</h2>
+                                    <h2 className="font-black text-2xl leading-none text-slate-900 dark:text-white print:text-slate-900">Meu Sistema PSI</h2>
                                     <p className="text-[10px] text-amber-600 font-black uppercase tracking-[0.2em] mt-2">Ficha de Anamnese Psicológica</p>
                                 </div>
                             </div>
@@ -690,7 +690,7 @@ const FichaAnamnese = () => {
             <div className="hidden print:block mt-20 pt-10 border-t border-slate-300 text-center max-w-sm mx-auto">
                 <p className="text-sm font-bold text-slate-900 mb-1">{dados.profissionalNome || user.nome}</p>
                 <p className="text-[11px] text-slate-500 uppercase tracking-widest font-black">Psicólogo(a) Clínico(a) • CRP {dados.profissionalCrp || user.crp || '---'}</p>
-                <div className="mt-8 text-[9px] text-slate-400">Gerado em {new Date().toLocaleDateString('pt-BR')} • MindCare OS</div>
+                <div className="mt-8 text-[9px] text-slate-400">Gerado em {new Date().toLocaleDateString('pt-BR')} • Meu Sistema PSI</div>
             </div>
 
             <style dangerouslySetInnerHTML={{ __html: `
@@ -737,3 +737,5 @@ const FichaAnamnese = () => {
 };
 
 export default FichaAnamnese;
+
+

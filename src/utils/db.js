@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * MindCare OS - Supabase Database Service
+ * Meu Sistema PSI - Supabase Database Service
  * Esta versão substitui o localStorage pelo Supabase SDK.
  * Todas as operações são assíncronas e retornam Promises.
  */
@@ -104,7 +104,7 @@ class SupabaseDB {
         
         const schemas = {
             'patients': [...baseColumns, 'name', 'email', 'phone', 'cpf', 'birth_date', 'gender', 'status', 'color', 'initials', 'address_zip', 'address_street', 'address_number', 'address_neighborhood', 'address_city', 'address_state', 'complaint', 'history', 'price_per_session', 'health_plan', 'is_minor', 'responsible_data', 'marital_status', 'profession', 'bairro'],
-            'appointments': [...baseColumns, 'patient_id', 'patient_name', 'data', 'time_start', 'duration', 'status', 'type', 'recurrence', 'obs'],
+            'appointments': [...baseColumns, 'patient_id', 'patient_name', 'data', 'time_start', 'duration', 'status', 'type', 'recurrence', 'obs', 'reminder_sent', 'reminder_enabled'],
             'evolutions': [...baseColumns, 'patient_id', 'patient_name', 'data_hora', 'type', 'status', 'professional_name', 'content_soap', 'techniques', 'observations', 'humor', 'risk_level', 'format', 'duration_minutes', 'session_number'],
             'finance': [...baseColumns, 'type', 'description', 'value', 'date', 'due_date', 'status', 'payment_method', 'category', 'subcategory', 'group_id', 'current_installment', 'total_installments', 'frequency', 'patient_id', 'patient_name', 'pix_key', 'pix_key_type', 'professional_name', 'professional_cpf_cnpj', 'professional_email', 'professional_phone', 'link_sent', 'link_visited_count'],
             'docs_laudo': [...baseColumns, 'documento_id', 'patient_id', 'patient_name', 'status', 'solicitante', 'identificacao', 'demanda', 'procedimento', 'analise_conclusao', 'professional_name'],
@@ -204,7 +204,9 @@ class SupabaseDB {
             'planoTipoFaturamento': 'plan_billing_type',
             'planoFormaPagamento': 'plan_payment_method',
             'planoStatus': 'plan_status',
-            'planoValor': 'plan_value'
+            'planoValor': 'plan_value',
+            'reminderSent': 'reminder_sent',
+            'reminderEnabled': 'reminder_enabled'
         };
 
         const allowedColumns = this._getAllowedColumns(table);
@@ -404,3 +406,5 @@ class SupabaseDB {
 }
 
 export const db = new SupabaseDB();
+
+

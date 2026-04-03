@@ -87,3 +87,5 @@ export const DeclaracaoProvider = ({ children }) => {
         </DeclaracaoContext.Provider>
     );
 };
+
+

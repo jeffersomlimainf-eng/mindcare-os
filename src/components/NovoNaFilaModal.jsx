@@ -118,3 +118,5 @@ const NovoNaFilaModal = ({ isOpen, onClose }) => {
 };
 
 export default NovoNaFilaModal;
+
+

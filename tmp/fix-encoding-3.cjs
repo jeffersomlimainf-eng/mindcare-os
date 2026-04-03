@@ -43,7 +43,7 @@ function walk(dir) {
     return results;
 }
 
-const files = walk('c:/Users/Jeferson Lima/Desktop/trabalho/MindCare OS/src/');
+const files = walk('c:/Users/Jeferson Lima/Desktop/trabalho/Meu Sistema PSI/src/');
 let fixedCount = 0;
 
 files.forEach(file => {
@@ -63,3 +63,4 @@ files.forEach(file => {
     }
 });
 console.log('Total resolvido:', fixedCount);
+

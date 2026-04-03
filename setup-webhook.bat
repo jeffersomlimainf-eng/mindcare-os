@@ -1,9 +1,9 @@
 @echo off
-title MindCare OS - Setup Webhook
+title Meu Sistema PSI - Setup Webhook
 cls
 
 echo =======================================================
-echo   MindCare OS - Setup Webhook (Login e Link)
+echo   Meu Sistema PSI - Setup Webhook (Login e Link)
 echo =======================================================
 echo.
 
@@ -30,3 +30,4 @@ echo   Agora de duplo-clique no arquivo 'deploy-webhook.bat'
 echo =======================================================
 echo.
 pause
+

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { JSDOM } = require('jsdom');
 
-const html = fs.readFileSync('c:/Users/Jeferson Lima/Desktop/trabalho/MindCare OS/key/admin.html', 'utf8');
+const html = fs.readFileSync('c:/Users/Jeferson Lima/Desktop/trabalho/Meu Sistema PSI/key/admin.html', 'utf8');
 const dom = new JSDOM(html, { runScripts: "dangerously" });
 const { window } = dom;
 
@@ -33,3 +33,4 @@ try {
 } catch (e) {
     console.error("Error running openEditModal:", e);
 }
+

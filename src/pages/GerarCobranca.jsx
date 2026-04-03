@@ -4,6 +4,7 @@ import { useFinance } from '../contexts/FinanceContext';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
 import { supabase } from '../lib/supabase';
+import { invoiceReminderTemplate } from '../constants/emailTemplates';
 
 
 const GerarCobranca = () => {
@@ -144,26 +145,14 @@ const GerarCobranca = () => {
 
         const subject = `Cobrança de ${profNome}`;
         
-        // Template HTML premium para o e-mail
-        const html = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #334155;">
-                <h2 style="color: #0d9488;">Olá, ${paciente}!</h2>
-                <p>${profNome} gerou uma cobrança para você no valor de <strong>${valorFmt}</strong>${vencFmt ? `, com vencimento em ${vencFmt}` : ''}.</p>
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;">
-                    <p style="margin: 0; font-size: 14px;"><strong>Descrição:</strong> ${desc || 'Sessão/Consulta'}</p>
-                    <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Valor:</strong> ${valorFmt}</p>
-                    ${vencFmt ? `<p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Vencimento:</strong> ${vencFmt}</p>` : ''}
-                </div>
-                <p>Para visualizar as informações da cobrança e efetuar o pagamento via Pix, clique no botão abaixo:</p>
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="${linkPublico}" style="background-color: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">Visualizar Cobrança</a>
-                </p>
-                <p style="font-size: 12px; color: #94a3b8; margin-top: 40px; border-top: 1px solid #e2e8f0; pt: 10px;">
-                    Se você não reconhece essa cobrança, ou tem dúvidas, entre em contato diretamente com o profissional ${profNome}.
-                    <br/>Caso já tenha pago, favor desconsiderar.
-                </p>
-            </div>
-        `;
+        const html = invoiceReminderTemplate({
+            pacienteNome: paciente,
+            valor: valorFmt,
+            vencimento: vencFmt,
+            descricao: desc || 'Sessão/Consulta',
+            profissionalNome: profNome,
+            linkPagamento: linkPublico
+        });
 
         try {
             const { data, error } = await supabase.functions.invoke('send-invoice-email', {
@@ -447,3 +436,5 @@ const GerarCobranca = () => {
 };
 
 export default GerarCobranca;
+
+

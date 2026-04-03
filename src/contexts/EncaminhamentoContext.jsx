@@ -87,3 +87,5 @@ export const EncaminhamentoProvider = ({ children }) => {
         </EncaminhamentoContext.Provider>
     );
 };
+
+

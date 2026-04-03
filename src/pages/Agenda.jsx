@@ -11,6 +11,8 @@ import { usePatients } from '../contexts/PatientContext';
 import { formatDateLocal } from '../utils/date';
 import { safeRender } from '../utils/render';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
+import HelpModal from '../components/HelpModal';
+import { HELP_CONTENT } from '../constants/helpContent';
 
 // ─── Constantes ──────────────────────────────────────────────
 const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
@@ -101,15 +103,17 @@ const Agenda = () => {
     const [nomePreCadastro, setNomePreCadastro] = useState('');
     const [consultaEditando, setConsultaEditando] = useState(null); 
     const [pacienteParaAgenda, setPacienteParaAgenda] = useState(null);
+    const [helpOpen, setHelpOpen] = useState(false);
 
     // Fechar modais locais da Agenda com Esc
     useGlobalShortcuts({
-        isModalOpen: modalAberto || settingsModalAberto || filaModalAberto || cadastroModalAberto,
+        isModalOpen: modalAberto || settingsModalAberto || filaModalAberto || cadastroModalAberto || helpOpen,
         closeModal: () => {
             if (modalAberto) { setModalAberto(false); setConsultaEditando(null); setNomePreCadastro(''); setPacienteParaAgenda(null); }
             if (settingsModalAberto) setSettingsModalAberto(false);
             if (filaModalAberto) setFilaModalAberto(false);
             if (cadastroModalAberto) { setCadastroModalAberto(false); setNomePreCadastro(''); }
+            if (helpOpen) setHelpOpen(false);
         },
         priority: 1
     });
@@ -363,6 +367,11 @@ const Agenda = () => {
 
     return (
         <>
+            <HelpModal 
+                isOpen={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+                content={HELP_CONTENT.agenda} 
+            />
             <NovoAgendamentoModal
                 isOpen={modalAberto}
                 onClose={() => { setModalAberto(false); setConsultaEditando(null); setNomePreCadastro(''); setPacienteParaAgenda(null); }}
@@ -483,6 +492,15 @@ const Agenda = () => {
                                     else { d.setDate(d.getDate() + (visao === 'semana' ? 7 : 1)); selecionarData(d); }
                                 }} className="p-1 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-md transition-colors"><span className="material-symbols-outlined text-base">chevron_right</span></button>
                             </div>
+
+                            <button 
+                                onClick={() => setHelpOpen(true)}
+                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                            >
+                                <span className="material-symbols-outlined text-lg">help_outline</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider hidden sm:inline">Como funciona?</span>
+                            </button>
+
                             <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
                                 {['mes', 'semana', 'dia'].map(v => (
                                     <button key={v} onClick={() => setVisao(v)} className={`px-4 py-1 rounded-md text-[10px] font-bold uppercase transition-all ${visao === v ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>{v === 'mes' ? 'Mês' : v === 'semana' ? 'Semana' : 'Dia'}</button>
@@ -723,3 +741,5 @@ const Agenda = () => {
 };
 
 export default Agenda;
+
+

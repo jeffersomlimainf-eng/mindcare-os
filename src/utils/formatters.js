@@ -68,3 +68,33 @@ export function valorPorExtenso(valor) {
 
     return extenso.charAt(0).toUpperCase() + extenso.slice(1);
 }
+
+/**
+ * Formata um valor numérico ou string para o padrão de moeda brasileiro (BRL) para inputs.
+ * @param {string|number} valor 
+ * @returns {string} - Ex: "1.250,50"
+ */
+export function formatCurrencyBRL(valor) {
+    if (valor === null || valor === undefined) return '';
+    
+    // Remove tudo que não é dígito
+    let v = String(valor).replace(/\D/g, '');
+    
+    // Converte para centavos
+    v = (Number(v) / 100).toFixed(2).replace('.', ',');
+    
+    // Adiciona separador de milhar
+    return v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+/**
+ * Converte uma string formatada em BRL de volta para um número decimal.
+ * @param {string} valor - Ex: "1.250,50"
+ * @returns {number} - Ex: 1250.50
+ */
+export function parseCurrencyBRL(valor) {
+    if (!valor) return 0;
+    return parseFloat(String(valor).replace(/\./g, '').replace(',', '.')) || 0;
+}
+
+

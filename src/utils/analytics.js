@@ -60,3 +60,5 @@ export const sendEvent = (category, action, label, value) => {
   // Facebook CAPI (Server)
   callCapi(action, eventId, window.location.href, { category, label, value });
 };
+
+

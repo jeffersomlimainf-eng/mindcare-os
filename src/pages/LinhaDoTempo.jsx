@@ -249,7 +249,7 @@ const LinhaDoTempo = () => {
                                                                 if (typeof content === 'object' && content !== null) {
                                                                     return content.subjetivo || content.S || content.A || 'Prontuário estruturado.';
                                                                 }
-                                                                return content || 'Registro clínico gerado e assinado via MindCare OS.';
+                                                                return content || 'Registro clínico gerado e assinado via Meu Sistema PSI.';
                                                             })()}"
                                                         </p>
                                                     </div>
@@ -522,3 +522,5 @@ const LinhaDoTempo = () => {
 };
 
 export default LinhaDoTempo;
+
+

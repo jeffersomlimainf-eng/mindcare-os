@@ -40,3 +40,5 @@ export const formatPatientIdForUrl = (id) => {
     if (!id) return '';
     return id.toString().replace('#', '');
 };
+
+

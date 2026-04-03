@@ -258,3 +258,5 @@ const LaudosLista = () => {
 };
 
 export default LaudosLista;
+
+

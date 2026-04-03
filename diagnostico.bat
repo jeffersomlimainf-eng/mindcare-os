@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo ==========================================
-echo    MindCare OS - Diagnostico de Sistema
+echo    Meu Sistema PSI - Diagnostico de Sistema
 echo ==========================================
 echo.
 
@@ -45,3 +45,4 @@ echo Diagnostico concluido.
 echo Se houver um ERRO acima, envie um print desta tela.
 echo ==========================================
 pause
+
