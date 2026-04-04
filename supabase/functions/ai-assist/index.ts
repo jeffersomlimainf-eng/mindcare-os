@@ -12,12 +12,14 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { messages, systemPrompt, temperature } = await req.json()
+    const { messages, systemPrompt, temperature, stream } = await req.json()
     const apiKey = Deno.env.get('OPENAI_API_KEY')
 
     if (!apiKey) {
       throw new Error("OPENAI_API_KEY não configurada no Supabase.")
     }
+
+    const shouldStream = stream === true;
 
     // Fazer a chamada para a OpenAI de forma segura (backend)
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -32,7 +34,8 @@ serve(async (req: Request) => {
           ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
           ...messages
         ],
-        temperature: temperature ?? 0.7
+        temperature: temperature ?? 0.7,
+        stream: shouldStream
       })
     })
 
@@ -41,6 +44,19 @@ serve(async (req: Request) => {
       throw new Error(`Erro OpenAI: ${errorData}`)
     }
 
+    // Modo Streaming: passa o ReadableStream diretamente para o cliente
+    if (shouldStream) {
+      return new Response(response.body, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        }
+      })
+    }
+
+    // Modo Normal: retorna JSON completo
     const data = await response.json()
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -48,7 +64,7 @@ serve(async (req: Request) => {
 
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || String(error) }), {
-      status: 200,   // Return 200 so the frontend can read the JSON payload
+      status: 200, // Return 200 so the frontend can read the JSON payload
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }

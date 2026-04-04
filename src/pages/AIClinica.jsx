@@ -67,17 +67,20 @@ const AIClinica = () => {
         });
     }, [patients, evolutions, anamneses, laudos, declaracoes, atestados, encaminhamentos, pacienteSelecionado]);
 
-    const systemPrompt = `Você é o "Meu Sistema PSI AI Assist", um parceiro clínico inteligente e empático para psicólogos que utilizam o Meu Sistema PSI.
+    const systemPrompt = useMemo(() => {
+        const nomePsicologo = user?.nome || 'Psicólogo(a)';
+        return `Você é o "Meu Sistema PSI AI Assist", parceiro clínico do(a) Dr(a). ${nomePsicologo}.
 Sua persona é a de um colega de trabalho sênior, experiente, ético e colaborativo. Você não apenas analisa dados, mas conversa livremente com o psicólogo como um igual.
 
 CONTEXTO DO SISTEMA:
+- Psicólogo(a) Logado(a): Dr(a). ${nomePsicologo}
 - Data e Hora Atual do Sistema: ${new Date().toLocaleString('pt-BR')}
 
 REGRAS DE OURO:
 1. Você tem acesso TOTAL à base de dados da clínica em tempo real (veja os dados abaixo).
 2. PACIENTE ATUALMENTE SELECIONADO NA TELA: ${pacienteSelecionado ? `${pacienteSelecionado.nome} (ID: ${pacienteSelecionado.id})` : 'NENHUM (Conversa Geral)'}.
 3. Se houver um paciente selecionado (como indicado acima), foque prioritariamente nos dados dele, mas saiba sobre tudo.
-4. Use um tom profissional, mas amigável e parceiro (em Português do Brasil).
+4. Use um tom profissional, mas amigável e parceiro (em Português do Brasil). Enderece o psicólogo pelo nome quando adequado.
 5. Ajude o psicólogo a identificar padrões, sugerir hipóteses diagnósticas (sempre citando que são hipóteses para revisão dele) e organizar ideias.
 6. Se perguntado sobre algo que não está nos dados, responda com base no seu conhecimento geral de psicologia, mas sempre contextualizando com a prática clínica.
 7. Mantenha as respostas concisas mas profundas.
@@ -85,6 +88,7 @@ REGRAS DE OURO:
 DADOS DA CLÍNICA (BASE DE CONHECIMENTO):
 ${fullDatabaseContext}
 `;
+    }, [user?.nome, pacienteSelecionado, fullDatabaseContext]);
 
     const pacientesFiltrados = patients.filter(p => 
         (p.nome || '').toLowerCase().includes(busca.toLowerCase()) || 
@@ -102,7 +106,8 @@ ${fullDatabaseContext}
         if (!input.trim() || isLoading) return;
 
         const userMsg = { role: 'user', text: input };
-        setMensagens(prev => [...prev, userMsg]);
+        const currentInput = input;
+        setMensagens(prev => [...prev, userMsg, { role: 'assistant', text: '' }]); // placeholder para stream
         setInput('');
         setIsLoading(true);
 
@@ -112,29 +117,72 @@ ${fullDatabaseContext}
                 content: m.text
             }));
 
-            const { data, error } = await supabase.functions.invoke('ai-assist', {
-                body: {
-                    messages: [...history, { role: 'user', content: input }],
-                    systemPrompt: systemPrompt,
-                    temperature: 0.7
-                }
+            // Streaming via fetch direto na edge function
+            const { data: { session } } = await supabase.auth.getSession();
+            const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
+
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-assist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+                    'apikey': SUPABASE_ANON_KEY
+                },
+                body: JSON.stringify({
+                    messages: [...history, { role: 'user', content: currentInput }],
+                    systemPrompt,
+                    temperature: 0.7,
+                    stream: true
+                })
             });
 
-            if (error) throw new Error(`Erro na conexão: ${error.message}`);
-            if (data?.error) throw new Error(`Erro da IA: ${data.error}`);
-            if (!data?.choices || !data.choices[0]) throw new Error('A resposta da IA veio em formato inesperado.');
-            
-            const aiText = data.choices[0].message.content;
+            if (!response.ok || !response.body) throw new Error('Falha ao conectar com a IA.');
 
-            setMensagens(prev => [...prev, { role: 'assistant', text: aiText }]);
-            
-            // Tracking de consumo de tokens (Média estimada para GPT-4o)
-            const promptTokens = input.length / 4;
-            const completionTokens = aiText.length / 4;
-            trackAIConsumption(promptTokens + completionTokens, user, updateUser);
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulated = '';
+            let totalChars = 0;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+
+                for (const line of lines) {
+                    if (!line.startsWith('data: ')) continue;
+                    const data = line.slice(6).trim();
+                    if (data === '[DONE]') break;
+                    try {
+                        const parsed = JSON.parse(data);
+                        const delta = parsed.choices?.[0]?.delta?.content || '';
+                        if (delta) {
+                            accumulated += delta;
+                            totalChars += delta.length;
+                            // Atualiza o placeholder da última mensagem em tempo real
+                            setMensagens(prev => {
+                                const msgs = [...prev];
+                                msgs[msgs.length - 1] = { role: 'assistant', text: accumulated };
+                                return msgs;
+                            });
+                        }
+                    } catch (_) { /* ignore parse errors nos chunks parciais */ }
+                }
+            }
+
+            // Tracking de consumo de tokens (estimativa)
+            const promptChars = history.reduce((acc, m) => acc + (m.content?.length || 0), 0) + currentInput.length;
+            trackAIConsumption((promptChars + totalChars) / 4, user, updateUser);
+
         } catch (error) {
             console.error(error);
-            setMensagens(prev => [...prev, { role: 'assistant', text: `Desculpe, erro: ${error.message || JSON.stringify(error)}` }]);
+            setMensagens(prev => {
+                const msgs = [...prev];
+                msgs[msgs.length - 1] = { role: 'assistant', text: `Desculpe, erro: ${error.message || JSON.stringify(error)}` };
+                return msgs;
+            });
         } finally {
             setIsLoading(false);
         }

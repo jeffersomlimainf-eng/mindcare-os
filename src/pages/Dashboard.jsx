@@ -64,6 +64,7 @@ import { useFinance } from '../contexts/FinanceContext';
 import { useTcles } from '../contexts/TcleContext';
 import { useUser } from '../contexts/UserContext';
 import { handleNavegacaoDocumento } from '../utils/navigation';
+import { checkAIAccess, trackAIConsumption } from '../utils/authMiddleware';
 import { formatDateLocal } from '../utils/date';
 import { safeRender } from '../utils/render';
 import { supabase } from '../lib/supabase';
@@ -174,6 +175,14 @@ const Dashboard = () => {
     };
 
     const handleGerarInsights = async () => {
+        // 1. Verificação de acesso à IA por plano
+        const aiAccess = checkAIAccess(user);
+        if (!aiAccess.allowed) {
+            const estrutura = `\n⚠️ [Acesso Restrito]: ${aiAccess.reason}`;
+            setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: (ativoNota?.texto || '') + estrutura } : n));
+            return;
+        }
+
         const original = ativoNota?.texto || '';
         if (!original.trim()) {
             const estrutura = `\n🧠 [Sugestão de Estrutura]:\n• Queixa Principal/Sintomas: \n• Dinâmica/Mecanismos Ativados: \n• Intervenção/Conduta Adotada: \n• Plano para Próxima Sessão: \n---`;
@@ -182,9 +191,14 @@ const Dashboard = () => {
         }
 
         setLoadingInsight(true);
+        // Adiciona placeholder para o streaming aparecer
+        setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: original + `\n\n🧠 **[Análise Clínico-IA]** ` } : n));
+
         try {
-            const systemPrompt = `Você é o "Meu Sistema PSI AI Assist", um consultor clínico para psicólogos. 
-Seu trabalho é ler as notas rápidas (rascunhos) que o psicólogo anotou sobre uma sessão ou paciente e estruturar insights clínicos úteis.
+            // 2. Prompt personalizado com nome do psicólogo
+            const nomePsicologo = user?.nome || 'Psicólogo(a)';
+            const systemPrompt = `Você é o "Meu Sistema PSI AI Assist", parceiro clínico do(a) Dr(a). ${nomePsicologo}.
+Seu trabalho é ler as notas rápidas (rascunhos) anotados sobre uma sessão ou paciente e estruturar insights clínicos úteis.
 Retorne SEMPRE no seguinte formato (Markdown):
 
 ---
@@ -200,24 +214,66 @@ Retorne SEMPRE no seguinte formato (Markdown):
 • [O que investigar na próxima sessão]
 ---`;
 
-            const { data, error } = await supabase.functions.invoke('ai-assist', {
-                body: {
-                    messages: [
-                        { role: 'user', content: `Aqui está o meu rascunho de nota:\n\n"${original}"\n\nPor favor, gere os insights clínicos.` }
-                    ],
-                    systemPrompt: systemPrompt,
-                    temperature: 0.5
-                }
+            // 3. Streaming via fetch direto na edge function
+            const { data: { session } } = await supabase.auth.getSession();
+            const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
+
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-assist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+                    'apikey': SUPABASE_ANON_KEY
+                },
+                body: JSON.stringify({
+                    messages: [{ role: 'user', content: `Aqui está o meu rascunho de nota:\n\n"${original}"\n\nPor favor, gere os insights clínicos.` }],
+                    systemPrompt,
+                    temperature: 0.5,
+                    stream: true
+                })
             });
 
-            if (error) throw error;
+            if (!response.ok || !response.body) throw new Error('Falha ao conectar com a IA.');
 
-            const aiText = data.choices[0]?.message?.content || 'Não foi possível gerar insights.';
-            setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: original + `\n\n${aiText}` } : n));
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulated = '';
+            let totalChars = 0;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+
+                for (const line of lines) {
+                    if (!line.startsWith('data: ')) continue;
+                    const data = line.slice(6).trim();
+                    if (data === '[DONE]') break;
+                    try {
+                        const parsed = JSON.parse(data);
+                        const delta = parsed.choices?.[0]?.delta?.content || '';
+                        if (delta) {
+                            accumulated += delta;
+                            totalChars += delta.length;
+                            setNotas(prev => prev.map(n => n.id === ativaNotaId
+                                ? { ...n, texto: original + `\n\n` + accumulated }
+                                : n
+                            ));
+                        }
+                    } catch (_) { /* ignore parse errors nos chunks parciais */ }
+                }
+            }
+
+            // 4. Tracking de consumo de tokens (estimativa)
+            trackAIConsumption((original.length + totalChars) / 4, user, updateUser);
+
         } catch (error) {
             console.error('Erro ao gerar insights:', error);
-            const estrutura = `\n🧠 [Sugestão de Estrutura]:\n• Queixa Principal/Sintomas: \n• Dinâmica/Mecanismos Ativados: \n• Intervenção/Conduta Adotada: \n• Plano para Próxima Sessão: \n--- (Erro ao conectar com AI)`;
-            setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: original + estrutura } : n));
+            const estrutura = `\n🧠 [Sugestão de Estrutura]:\n• Queixa Principal/Sintomas: \n• Dinâmica/Mecanismos Ativados: \n• Intervenção/Conduta Adotada: \n• Plano para Próxima Sessão: \n--- (Erro ao conectar com IA)`;
+            setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: (ativoNota?.texto || '') + estrutura } : n));
         } finally {
             setLoadingInsight(false);
         }
@@ -229,7 +285,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
     const { declaracoes } = useDeclaracoes();
     const { anamneses } = useAnamneses();
     const { encaminhamentos } = useEncaminhamentos();
-    const { user } = useUser();
+    const { user, updateUser } = useUser();
     const { getContasVencidas } = useFinance();
     const { tcles } = useTcles();
     const [modalDoc, setModalDoc] = useState(false);
