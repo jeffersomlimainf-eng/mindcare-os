@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { notifyAdminNewSignup } from '../utils/notifications';
 
@@ -134,6 +134,8 @@ export const UserProvider = ({ children }) => {
                     plan_payment_method: data.plan_payment_method,
                     plan_status: effectivePlanStatus,
                     isClinicBlocked: isClinicBlocked,
+                    // BUG-17 FIX: popular isInadimplente de acordo com o status efetivo
+                    isInadimplente: blockedStatuses.includes(effectivePlanStatus),
                     is_trial: data.is_trial ?? true, 
                     trial_end_date: data.trial_end_date,
                     onboardingCompleted: data.onboarding_completed ?? true,
@@ -231,9 +233,10 @@ export const UserProvider = ({ children }) => {
             }
         });
 
-        // Segurança máxima: Forçar fim do loading após 8s se nada acontecer
+        // BUG-07 FIX: remover checagem de 'loading' no closure (sempre stale = true)
+        // setLoading(false) é idempotente — não causa re-render se já for false
         const safetyTimeout = setTimeout(() => {
-            if (mounted && loading) {
+            if (mounted) {
                 console.warn('[UserContext] Safety timeout atingido!');
                 setLoading(false);
             }
@@ -249,9 +252,7 @@ export const UserProvider = ({ children }) => {
     const login = async (email, password) => {
         setLoading(true);
         try {
-            // 2. Prevenção do Erro 400 (Login.jsx / UserContext.jsx)
-            await supabase.auth.signOut().catch(() => {});
-
+            // Removida redundância de signOut() para acelerar o processo.
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password
@@ -350,7 +351,17 @@ export const UserProvider = ({ children }) => {
 
     const changePassword = async (currentPassword, newPassword) => {
         try {
-            // Atualizar diretamente para a nova senha
+            // BUG-08 FIX: verificar senha atual antes de atualizar (reautenticação)
+            const { error: reAuthError } = await supabase.auth.signInWithPassword({
+                email: user.email,
+                password: currentPassword
+            });
+
+            if (reAuthError) {
+                return { success: false, message: 'Senha atual incorreta. Verifique e tente novamente.' };
+            }
+
+            // Senha atual confirmada — agora atualiza para a nova
             const { error: updateError } = await supabase.auth.updateUser({
                 password: newPassword
             });

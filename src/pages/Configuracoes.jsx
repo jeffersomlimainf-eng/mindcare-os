@@ -78,6 +78,48 @@ const Configuracoes = () => {
     // Estado para Indique e Ganhe
     const [referralContact, setReferralContact] = useState('');
     const [submittingReferral, setSubmittingReferral] = useState(false);
+    const [referrals, setReferrals] = useState([]);
+    const [loadingReferrals, setLoadingReferrals] = useState(true);
+
+    const handleDeleteReferral = async (id) => {
+        if (!window.confirm('Tem certeza que deseja remover esta indicação do seu histórico?')) return;
+        
+        try {
+            const { error } = await supabase
+                .from('referrals')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+            showToast('Indicação removida com sucesso.', 'success');
+            fetchReferrals();
+        } catch (error) {
+            showToast('Erro ao remover indicação.', 'error');
+        }
+    };
+
+    const fetchReferrals = async () => {
+        if (!user?.id) return;
+        setLoadingReferrals(true);
+        try {
+            const { data, error } = await supabase
+                .from('referrals')
+                .select('*')
+                .eq('referrer_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setReferrals(data || []);
+        } catch (error) {
+            console.error('Erro ao buscar indicações:', error.message);
+        } finally {
+            setLoadingReferrals(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchReferrals();
+    }, [user?.id]);
 
     useEffect(() => {
         setFormData({
@@ -156,11 +198,27 @@ const Configuracoes = () => {
 
         setSubmittingReferral(true);
         try {
+            // Verificar duplicatas
+            const { data: existing, error: checkError } = await supabase
+                .from('referrals')
+                .select('id')
+                .eq('referrer_id', user.id)
+                .eq('referral_contact', referralContact.trim())
+                .maybeSingle();
+
+            if (checkError) throw checkError;
+
+            if (existing) {
+                showToast('Você já indicou este contato anteriormente!', 'warning');
+                setSubmittingReferral(false);
+                return;
+            }
+
             const { error: dbError } = await supabase
                 .from('referrals')
                 .insert([{
                     referrer_id: user.id,
-                    referral_contact: referralContact,
+                    referral_contact: referralContact.trim(),
                     status: 'Pendente'
                 }]);
 
@@ -171,6 +229,8 @@ const Configuracoes = () => {
                 const subject = `Convite Especial: Conheça o Meu Sistema PSI 🚀`;
                 const profNome = user.clinic_name || user.nome || 'Um colega psicólogo';
                 
+                const referralLink = `${window.location.origin}/cadastrar?ref=${user.id}`;
+                
                 const { data, error: functionError } = await supabase.functions.invoke('send-invoice-email', {
                     body: {
                         to: referralContact,
@@ -179,7 +239,7 @@ const Configuracoes = () => {
                         fromName: profNome,
                         html: referralInviteTemplate({
                             profNome: profNome,
-                            referralLink: 'https://meusistemapsi.com.br'
+                            referralLink: referralLink
                         })
                     }
                 });
@@ -191,7 +251,8 @@ const Configuracoes = () => {
             } 
             // Se for número de telefone, oferecer abrir WhatsApp
             else if (referralContact.match(/^\+?[0-9\s-]{8,}$/)) {
-                const message = encodeURIComponent(`Olá! Estou usando o Meu Sistema PSI para gerenciar minha clínica e recomendo muito. Dá uma olhada: https://meusistemapsi.com.br`);
+                const referralLink = `${window.location.origin}/cadastrar?ref=${user.id}`;
+                const message = encodeURIComponent(`Olá! Estou usando o Meu Sistema PSI para gerenciar minha clínica e recomendo muito. Dá uma olhada: ${referralLink}`);
                 const phone = referralContact.replace(/\D/g, '');
                 window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
                 showToast('Indicação registrada! Abrindo WhatsApp...', 'success');
@@ -202,6 +263,7 @@ const Configuracoes = () => {
             }
 
             setReferralContact('');
+            fetchReferrals(); // Atualizar lista
         } catch (error) {
             console.error('Erro ao enviar indicação:', error.message);
             showToast(`Erro: ${error.message}`, 'error');
@@ -645,6 +707,93 @@ const Configuracoes = () => {
                 </div>
             </div>
 
+            {/* Lista de Indicações */}
+            <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                    <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
+                        <div className="size-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-indigo-500 text-xl">group_add</span>
+                        </div>
+                        Suas Indicações
+                    </h2>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full">
+                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                            {referrals.filter(r => r.status === 'Assinou').length} Bônus Coletados
+                        </span>
+                    </div>
+                </div>
+                <div className="p-4 md:p-8">
+                    {loadingReferrals ? (
+                        <div className="flex flex-col items-center justify-center py-10 opacity-30">
+                            <div className="h-8 w-8 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-3"></div>
+                            <p className="text-xs font-bold uppercase tracking-widest">Carregando histórico...</p>
+                        </div>
+                    ) : referrals.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="border-b border-slate-100 dark:border-slate-800">
+                                        <th className="text-left py-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Contato</th>
+                                        <th className="text-left py-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Data</th>
+                                        <th className="text-center py-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                                        <th className="text-right py-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                                    {referrals.map((ref) => (
+                                        <tr key={ref.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <td className="py-4 px-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`size-8 rounded-lg flex items-center justify-center ${ref.referral_contact.includes('@') ? 'bg-blue-500/10 text-blue-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
+                                                        <span className="material-symbols-outlined text-lg">
+                                                            {ref.referral_contact.includes('@') ? 'mail' : 'chat_bubble'}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{ref.referral_contact}</span>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <span className="text-xs font-medium text-slate-500">
+                                                    {new Date(ref.created_at).toLocaleDateString('pt-BR')}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <div className="flex justify-center">
+                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                                        ref.status === 'Assinou' ? 'bg-emerald-500/10 text-emerald-600' :
+                                                        ref.status === 'Cadastrado' ? 'bg-blue-500/10 text-blue-600' :
+                                                        'bg-slate-100 text-slate-500'
+                                                    }`}>
+                                                        {ref.status}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-4 text-right">
+                                                <button 
+                                                    onClick={() => handleDeleteReferral(ref.id)}
+                                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
+                                                    title="Remover indicação"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <div className="size-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4 opacity-50">
+                                <span className="material-symbols-outlined text-slate-400 text-3xl">diversity_3</span>
+                            </div>
+                            <p className="text-sm font-bold text-slate-500 mb-1">Nenhuma indicação ainda</p>
+                            <p className="text-xs text-slate-400">Suas indicações aparecerão aqui assim que você enviar os primeiros convites.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             {/* Gestão de Equipe */}
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden mb-6">
                 <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
@@ -726,7 +875,35 @@ const Configuracoes = () => {
                         )}
                     </div>
                 </div>
-                <div className="p-4 md:p-8">
+                <div className="p-4 md:p-8 space-y-8">
+                    {/* Card de Saldo de Prêmios */}
+                    {referrals.filter(r => r.status === 'Assinou').length > 0 && (
+                        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[2rem] p-6 md:p-8 text-white shadow-xl shadow-emerald-500/20 flex flex-col md:flex-row items-center justify-between gap-6 animate-in zoom-in duration-500">
+                            <div className="flex items-center gap-6">
+                                <div className="size-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl">
+                                    🎁
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black italic tracking-tight">Saldo de Prêmios Acumulado</h3>
+                                    <p className="text-emerald-50/80 text-sm font-medium">Você ganhou meses grátis por indicar colegas!</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-8">
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Total Ganho</p>
+                                    <p className="text-3xl font-black">{referrals.filter(r => r.status === 'Assinou').length} Meses</p>
+                                </div>
+                                <div className="size-px h-12 bg-white/20" />
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Disponível</p>
+                                    <p className="text-3xl font-black">
+                                        {referrals.filter(r => r.status === 'Assinou' && !r.bonus_applied).length} Meses
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
                             {

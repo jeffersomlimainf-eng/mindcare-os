@@ -16,11 +16,20 @@ export function formatarTamanho(valor) {
     return len.toString().padStart(2, '0') + valor;
 }
 
-export function gerarCadeiaPix({ chave, valor, recebedor, cidade = "MARINGA", txid = "Meu Sistema PSI" }) {
+export function gerarCadeiaPix({ chave, valor, recebedor, cidade = "MARINGA", txid = "Meu Sistema PSI", tipoChave = 'auto' }) {
     if (!chave) return '';
     
-    // Remove espaços, traços, etc da chave.
-    const chaveLimpa = String(chave).replace(/[^\w]/g, ''); 
+    // BUG-13 FIX: sanitizar chave de acordo com seu tipo
+    // E-mail: preservar @ e . | Telefone: preservar + | Outros (CPF, CNPJ, UUID): remover especiais
+    let chaveLimpa;
+    const chaveStr = String(chave).trim();
+    if (tipoChave === 'email' || (tipoChave === 'auto' && chaveStr.includes('@'))) {
+        chaveLimpa = chaveStr.toLowerCase(); // e-mail: manter como está
+    } else if (tipoChave === 'telefone' || (tipoChave === 'auto' && (chaveStr.startsWith('+') || /^\+?\d{10,13}$/.test(chaveStr.replace(/\D/g, ''))))) {
+        chaveLimpa = chaveStr.replace(/[^\d+]/g, ''); // telefone: manter apenas dígitos e +
+    } else {
+        chaveLimpa = chaveStr.replace(/[^\w]/g, ''); // CPF, CNPJ, UUID: remover especiais
+    }
     const valorNum = parseFloat(valor).toFixed(2);
 
     let payloadFormat = "000201";

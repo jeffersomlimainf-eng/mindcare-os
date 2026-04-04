@@ -29,17 +29,15 @@ export const LaudoProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    // PERF-01 FIX: user?.id evita re-fetch em atualizações de perfil
+    }, [user?.id]);
 
     const addLaudo = async (data) => {
         try {
             const novo = await db.insert('laudos', {
-                ...data,
-                userId: user?.id,
-                status: data.status || 'Pendente',
-                professional_name: user?.nome
+                ...data, userId: user?.id, status: data.status || 'Pendente', professional_name: user?.nome
             });
-            setLaudos(await db.list('laudos'));
+            setLaudos(prev => [...prev, novo]); // PERF-02: optimistic update
             return novo;
         } catch (error) {
             console.error('[LaudoContext] Erro ao adicionar:', error);
@@ -49,8 +47,8 @@ export const LaudoProvider = ({ children }) => {
 
     const updateLaudo = async (id, data) => {
         try {
-            await db.update('laudos', id, data);
-            setLaudos(await db.list('laudos'));
+            const atualizado = await db.update('laudos', id, data);
+            setLaudos(prev => prev.map(l => l.id === id ? { ...l, ...atualizado } : l)); // PERF-02
         } catch (error) {
             console.error('[LaudoContext] Erro ao atualizar:', error);
         }
@@ -59,7 +57,7 @@ export const LaudoProvider = ({ children }) => {
     const deleteLaudo = async (id) => {
         try {
             await db.delete('laudos', id);
-            setLaudos(await db.list('laudos'));
+            setLaudos(prev => prev.filter(l => l.id !== id)); // PERF-02
         } catch (error) {
             console.error('[LaudoContext] Erro ao deletar:', error);
         }

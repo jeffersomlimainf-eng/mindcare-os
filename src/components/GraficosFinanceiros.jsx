@@ -61,8 +61,8 @@ const GraficosFinanceiros = ({ transacoes }) => {
             const horas = ['00h', '04h', '08h', '12h', '16h', '20h'];
             const hojeStr = fmtDate(agora);
             const transHoje = safe.filter(t => t.data === hojeStr);
-            const totalRec = transHoje.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (Number(t.valor) || 0), 0);
-            const totalDesp = transHoje.filter(t => t.tipo === 'Despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0);
+            const totalRec = transHoje.filter(t => t.tipo?.toLowerCase() === 'receita').reduce((a, t) => a + (Number(t.valor) || 0), 0);
+            const totalDesp = transHoje.filter(t => t.tipo?.toLowerCase() === 'despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0);
             const totalCount = transHoje.length;
 
             horas.forEach((h, idx) => {
@@ -81,8 +81,8 @@ const GraficosFinanceiros = ({ transacoes }) => {
                 labels.push(`${d.getDate()} de ${NOMES_MESES_CURTO[d.getMonth()]}` + (isHoje ? '*' : ''));
 
                 const dayTrans = safe.filter(t => t.data === dStr);
-                receitas.push(dayTrans.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (Number(t.valor) || 0), 0));
-                despesas.push(dayTrans.filter(t => t.tipo === 'Despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0));
+                receitas.push(dayTrans.filter(t => t.tipo?.toLowerCase() === 'receita').reduce((a, t) => a + (Number(t.valor) || 0), 0));
+                despesas.push(dayTrans.filter(t => t.tipo?.toLowerCase() === 'despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0));
                 transacoesCont.push(dayTrans.length);
             }
 
@@ -96,8 +96,8 @@ const GraficosFinanceiros = ({ transacoes }) => {
 
                 const dStr = fmtDate(new Date(anoAtual, mesAtual, d));
                 const dayTrans = safe.filter(t => t.data === dStr);
-                receitas.push(dayTrans.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (Number(t.valor) || 0), 0));
-                despesas.push(dayTrans.filter(t => t.tipo === 'Despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0));
+                receitas.push(dayTrans.filter(t => t.tipo?.toLowerCase() === 'receita').reduce((a, t) => a + (Number(t.valor) || 0), 0));
+                despesas.push(dayTrans.filter(t => t.tipo?.toLowerCase() === 'despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0));
                 transacoesCont.push(dayTrans.length);
             }
 
@@ -110,8 +110,8 @@ const GraficosFinanceiros = ({ transacoes }) => {
                     const tData = new Date(t.data);
                     return tData.getMonth() === m && tData.getFullYear() === anoAtual;
                 });
-                receitas.push(monthTrans.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (Number(t.valor) || 0), 0));
-                despesas.push(monthTrans.filter(t => t.tipo === 'Despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0));
+                receitas.push(monthTrans.filter(t => t.tipo?.toLowerCase() === 'receita').reduce((a, t) => a + (Number(t.valor) || 0), 0));
+                despesas.push(monthTrans.filter(t => t.tipo?.toLowerCase() === 'despesa').reduce((a, t) => a + Math.abs(Number(t.valor) || 0), 0));
                 transacoesCont.push(monthTrans.length);
             }
         }
@@ -160,7 +160,7 @@ const GraficosFinanceiros = ({ transacoes }) => {
     const distribuicao = useMemo(() => {
         const safe = Array.isArray(transacoes) ? transacoes.filter(Boolean) : [];
         const totalReceita = safe
-            .filter(t => t.tipo === 'Receita')
+            .filter(t => t.tipo?.toLowerCase() === 'receita')
             .reduce((acc, t) => acc + (Number(t.valor) || 0), 0);
 
         if (totalReceita === 0) {
@@ -168,7 +168,7 @@ const GraficosFinanceiros = ({ transacoes }) => {
         }
 
         const agrupado = safe
-            .filter(t => t.tipo === 'Receita')
+            .filter(t => t.tipo?.toLowerCase() === 'receita')
             .reduce((acc, t) => {
                 const subcat = t.subcategoria || 'outras_receitas';
                 acc[subcat] = (acc[subcat] || 0) + (Number(t.valor) || 0);

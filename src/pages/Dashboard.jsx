@@ -1,4 +1,54 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+// PERF-04: ClockWidget isolado para evitar que o Dashboard inteiro re-renderize a cada segundo
+const ClockWidget = React.memo(({ dadosClima, cidade, loadingClima, editandoCidade, setEditandoCidade, onCidadeChange }) => {
+    const [hora, setHora] = React.useState(new Date());
+    useEffect(() => {
+        const timer = setInterval(() => setHora(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+    return (
+        <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 w-full md:w-auto md:self-center justify-center shadow-lg shadow-slate-100/50 dark:shadow-none hover:shadow-xl transition-all relative z-10">
+            <div className="flex flex-col items-center gap-1">
+                <span className="material-symbols-outlined text-4xl text-amber-500 animate-pulse">{dadosClima.icone}</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{dadosClima.condicao}</span>
+            </div>
+            <div className="h-12 w-px bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
+            <div className="flex flex-col">
+                <div className="flex items-baseline gap-0.5 relative">
+                    {loadingClima && <span className="absolute -left-5 top-2 size-3 rounded-full border-2 border-primary border-t-transparent animate-spin"></span>}
+                    <span className="text-3xl font-black text-slate-900 dark:text-white">{dadosClima.temp}°</span>
+                    <span className="text-sm font-bold text-slate-400">C</span>
+                    <span className="mx-2 text-slate-300 dark:text-slate-600">|</span>
+                    <div className="flex items-baseline gap-0.5" title="Hora atual">
+                        <span className="text-2xl font-black text-slate-700 dark:text-slate-300">
+                            {hora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 ml-0.5 animate-pulse">
+                            :{String(hora.getSeconds()).padStart(2, '0')}
+                        </span>
+                    </div>
+                </div>
+                {editandoCidade ? (
+                    <input type="text" defaultValue={cidade} autoFocus
+                        onBlur={(e) => { const nova = e.target.value.trim(); if (nova) onCidadeChange(nova); setEditandoCidade(false); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { const nova = e.target.value.trim(); if (nova) onCidadeChange(nova); setEditandoCidade(false); } }}
+                        className="text-[10px] font-black text-slate-900 dark:text-white uppercase bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1 max-w-[110px] outline-none focus:border-primary"
+                    />
+                ) : (
+                    <span onClick={() => setEditandoCidade(true)} className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-primary transition-colors group" title="Clique para mudar a cidade">
+                        <span className="material-symbols-outlined text-[12px] text-primary">location_on</span>
+                        {cidade}
+                        <span className="material-symbols-outlined text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+                    </span>
+                )}
+                <div className="flex gap-3 mt-1 text-[9px] text-slate-400 font-bold uppercase tracking-widest">
+                    <span>💧 {dadosClima.umidade}%</span>
+                    <span>💨 {dadosClima.vento} km/h</span>
+                </div>
+            </div>
+        </div>
+    );
+});
 import { useNavigate } from 'react-router-dom';
 import NovoDocumentoModal from '../components/NovoDocumentoModal';
 import AgendaSettingsModal from '../components/AgendaSettingsModal';
@@ -53,13 +103,7 @@ const Dashboard = () => {
     const [loadingClima, setLoadingClima] = useState(false);
     const [editandoCidade, setEditandoCidade] = useState(false);
     
-    // Estado do Relógio
-    const [hora, setHora] = useState(new Date());
-
-    useEffect(() => {
-        const timer = setInterval(() => setHora(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
+    // PERF-04 FIX: hora movida para ClockWidget isolado — Dashboard não re-renderiza mais a cada 1 segundo
 
     useEffect(() => {
         const fetchClima = async () => {
@@ -226,7 +270,8 @@ Retorne SEMPRE no seguinte formato (Markdown):
 
     const totalDocumentos = (evolutions?.length || 0) + (laudos?.length || 0) + (atestados?.length || 0) + (declaracoes?.length || 0) + (anamneses?.length || 0) + (encaminhamentos?.length || 0);
 
-    const todosDocumentosRecentes = [
+    // PERF-06 FIX: memoizar para não recriar arrays em cada render
+    const todosDocumentosRecentes = useMemo(() => [
         ...(evolutions || []).map(ev => ({
             id: ev.id,
             type: 'evolucao',
@@ -261,76 +306,28 @@ Retorne SEMPRE no seguinte formato (Markdown):
         const dateA = a.date === 'Hoje' ? new Date() : new Date(a.date.split('/').reverse().join('-') || a.date);
         const dateB = b.date === 'Hoje' ? new Date() : new Date(b.date.split('/').reverse().join('-') || b.date);
         return dateB - dateA;
-    }).slice(0, 5);
+    }).slice(0, 5), [evolutions, laudos, atestados]);
 
     const abrirModal = (tipo) => {
         setTipoDocInicial(tipo);
         setModalDoc(true);
     };
 
-    const stats = [
+    // PERF-06 FIX: memoizar stats e quickActions (evitar recriar arrays a cada render)
+    const stats = useMemo(() => [
         { title: 'Total de Prontuários', value: totalDocumentos.toLocaleString(), trend: '+12.5%', icon: 'folder_shared', color: 'text-primary', bgColor: 'bg-primary/10', rota: '/prontuarios' },
-        { 
-            title: 'Pacientes Ativos', 
-            value: (patients || []).length.toString(), 
-            trend: 'Total', icon: 'group', color: 'text-amber-500', bgColor: 'bg-amber-500/10', rota: '/pacientes' 
-        },
+        { title: 'Pacientes Ativos', value: (patients || []).length.toString(), trend: 'Total', icon: 'group', color: 'text-amber-500', bgColor: 'bg-amber-500/10', rota: '/pacientes' },
         { title: 'Laudos Emitidos', value: laudos.length.toString(), trend: '+5.2%', icon: 'history_edu', color: 'text-emerald-500', bgColor: 'bg-emerald-500/10', rota: '/laudos' },
         { title: 'Declarações', value: declaracoes.length.toString(), trend: '-2.4%', icon: 'assignment_ind', color: 'text-indigo-500', bgColor: 'bg-indigo-500/10', rota: '/declaracoes' },
-    ];
+    ], [totalDocumentos, patients, laudos, declaracoes]);
 
-    const quickActions = [
-        { 
-            title: 'Criar Novo Laudo', 
-            desc: 'Relatório psicológico', 
-            icon: 'article', 
-            color: 'text-primary', 
-            bgColor: 'bg-primary/10', 
-            count: laudos.length, 
-            path: '/laudos/novo',
-            categoria: 'Laudos'
-        },
-        { 
-            title: 'Nova Declaração', 
-            desc: 'Comprovante de comparecimento', 
-            icon: 'verified', 
-            color: 'text-emerald-500', 
-            bgColor: 'bg-emerald-100', 
-            count: declaracoes.length, 
-            path: '/declaracoes/novo',
-            categoria: 'Declarações'
-        },
-        { 
-            title: 'Emitir Atestado', 
-            desc: 'Certificado clínico', 
-            icon: 'medical_information', 
-            color: 'text-orange-500', 
-            bgColor: 'bg-orange-100', 
-            count: atestados.length, 
-            path: '/atestados/novo',
-            categoria: 'Atestados'
-        },
-        { 
-            title: 'Ficha de Anamnese', 
-            desc: 'Formulário detalhado', 
-            icon: 'patient_list', 
-            color: 'text-purple-500', 
-            bgColor: 'bg-purple-100', 
-            count: anamneses.length, 
-            path: '/anamneses/novo',
-            categoria: 'Anamneses'
-        },
-        { 
-            title: 'Novo Encaminhamento', 
-            desc: 'Encaminhar paciente', 
-            icon: 'send', 
-            color: 'text-sky-500', 
-            bgColor: 'bg-sky-100', 
-            count: encaminhamentos.length, 
-            path: '/encaminhamentos/novo',
-            categoria: 'Encaminhamentos'
-        },
-    ];
+    const quickActions = useMemo(() => [
+        { title: 'Criar Novo Laudo', desc: 'Relatório psicológico', icon: 'article', color: 'text-primary', bgColor: 'bg-primary/10', count: laudos.length, path: '/laudos/novo', categoria: 'Laudos' },
+        { title: 'Nova Declaração', desc: 'Comprovante de comparecimento', icon: 'verified', color: 'text-emerald-500', bgColor: 'bg-emerald-100', count: declaracoes.length, path: '/declaracoes/novo', categoria: 'Declarações' },
+        { title: 'Emitir Atestado', desc: 'Certificado clínico', icon: 'medical_information', color: 'text-orange-500', bgColor: 'bg-orange-100', count: atestados.length, path: '/atestados/novo', categoria: 'Atestados' },
+        { title: 'Ficha de Anamnese', desc: 'Formulário detalhado', icon: 'patient_list', color: 'text-purple-500', bgColor: 'bg-purple-100', count: anamneses.length, path: '/anamneses/novo', categoria: 'Anamneses' },
+        { title: 'Novo Encaminhamento', desc: 'Encaminhar paciente', icon: 'send', color: 'text-sky-500', bgColor: 'bg-sky-100', count: encaminhamentos.length, path: '/encaminhamentos/novo', categoria: 'Encaminhamentos' },
+    ], [laudos.length, declaracoes.length, atestados.length, anamneses.length, encaminhamentos.length]);
 
     // Jarvis Mode: Alerta de Risco Clínico
     const pacientesEmRisco = useMemo(() => {
@@ -487,13 +484,22 @@ Retorne SEMPRE no seguinte formato (Markdown):
         }
 
         // 7. Prevenção de Abandono (Churn)
+        // 7. Prevenção de Abandono (Churn) — PERF-03 FIX: O(n²) → O(n) via Map pré-indexado
         try {
             const trintaDiasAtras = new Date();
             trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
             const hojeDate = new Date();
 
+            // Pré-indexar appointments por pacienteId para lookup O(1)
+            const appointmentMap = new Map();
+            (appointments || []).forEach(a => {
+                const key = a.pacienteId || a.paciente;
+                if (!appointmentMap.has(key)) appointmentMap.set(key, []);
+                appointmentMap.get(key).push(a);
+            });
+
             (patients || []).forEach(p => {
-                const consultasPaciente = (appointments || []).filter(a => a.pacienteId === p.id || a.paciente === p.nome);
+                const consultasPaciente = appointmentMap.get(p.id) || appointmentMap.get(p.nome) || [];
                 const passadas = consultasPaciente.filter(a => new Date(a.data) < hojeDate);
                 const futuras = consultasPaciente.filter(a => new Date(a.data) >= hojeDate);
 
@@ -662,74 +668,18 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             </div>
                         </div>
 
-                        {/* Clima Tempo Widget */}
-                        <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 w-full md:w-auto md:self-center justify-center shadow-lg shadow-slate-100/50 dark:shadow-none hover:shadow-xl transition-all relative z-10">
-                            <div className="flex flex-col items-center gap-1">
-                                <span className="material-symbols-outlined text-4xl text-amber-500 animate-pulse">{dadosClima.icone}</span>
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{dadosClima.condicao}</span>
-                            </div>
-                            <div className="h-12 w-px bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
-                            <div className="flex flex-col">
-                                <div className="flex items-baseline gap-0.5 relative">
-                                    {loadingClima && <span className="absolute -left-5 top-2 size-3 rounded-full border-2 border-primary border-t-transparent animate-spin"></span>}
-                                    <span className="text-3xl font-black text-slate-900 dark:text-white">{dadosClima.temp}°</span>
-                                    <span className="text-sm font-bold text-slate-400">C</span>
-
-                                    <span className="mx-2 text-slate-300 dark:text-slate-600">|</span>
-
-                                    <div className="flex items-baseline gap-0.5" title="Hora atual">
-                                        <span className="text-2xl font-black text-slate-700 dark:text-slate-300">
-                                            {hora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                        <span className="text-[10px] font-bold text-slate-400 ml-0.5 animate-pulse">
-                                            :{String(hora.getSeconds()).padStart(2, '0')}
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                {editandoCidade ? (
-                                    <input 
-                                        type="text"
-                                        defaultValue={cidade}
-                                        autoFocus
-                                        onBlur={(e) => {
-                                            const nova = e.target.value.trim();
-                                            if (nova) {
-                                                setCidade(nova);
-                                                localStorage.setItem('dashboard_clima_cidade', nova);
-                                            }
-                                            setEditandoCidade(false);
-                                        }}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                const nova = e.target.value.trim();
-                                                if (nova) {
-                                                    setCidade(nova);
-                                                    localStorage.setItem('dashboard_clima_cidade', nova);
-                                                }
-                                                setEditandoCidade(false);
-                                            }
-                                        }}
-                                        className="text-[10px] font-black text-slate-900 dark:text-white uppercase bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1 max-w-[110px] outline-none focus:border-primary"
-                                    />
-                                ) : (
-                                    <span 
-                                        onClick={() => setEditandoCidade(true)}
-                                        className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-primary transition-colors group"
-                                        title="Clique para mudar a cidade"
-                                    >
-                                        <span className="material-symbols-outlined text-[12px] text-primary">location_on</span>
-                                        {cidade}
-                                        <span className="material-symbols-outlined text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
-                                    </span>
-                                )}
-                                
-                                <div className="flex gap-3 mt-1 text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-                                    <span>💧 {dadosClima.umidade}%</span>
-                                    <span>💨 {dadosClima.vento} km/h</span>
-                                </div>
-                            </div>
-                        </div>
+                        {/* PERF-04 FIX: ClockWidget isolado — só ele re-renderiza a cada segundo, não o Dashboard inteiro */}
+                        <ClockWidget
+                            dadosClima={dadosClima}
+                            cidade={cidade}
+                            loadingClima={loadingClima}
+                            editandoCidade={editandoCidade}
+                            setEditandoCidade={setEditandoCidade}
+                            onCidadeChange={(nova) => {
+                                setCidade(nova);
+                                localStorage.setItem('dashboard_clima_cidade', nova);
+                            }}
+                        />
                     </div>
 
                     {/* Agenda de Hoje SideBlock */}

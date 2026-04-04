@@ -29,17 +29,14 @@ export const AtestadoProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    }, [user?.id]); // PERF-01 FIX
 
     const addAtestado = async (data) => {
         try {
             const novo = await db.insert('atestados', {
-                ...data,
-                userId: user?.id,
-                status: data.status || 'Finalizado',
-                professional_name: user?.nome
+                ...data, userId: user?.id, status: data.status || 'Finalizado', professional_name: user?.nome
             });
-            setAtestados(await db.list('atestados'));
+            setAtestados(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
             console.error('[AtestadoContext] Erro ao adicionar:', error);
@@ -49,8 +46,8 @@ export const AtestadoProvider = ({ children }) => {
 
     const updateAtestado = async (id, data) => {
         try {
-            await db.update('atestados', id, data);
-            setAtestados(await db.list('atestados'));
+            const atualizado = await db.update('atestados', id, data);
+            setAtestados(prev => prev.map(a => a.id === id ? { ...a, ...atualizado } : a)); // PERF-02
         } catch (error) {
             console.error('[AtestadoContext] Erro ao atualizar:', error);
         }
@@ -59,7 +56,7 @@ export const AtestadoProvider = ({ children }) => {
     const deleteAtestado = async (id) => {
         try {
             await db.delete('atestados', id);
-            setAtestados(await db.list('atestados'));
+            setAtestados(prev => prev.filter(a => a.id !== id)); // PERF-02
         } catch (error) {
             console.error('[AtestadoContext] Erro ao deletar:', error);
         }

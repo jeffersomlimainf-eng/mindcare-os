@@ -29,7 +29,7 @@ export const TcleProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    }, [user?.id]); // PERF-01 FIX
 
     const addTcle = async (data) => {
         try {
@@ -38,11 +38,8 @@ export const TcleProvider = ({ children }) => {
             delete payload.userId;
             delete payload.professional_name;
             
-            const novo = await db.insert('tcles', {
-                ...payload,
-                status: data.status || 'Pendente',
-            });
-            setTcles(await db.list('tcles'));
+            const novo = await db.insert('tcles', { ...payload, status: data.status || 'Pendente' });
+            setTcles(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
             console.error('[TcleContext] Erro ao adicionar:', error);
@@ -53,8 +50,8 @@ export const TcleProvider = ({ children }) => {
 
     const updateTcle = async (id, data) => {
         try {
-            await db.update('tcles', id, data);
-            setTcles(await db.list('tcles'));
+            const atualizado = await db.update('tcles', id, data);
+            setTcles(prev => prev.map(t => t.id === id ? { ...t, ...atualizado } : t)); // PERF-02
         } catch (error) {
             console.error('[TcleContext] Erro ao atualizar:', error);
         }
@@ -63,7 +60,7 @@ export const TcleProvider = ({ children }) => {
     const deleteTcle = async (id) => {
         try {
             await db.delete('tcles', id);
-            setTcles(await db.list('tcles'));
+            setTcles(prev => prev.filter(t => t.id !== id)); // PERF-02
         } catch (error) {
             console.error('[TcleContext] Erro ao deletar:', error);
         }

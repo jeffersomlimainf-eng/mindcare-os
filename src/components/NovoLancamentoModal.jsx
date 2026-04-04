@@ -54,6 +54,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
             setSubcategoria('');
             setRepetir(false);
             setParcelas('1');
+            setFrequencia('mensal'); // BUG-09 FIX: resetar frequencia para o padrão
             setBuscaPaciente('');
             setPacienteSelecionado(null);
         }
@@ -73,33 +74,67 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
 
     const subcategoriasList = SUBCATEGORIAS[tipo] || [];
 
-    const handleSalvar = () => {
+    const handleSalvar = async () => {
         const numericValor = parseCurrencyBRL(valor);
         if (!desc || numericValor <= 0) { 
             showToast('Preencha descrição e um valor válido', 'warning'); 
             return; 
         }
 
-        const payload = {
-            tipo,
-            desc,
-            valor: numericValor,
-            data,
-            dataVencimento: dataVencimento || data,
-            status,
-            formaPag,
-            categoria,
-            subcategoria,
-            parcelas: repetir ? parcelas : 1,
-            frequencia: repetir ? frequencia : null,
-            pacienteId: pacienteSelecionado?.id || null,
-            pacienteNome: pacienteSelecionado?.nome || null,
-        };
+        const isEdit = !!lancamentoEditando;
+        const numParcelas = (!isEdit && repetir) ? parseInt(parcelas) || 1 : 1;
+        
+        try {
+            for (let i = 0; i < numParcelas; i++) {
+                // Cálculo das datas futuras
+                const dBase = new Date(data + 'T00:00:00');
+                const dvBase = new Date(dataVencimento + 'T00:00:00');
+                
+                if (i > 0) {
+                    if (frequencia === 'mensal') {
+                        dBase.setMonth(dBase.getMonth() + i);
+                        dvBase.setMonth(dvBase.getMonth() + i);
+                    } else if (frequencia === 'quinzenal') {
+                        dBase.setDate(dBase.getDate() + (i * 14));
+                        dvBase.setDate(dvBase.getDate() + (i * 14));
+                    } else if (frequencia === 'semanal') {
+                        dBase.setDate(dBase.getDate() + (i * 7));
+                        dvBase.setDate(dvBase.getDate() + (i * 7));
+                    }
+                }
 
-        onSave && onSave(payload);
-        showToast(lancamentoEditando ? 'Lançamento atualizado!' : 'Lançamento registrado!', 'success');
-        onClose();
-        setDesc(''); setValor(''); setRepetir(false);
+                const dFormatted = dBase.toISOString().split('T')[0];
+                const dvFormatted = dvBase.toISOString().split('T')[0];
+
+                const payload = {
+                    tipo,
+                    desc: numParcelas > 1 ? `${desc} (${i + 1}/${numParcelas})` : desc,
+                    valor: numericValor,
+                    data: dFormatted,
+                    dataVencimento: dvFormatted,
+                    status,
+                    formaPag,
+                    categoria,
+                    subcategoria,
+                    parcelas: isEdit ? (lancamentoEditando.parcelas || 1) : numParcelas,
+                    current_installment: isEdit ? (lancamentoEditando.current_installment || 1) : (i + 1),
+                    frequencia: repetir ? frequencia : (isEdit ? lancamentoEditando.frequencia : null),
+                    pacienteId: pacienteSelecionado?.id || null,
+                    pacienteNome: pacienteSelecionado?.nome || null,
+                };
+
+                if (onSave) {
+                    await onSave(payload);
+                }
+            }
+            
+            showToast(numParcelas > 1 ? `${numParcelas} parcelas registradas!` : (lancamentoEditando ? 'Lançamento atualizado!' : 'Lançamento registrado!'), 'success');
+            onClose();
+            setDesc(''); setValor(''); setRepetir(false);
+        } catch (error) {
+            console.error('[NovoLancamentoModal] Erro ao salvar:', error);
+            showToast('Erro ao salvar lançamentos', 'error');
+        }
     };
 
     const renderReceitaFields = () => (
@@ -170,14 +205,29 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                     </div>
                 </div>
 
-                {/* Data */}
+                {/* Data Atendimento */}
                 <div className="md:col-span-1">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Data do Atendimento</label>
                     <input
                         type="date"
                         className="w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none text-sm font-bold transition-all"
                         value={data}
-                        onChange={e => setData(e.target.value)}
+                        onChange={e => {
+                            setData(e.target.value);
+                            // Sugestão automática apenas em novos registros
+                            if (!lancamentoEditando) setDataVencimento(e.target.value);
+                        }}
+                    />
+                </div>
+
+                {/* Data Vencimento */}
+                <div className="md:col-span-1">
+                    <label className="block text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2 ml-1">Data de Vencimento</label>
+                    <input
+                        type="date"
+                        className="w-full h-12 px-4 rounded-2xl bg-amber-50/20 dark:bg-amber-900/10 border-2 border-amber-100 dark:border-amber-800/30 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 outline-none text-sm font-bold transition-all"
+                        value={dataVencimento}
+                        onChange={e => setDataVencimento(e.target.value)}
                     />
                 </div>
 

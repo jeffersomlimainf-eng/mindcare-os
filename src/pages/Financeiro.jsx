@@ -46,11 +46,25 @@ const Financeiro = () => {
     const [helpOpen, setHelpOpen] = useState(false);
 
     const safe = Array.isArray(transactions) ? transactions.filter(Boolean) : [];
+    
+    // Filtro temporal para resumos (Mês Atual)
+    const agora = new Date();
+    const anoAtual = agora.getFullYear();
+    const mesAtual = agora.getMonth();
+    const inCurrentMonth = (dateStr) => {
+        if (!dateStr) return false;
+        const [y, m] = dateStr.split('-');
+        return parseInt(y) === anoAtual && (parseInt(m) - 1) === mesAtual;
+    };
+
     const filtered = filtroCategoria === 'todas' ? safe : safe.filter(t => t.categoria === filtroCategoria);
     
     const filteredByCliente = filtroCliente === 'todos' 
         ? filtered 
         : filtered.filter(t => t.patient_id === filtroCliente || t.pacienteId === filtroCliente);
+
+    // Transações do mês para os cards de resumo
+    const monthTransactions = filteredByCliente.filter(t => inCurrentMonth(t.dataVencimento));
 
     const pendentesTotalFiltered = filteredByCliente.filter(t => t.status === 'Pendente');
 
@@ -66,8 +80,8 @@ const Financeiro = () => {
         navigate(`/financeiro/cobrar/${ids}`);
     };
 
-    const receitas = filteredByCliente.filter(t => (t?.valor || 0) > 0);
-    const despesas = filteredByCliente.filter(t => (t?.valor || 0) < 0);
+    const receitas = monthTransactions.filter(t => (t?.valor || 0) > 0);
+    const despesas = monthTransactions.filter(t => (t?.valor || 0) < 0);
     const totalReceitas = receitas.reduce((a, b) => a + (b?.valor || 0), 0);
     const totalDespesas = despesas.reduce((a, b) => a + (b?.valor || 0), 0);
     const saldo = totalReceitas + totalDespesas;
@@ -85,7 +99,7 @@ const Financeiro = () => {
             const payload = {
                 ...dados,
                 valor: novoValor,
-                tipo: dados.tipo === 'receita' ? 'Receita' : 'Despesa',
+                tipo: dados.tipo.toLowerCase(),
                 status: dados.tipo === 'receita' ? (dados.status === 'recebido' ? 'Recebido' : 'Pendente') : (dados.status === 'pago' ? 'Pago' : 'Pendente'),
             };
             if (lancamentoEditando) {
@@ -124,7 +138,7 @@ const Financeiro = () => {
         return list.find(s => s.value === subcat)?.label || subcat || '—';
     };
 
-    const pendentesTotal = filteredByCliente.filter(t => t.status === 'Pendente');
+    // BUG-05 FIX: variável removida — usar pendentesTotalFiltered (linha ~69) que tem o mesmo filtro
 
     return (
         <div className="space-y-6">
@@ -210,8 +224,8 @@ const Financeiro = () => {
                     { 
                         id: 'vencidas', 
                         label: 'Pendências', 
-                        value: pendentesTotal.reduce((a, b) => a + Math.abs(b.valor || 0), 0), 
-                        subLabel: `${vencidas.length} vencidos · ${pendentesTotal.length} total`,
+                        value: pendentesTotalFiltered.reduce((a, b) => a + Math.abs(b.valor || 0), 0), 
+                        subLabel: `${vencidas.length} vencidos · ${pendentesTotalFiltered.length} total`,
                         type: 'vencidas' 
                     },
                 ].map((card, i) => {
@@ -326,7 +340,8 @@ const Financeiro = () => {
                         </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {dadosTabela.map((l) => {
-                                    const isReceita = l.tipo === 'Receita';
+                                    // BUG-04 FIX: normalizar para lowercase (DB armazena 'receita'/'despesa')
+                                    const isReceita = l.tipo?.toLowerCase() === 'receita';
                                     const rowClass = isReceita 
                                         ? 'bg-emerald-50/10 hover:bg-emerald-50/30' 
                                         : 'bg-rose-50/10 hover:bg-rose-50/30';
@@ -339,7 +354,7 @@ const Financeiro = () => {
                                         >
                                     {filtroCliente !== 'todos' && (
                                         <td className="px-4 md:px-6 py-3 md:py-4" onClick={(e) => e.stopPropagation()}>
-                                            {l.tipo === 'Receita' && l.status === 'Pendente' && (
+                                            {l.tipo?.toLowerCase() === 'receita' && l.status === 'Pendente' && (
                                                 <input 
                                                     type="checkbox" 
                                                     className="accent-primary size-4 rounded border-slate-300 pointer-events-auto"
@@ -379,6 +394,11 @@ const Financeiro = () => {
                                     </td>
                                     <td className="px-4 md:px-6 py-3 md:py-4">
                                         <div className="flex flex-col">
+                                            {l.tipo === 'receita' && l.data && l.data !== l.dataVencimento && (
+                                                <span className="text-[9px] font-black text-slate-400/80 uppercase tracking-tight mb-0.5" title="Data do Atendimento">
+                                                    Sessão: {formatarData(l.data)}
+                                                </span>
+                                            )}
                                             <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{formatarData(l.dataVencimento)}</span>
                                             {getVencimentoBadge(l)}
                                         </div>
@@ -399,15 +419,15 @@ const Financeiro = () => {
                                     </td>
                                     <td className="px-4 md:px-6 py-3 md:py-4 text-right">
                                         <div className="flex gap-2 justify-end">
-                                            {l.status === 'Pendente' && l.tipo === 'Receita' && (
+                                            {l.status === 'Pendente' && l.tipo?.toLowerCase() === 'receita' && (
                                                 <button onClick={(e) => { e.stopPropagation(); navigate(`/financeiro/cobrar/${l.id}`); }} className="size-8 flex items-center justify-center rounded-lg bg-teal-50 text-teal-600 hover:bg-teal-500 hover:text-white transition-all shadow-sm" title="Gerar Link de Cobrança">
                                                     <span className="material-symbols-outlined text-base">qr_code</span>
                                                 </button>
                                             )}
                                             {l.status === 'Pendente' && (
-                                                <button onClick={(e) => { e.stopPropagation(); updateTransaction(l.id, { status: l.tipo === 'Receita' ? 'Recebido' : 'Pago' }); showToast('Status atualizado!', 'success'); }} className="size-8 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all" title="Marcar como Liquidado"><span className="material-symbols-outlined text-base">check</span></button>
+                                                <button onClick={(e) => { e.stopPropagation(); updateTransaction(l.id, { status: l.tipo?.toLowerCase() === 'receita' ? 'Recebido' : 'Pago' }); showToast('Status atualizado!', 'success'); }} className="size-8 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all" title="Marcar como Liquidado"><span className="material-symbols-outlined text-base">check</span></button>
                                             )}
-                                            {(l.status === 'Recebido' || l.status === 'Pago') && l.tipo === 'Receita' && (
+                                            {(l.status === 'Recebido' || l.status === 'Pago') && l.tipo?.toLowerCase() === 'receita' && (
                                                 <button onClick={(e) => { e.stopPropagation(); setTransacaoRecibo(l); setReciboAberto(true); }} className="size-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white transition-all shadow-sm" title="Emitir Recibo"><span className="material-symbols-outlined text-base">receipt_long</span></button>
                                             )}
 

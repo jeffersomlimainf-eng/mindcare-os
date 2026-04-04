@@ -82,7 +82,10 @@ export default function Vendas2() {
               MeuSistemaPsi
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-purple-600 transition-colors">
+              Entrar
+            </Link>
             <Link to="/cadastrar" className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-full shadow-lg shadow-purple-100 transition-all hover:scale-105">
               Testar Grátis
             </Link>
@@ -467,6 +470,7 @@ export default function Vendas2() {
               <div className="flex flex-col gap-4">
                  <p className="font-bold text-slate-900">Links Úteis</p>
                  <Link to="/blog" className="text-slate-500 hover:text-purple-600 transition-colors">Blog de Autoridade</Link>
+                 <Link to="/login" className="text-slate-500 hover:text-purple-600 transition-colors">Entrar no Sistema</Link>
                  <Link to="/cadastrar" className="text-slate-500 hover:text-purple-600 transition-colors">Preços & Planos</Link>
                  <a href="#" className="text-slate-500 hover:text-purple-600 transition-colors">Termos de Uso</a>
               </div>

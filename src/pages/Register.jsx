@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
+import { supabase } from '../lib/supabase';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -20,6 +21,13 @@ const Register = () => {
             document.head.appendChild(canonical);
         }
         canonical.setAttribute('href', 'https://meusistemapsi.com.br/cadastrar');
+
+        // Capturar ref da indicação
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        if (ref) {
+            sessionStorage.setItem('referral_code', ref);
+        }
     }, []);
     
     const [email, setEmail] = useState('');
@@ -44,6 +52,19 @@ const Register = () => {
         const res = await signUp('', email, senha, '');
         
         if (res.success) {
+            // Tentar vincular indicação
+            try {
+                const { error: refError } = await supabase
+                    .from('referrals')
+                    .update({ status: 'Cadastrado' })
+                    .eq('referral_contact', email)
+                    .eq('status', 'Pendente');
+                
+                if (refError) console.warn('[Register] Erro ao atualizar indicação:', refError);
+            } catch (e) {
+                console.error('[Register] Erro no vínculo de indicação:', e);
+            }
+
             if (res.data?.session) {
                 showToast('Cadastro realizado com sucesso!', 'success');
                 navigate('/dashboard');

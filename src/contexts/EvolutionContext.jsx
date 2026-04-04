@@ -30,7 +30,8 @@ export const EvolutionProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    // PERF-01 FIX: user?.id evita re-fetch em atualizações de perfil
+    }, [user?.id]);
 
     const addEvolution = async (data) => {
         try {
@@ -59,7 +60,7 @@ export const EvolutionProvider = ({ children }) => {
                 formato: data.formato || 'SOAP',
                 userId: user?.id,
             });
-            setEvolutions(await db.list('evolutions'));
+            setEvolutions(prev => [...prev, nova]); // PERF-02: optimistic update
             return nova;
         } catch (error) {
             console.error('[EvolutionContext] Erro ao adicionar:', error);
@@ -90,7 +91,7 @@ export const EvolutionProvider = ({ children }) => {
             }
 
             // Mapear humor e nível de risco
-            if (data.humorPaciente) updates.humor = data.humorPaciente;
+            // BUG-15 FIX: linha removida — db.js já mapeia 'humorPaciente' → 'humor' automaticamente via _mapKeysToDB
             if (data.nivelRisco) updates.nivelRisco = data.nivelRisco;
             if (data.observacoes) updates.observacoes = data.observacoes;
             if (data.duracaoSessao) updates.duracaoSessao = parseInt(data.duracaoSessao);
@@ -98,17 +99,18 @@ export const EvolutionProvider = ({ children }) => {
             if (data.dataHora) updates.dataHora = data.dataHora;
 
             const result = await db.update('evolutions', id, updates);
-            setEvolutions(await db.list('evolutions'));
+            setEvolutions(prev => prev.map(e => e.id === id ? { ...e, ...result } : e)); // PERF-02
             return result;
         } catch (error) {
             console.error('[EvolutionContext] Erro ao atualizar:', error);
+            throw error; // BUG-14 FIX: propagar erro para o chamador saber da falha
         }
     };
 
     const deleteEvolution = async (id) => {
         try {
             await db.delete('evolutions', id);
-            setEvolutions(await db.list('evolutions'));
+            setEvolutions(prev => prev.filter(e => e.id !== id)); // PERF-02
         } catch (error) {
             console.error('[EvolutionContext] Erro ao deletar:', error);
         }

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { referralSuccessTemplate } from "../shared/templates.ts"
 
 /**
  * Meu Sistema PSI - Eduzz Webhook Postback Handler
@@ -141,6 +142,49 @@ serve(async (req: Request) => {
         }
 
         console.log(`[Eduzz Webhook] Sucesso! Plano [${planId}] atualizado para [${planStatus}] para [${cusEmail}].`);
+
+        // 5. BÔNUS: Verificar se o cliente veio por indicação
+        if (planStatus === 'Ativo') {
+            const { data: referral, error: refError } = await supabase
+                .from('referrals')
+                .select('*, profiles:referrer_id(*)')
+                .eq('referral_contact', cusEmail)
+                .eq('status', 'Cadastrado')
+                .maybeSingle();
+
+            if (referral && !refError) {
+                console.log(`[Eduzz Webhook] Conversão Detectada! Indicado: ${cusEmail} | Padrinho: ${referral.profiles?.email}`);
+                
+                // Atualizar status da indicação
+                await supabase
+                    .from('referrals')
+                    .update({ status: 'Assinou' })
+                    .eq('id', referral.id);
+
+                // Notificar o Padrinho
+                if (referral.profiles?.email) {
+                    const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? "";
+                    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || "onboarding@resend.dev";
+                    
+                    const html = referralSuccessTemplate({
+                        referralName: body.cus_name || body.cus_fullname || 'Um novo colega',
+                        professionalName: referral.profiles.full_name || 'Doutor(a)'
+                    });
+
+                    await fetch('https://api.resend.com/emails', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendApiKey}` },
+                        body: JSON.stringify({
+                            from: `Meu Sistema PSI <${fromEmail}>`,
+                            to: [referral.profiles.email],
+                            subject: `🎁 Parabéns! Você ganhou +1 Mês Grátis!`,
+                            html: html
+                        })
+                    });
+                }
+            }
+        }
+
         return new Response(JSON.stringify({ success: true, message: `Plano ${planId} atualizado para ${planStatus}`, email: cusEmail }), { status: 200 });
 
     } catch (err: any) {

@@ -41,7 +41,13 @@ export const PatientProvider = ({ children }) => {
         if (user && user.id !== 'guest') {
             const channel = supabase
                 .channel('patients_changes')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'patients' }, (payload) => {
+                .on('postgres_changes', { 
+                    event: '*', 
+                    schema: 'public', 
+                    table: 'patients',
+                    // BUG-06 FIX: filtrar por user_id para evitar N+1 queries (um disparo por qualquer usuário)
+                    filter: `user_id=eq.${user.id}`
+                }, (payload) => {
                     console.log('[PatientContext] Mudança em tempo real:', payload);
                     loadPatients(); 
                 })

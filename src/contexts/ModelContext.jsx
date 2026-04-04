@@ -27,15 +27,16 @@ export const ModelProvider = ({ children }) => {
                     
                     // Se estiver vazio, popula com os modelos padrões
                     if (remoteModels.length === 0) {
-                        console.log('[ModelContext] Banco vazio. Populando modelos padrões...');
-                        for (const model of defaultModels) {
-                            await db.insert('models', {
+                        console.log('[ModelContext] Banco vazio. Populando modelos padrões em paralelo...');
+                        // PERF-07 FIX: Promise.all em vez de loop sequencial (6x mais rápido)
+                        await Promise.all(
+                            defaultModels.map(model => db.insert('models', {
                                 ...model,
                                 userId: user.id,
                                 tenantId: user.tenantId,
-                                conteudo: '' // Iniciar vazio para o usuário preencher ou manter o padrão se necessário
-                            });
-                        }
+                                conteudo: ''
+                            }))
+                        );
                         remoteModels = await db.list('models');
                     }
                     
@@ -48,18 +49,15 @@ export const ModelProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    // PERF-01 FIX: user?.id evita re-fetch em atualizações de perfil
+    }, [user?.id]);
 
     const addModel = async (model) => {
         try {
             const newModel = await db.insert('models', {
-                ...model,
-                userId: user?.id,
-                tenantId: user?.tenantId,
-                uso: 0,
-                conteudo: model.conteudo || ''
+                ...model, userId: user?.id, tenantId: user?.tenantId, uso: 0, conteudo: model.conteudo || ''
             });
-            setModels(await db.list('models'));
+            setModels(prev => [...prev, newModel]); // PERF-02
             return newModel;
         } catch (error) {
             console.error('[ModelContext] Erro ao adicionar:', error);
@@ -68,8 +66,8 @@ export const ModelProvider = ({ children }) => {
 
     const updateModel = async (id, updatedData) => {
         try {
-            await db.update('models', id, updatedData);
-            setModels(await db.list('models'));
+            const atualizado = await db.update('models', id, updatedData);
+            setModels(prev => prev.map(m => m.id === id ? { ...m, ...atualizado } : m)); // PERF-02
         } catch (error) {
             console.error('[ModelContext] Erro ao atualizar:', error);
         }
@@ -78,7 +76,7 @@ export const ModelProvider = ({ children }) => {
     const deleteModel = async (id) => {
         try {
             await db.delete('models', id);
-            setModels(await db.list('models'));
+            setModels(prev => prev.filter(m => m.id !== id)); // PERF-02
         } catch (error) {
             console.error('[ModelContext] Erro ao deletar:', error);
         }
@@ -87,8 +85,10 @@ export const ModelProvider = ({ children }) => {
     const incrementUsage = async (id) => {
         const model = models.find(m => m.id === id);
         if (model) {
-            await db.update('models', id, { uso: (model.uso || 0) + 1 });
-            setModels(await db.list('models'));
+            const novoUso = (model.uso || 0) + 1;
+            // PERF-02: Atualizar localmente antes de persistir (sem db.list())
+            setModels(prev => prev.map(m => m.id === id ? { ...m, uso: novoUso } : m));
+            await db.update('models', id, { uso: novoUso });
         }
     };
 

@@ -46,7 +46,8 @@ export const AppointmentProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    // PERF-01 FIX: user?.id em vez de user (objeto) — evita re-fetch em qualquer atualização de perfil
+    }, [user?.id]);
 
     const addAppointment = async (appointment, silent = false) => {
         try {
@@ -59,7 +60,8 @@ export const AppointmentProvider = ({ children }) => {
             if (!silent) {
                 addNotification({
                 title: 'Nova Consulta Agendada',
-                message: `${novo.paciente || novo.patient_name} agendado para ${novo.data.split('-').reverse().join('/')}.`,
+                // BUG-16 FIX: optional chaining para evitar TypeError se novo.data for undefined
+                message: `${novo.paciente || novo.patient_name} agendado para ${(novo.data || '').split('-').reverse().join('/') || 'data informada'}.`,
                 type: 'info',
                 icon: 'event'
             });
@@ -94,11 +96,8 @@ export const AppointmentProvider = ({ children }) => {
 
     const addToWaitingList = async (item) => {
         try {
-            await db.insert('waiting_list', {
-                ...item,
-                userId: user?.id
-            });
-            setWaitingList(await db.list('waiting_list'));
+            const novo = await db.insert('waiting_list', { ...item, userId: user?.id });
+            setWaitingList(prev => [...prev, novo]); // PERF-02
             return true;
         } catch (error) {
             console.error('[AppointmentContext] Erro ao adicionar na fila:', error);
@@ -109,7 +108,7 @@ export const AppointmentProvider = ({ children }) => {
     const removeFromWaitingList = async (id) => {
         try {
             await db.delete('waiting_list', id);
-            setWaitingList(await db.list('waiting_list'));
+            setWaitingList(prev => prev.filter(w => w.id !== id)); // PERF-02
             return true;
         } catch (error) {
             console.error('[AppointmentContext] Erro ao remover da fila:', error);

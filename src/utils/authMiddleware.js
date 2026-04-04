@@ -51,8 +51,9 @@ export const trackAIConsumption = (tokensUsed, user, updateUser) => {
 
     updateUser({ consumoIA: novoConsumo });
     
-    // Alerta de proximidade de limite (Ex: 80%)
-    if (novoConsumo.tokensTotal > (user.consumoIA?.limiteMensal * 0.8)) {
+    // BUG-12 FIX: usar fallback para evitar NaN quando limiteMensal é undefined
+    const limiteSeguro = user.consumoIA?.limiteMensal ?? 500000;
+    if (novoConsumo.tokensTotal > (limiteSeguro * 0.8)) {
         showToast('Você atingiu 80% do seu limite mensal de IA.', 'warning');
     }
 };

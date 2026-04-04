@@ -11,7 +11,7 @@ const Login = () => {
     const [recoveryEmail, setRecoveryEmail] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
 
-    const { login, loginWithGoogle, resetPassword } = useUser();
+    const { login, loginWithGoogle, resetPassword, loading } = useUser();
     const [erro, setErro] = useState('');
     const [loadingGoogle, setLoadingGoogle] = useState(false);
 
@@ -154,10 +154,20 @@ const Login = () => {
                             </div>
                             <button
                                 type="submit"
-                                className="flex w-full justify-center rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3.5 text-sm font-bold leading-6 text-white shadow-xl shadow-purple-100 hover:from-purple-700 hover:to-indigo-700 transition-all active:scale-[0.98] group items-center gap-2"
+                                disabled={loading}
+                                className="flex w-full justify-center rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3.5 text-sm font-bold leading-6 text-white shadow-xl shadow-purple-100 hover:from-purple-700 hover:to-indigo-700 transition-all active:scale-[0.98] group items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                Acessar Sistema
-                                <span className="material-symbols-outlined text-transparent group-hover:text-white group-hover:translate-x-1 transition-all text-sm font-bold">arrow_forward</span>
+                                {loading ? (
+                                    <>
+                                        <span className="animate-spin size-4 border-2 border-white border-t-transparent rounded-full font-bold"></span>
+                                        Acessando...
+                                    </>
+                                ) : (
+                                    <>
+                                        Acessar Sistema
+                                        <span className="material-symbols-outlined text-transparent group-hover:text-white group-hover:translate-x-1 transition-all text-sm font-bold">arrow_forward</span>
+                                    </>
+                                )}
                             </button>
                         </form>
                     ) : (

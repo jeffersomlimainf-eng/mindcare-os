@@ -29,17 +29,14 @@ export const AnamneseProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    }, [user?.id]); // PERF-01 FIX
 
     const addAnamnese = async (data) => {
         try {
             const novo = await db.insert('anamneses', {
-                ...data,
-                userId: user?.id,
-                status: data.status || 'Finalizado',
-                professional_name: user?.nome
+                ...data, userId: user?.id, status: data.status || 'Finalizado', professional_name: user?.nome
             });
-            setAnamneses(await db.list('anamneses'));
+            setAnamneses(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
             console.error('[AnamneseContext] Erro ao adicionar:', error);
@@ -49,8 +46,8 @@ export const AnamneseProvider = ({ children }) => {
 
     const updateAnamnese = async (id, data) => {
         try {
-            await db.update('anamneses', id, data);
-            setAnamneses(await db.list('anamneses'));
+            const atualizado = await db.update('anamneses', id, data);
+            setAnamneses(prev => prev.map(a => a.id === id ? { ...a, ...atualizado } : a)); // PERF-02
         } catch (error) {
             console.error('[AnamneseContext] Erro ao atualizar:', error);
         }
@@ -59,7 +56,7 @@ export const AnamneseProvider = ({ children }) => {
     const deleteAnamnese = async (id) => {
         try {
             await db.delete('anamneses', id);
-            setAnamneses(await db.list('anamneses'));
+            setAnamneses(prev => prev.filter(a => a.id !== id)); // PERF-02
         } catch (error) {
             console.error('[AnamneseContext] Erro ao deletar:', error);
         }

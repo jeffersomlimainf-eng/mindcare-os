@@ -29,17 +29,14 @@ export const EncaminhamentoProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    }, [user?.id]); // PERF-01 FIX
 
     const addEncaminhamento = async (data) => {
         try {
             const novo = await db.insert('encaminhamentos', {
-                ...data,
-                userId: user?.id,
-                status: data.status || 'Finalizado',
-                professional_name: user?.nome
+                ...data, userId: user?.id, status: data.status || 'Finalizado', professional_name: user?.nome
             });
-            setEncaminhamentos(await db.list('encaminhamentos'));
+            setEncaminhamentos(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
             console.error('[EncaminhamentoContext] Erro ao adicionar:', error);
@@ -49,8 +46,8 @@ export const EncaminhamentoProvider = ({ children }) => {
 
     const updateEncaminhamento = async (id, data) => {
         try {
-            await db.update('encaminhamentos', id, data);
-            setEncaminhamentos(await db.list('encaminhamentos'));
+            const atualizado = await db.update('encaminhamentos', id, data);
+            setEncaminhamentos(prev => prev.map(e => e.id === id ? { ...e, ...atualizado } : e)); // PERF-02
         } catch (error) {
             console.error('[EncaminhamentoContext] Erro ao atualizar:', error);
         }
@@ -59,7 +56,7 @@ export const EncaminhamentoProvider = ({ children }) => {
     const deleteEncaminhamento = async (id) => {
         try {
             await db.delete('encaminhamentos', id);
-            setEncaminhamentos(await db.list('encaminhamentos'));
+            setEncaminhamentos(prev => prev.filter(e => e.id !== id)); // PERF-02
         } catch (error) {
             console.error('[EncaminhamentoContext] Erro ao deletar:', error);
         }

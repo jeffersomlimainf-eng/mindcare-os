@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
@@ -48,18 +48,19 @@ export const FinanceProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    // PERF-01 FIX: usar user?.id em vez de user (objeto inteiro)
+    // Antes: qualquer campo do perfil (plano, configs, etc.) re-disparava db.list()
+    // Depois: só re-carrega quando o usuário real muda (login/logout)
+    }, [user?.id]);
 
+    // PERF-02 FIX: refreshData mantido apenas para uso explícito (ex: sincronização forçada)
     const refreshData = async () => setTransactions(await db.list('finance'));
 
     const addTransaction = async (data) => {
         try {
-            const novo = await db.insert('finance', {
-                ...data,
-                userId: user?.id,
-                date: data.data || new Date().toISOString()
-            });
-            await refreshData();
+            const novo = await db.insert('finance', { ...data, userId: user?.id });
+            // PERF-02: optimistic update — sem segundo db.list()
+            setTransactions(prev => [...prev, novo]);
             return novo;
         } catch (error) {
             console.error('[FinanceContext] Erro ao adicionar:', error);
@@ -69,8 +70,9 @@ export const FinanceProvider = ({ children }) => {
 
     const updateTransaction = async (id, updates) => {
         try {
-            await db.update('finance', id, updates);
-            await refreshData();
+            const atualizado = await db.update('finance', id, updates);
+            // PERF-02: merge local do item atualizado
+            setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...atualizado } : t));
         } catch (e) {
             console.error('[FinanceContext] Erro ao atualizar:', e);
         }
@@ -79,7 +81,8 @@ export const FinanceProvider = ({ children }) => {
     const deleteTransaction = async (id) => {
         try {
             await db.delete('finance', id);
-            await refreshData();
+            // PERF-02: remover localmente sem refetch
+            setTransactions(prev => prev.filter(t => t.id !== id));
         } catch (e) {
             console.error('[FinanceContext] Erro ao excluir:', e);
         }
@@ -139,10 +142,30 @@ export const FinanceProvider = ({ children }) => {
         return null;
     };
 
-    const stats = {
-        receitaMensal: transactions.filter(t => (t?.valor || 0) > 0).reduce((acc, t) => acc + (t?.valor || 0), 0),
-        despesaMensal: transactions.filter(t => (t?.valor || 0) < 0).reduce((acc, t) => acc + Math.abs(t?.valor || 0), 0)
-    };
+    // BUG-01 FIX: useMemo garante recálculo toda vez que transactions mudar
+    // BUG-02 FIX: filtro por campo 'tipo', não pelo sinal matemático do valor
+    const stats = useMemo(() => {
+        const agora = new Date();
+        const anoAtual = agora.getFullYear();
+        const mesAtual = agora.getMonth(); // 0-11
+
+        const inCurrentMonth = (dateStr) => {
+            if (!dateStr) return false;
+            const d = _parseDate(dateStr);
+            return d && d.getFullYear() === anoAtual && d.getMonth() === mesAtual;
+        };
+
+        const currentMonthTransactions = transactions.filter(t => inCurrentMonth(t.dataVencimento));
+
+        return {
+            receitaMensal: currentMonthTransactions
+                .filter(t => t?.tipo?.toLowerCase() === 'receita')
+                .reduce((acc, t) => acc + Math.abs(t?.valor || 0), 0),
+            despesaMensal: currentMonthTransactions
+                .filter(t => t?.tipo?.toLowerCase() === 'despesa')
+                .reduce((acc, t) => acc + Math.abs(t?.valor || 0), 0)
+        };
+    }, [transactions]);
 
     return (
         <FinanceContext.Provider value={{

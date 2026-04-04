@@ -29,17 +29,14 @@ export const DeclaracaoProvider = ({ children }) => {
             }
         };
         load();
-    }, [user]);
+    }, [user?.id]); // PERF-01 FIX
 
     const addDeclaracao = async (data) => {
         try {
             const novo = await db.insert('declaracoes', {
-                ...data,
-                userId: user?.id,
-                status: data.status || 'Finalizado',
-                professional_name: user?.nome
+                ...data, userId: user?.id, status: data.status || 'Finalizado', professional_name: user?.nome
             });
-            setDeclaracoes(await db.list('declaracoes'));
+            setDeclaracoes(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
             console.error('[DeclaracaoContext] Erro ao adicionar:', error);
@@ -49,8 +46,8 @@ export const DeclaracaoProvider = ({ children }) => {
 
     const updateDeclaracao = async (id, data) => {
         try {
-            await db.update('declaracoes', id, data);
-            setDeclaracoes(await db.list('declaracoes'));
+            const atualizado = await db.update('declaracoes', id, data);
+            setDeclaracoes(prev => prev.map(d => d.id === id ? { ...d, ...atualizado } : d)); // PERF-02
         } catch (error) {
             console.error('[DeclaracaoContext] Erro ao atualizar:', error);
         }
@@ -59,7 +56,7 @@ export const DeclaracaoProvider = ({ children }) => {
     const deleteDeclaracao = async (id) => {
         try {
             await db.delete('declaracoes', id);
-            setDeclaracoes(await db.list('declaracoes'));
+            setDeclaracoes(prev => prev.filter(d => d.id !== id)); // PERF-02
         } catch (error) {
             console.error('[DeclaracaoContext] Erro ao deletar:', error);
         }
