@@ -37,6 +37,9 @@ const AIClinica = () => {
     // Consolidar a base de dados para o System Prompt (Otimizado para poupar tokens/evitar limites)
     const fullDatabaseContext = useMemo(() => {
         if (pacienteSelecionado) {
+            const normalizeId = (id) => String(id || '').replace('#', '');
+            const cId = normalizeId(pacienteSelecionado.id);
+            
             return JSON.stringify({
                 paciente_foco: {
                     id: pacienteSelecionado.id,
@@ -47,12 +50,12 @@ const AIClinica = () => {
                     plano: pacienteSelecionado.plano,
                     status: pacienteSelecionado.status
                 },
-                evolucoes: evolutions.filter(e => e.pacienteId === pacienteSelecionado.id),
-                anamneses: anamneses.filter(a => a.pacienteId === pacienteSelecionado.id),
-                laudos: laudos.filter(l => l.pacienteId === pacienteSelecionado.id),
-                declaracoes: declaracoes.filter(d => d.pacienteId === pacienteSelecionado.id),
-                atestados: atestados.filter(a => a.pacienteId === pacienteSelecionado.id),
-                encaminhamentos: encaminhamentos.filter(e => e.pacienteId === pacienteSelecionado.id)
+                evolucoes: evolutions.filter(e => normalizeId(e.pacienteId) === cId),
+                anamneses: anamneses.filter(a => normalizeId(a.pacienteId) === cId),
+                laudos: laudos.filter(l => normalizeId(l.pacienteId) === cId),
+                declaracoes: declaracoes.filter(d => normalizeId(d.pacienteId) === cId),
+                atestados: atestados.filter(a => normalizeId(a.pacienteId) === cId),
+                encaminhamentos: encaminhamentos.filter(e => normalizeId(e.pacienteId) === cId)
             });
         }
         
@@ -191,14 +194,19 @@ ${fullDatabaseContext}
 
     const getEvolucoesPaciente = () => {
         if (!pacienteSelecionado) return [];
-        return evolutions.filter(ev => ev.pacienteId === pacienteSelecionado.id);
+        const normalizeId = (id) => String(id || '').replace('#', '');
+        const cId = normalizeId(pacienteSelecionado.id);
+        return evolutions.filter(ev => normalizeId(ev.pacienteId) === cId);
     };
 
     const getTimelineData = () => {
         if (!pacienteSelecionado) return [];
-        const evs = evolutions.filter(ev => ev.pacienteId === pacienteSelecionado.id).map(e => ({ ...e, type: 'Evolução', icon: 'clinical_notes', color: 'text-blue-500' }));
-        const anam = anamneses.filter(a => a.pacienteId === pacienteSelecionado.id).map(a => ({ ...a, type: 'Anamnese', icon: 'assignment', color: 'text-rose-500', data: a.criadoEm.split('T')[0] }));
-        const laud = laudos.filter(l => l.pacienteId === pacienteSelecionado.id).map(l => ({ ...l, type: 'Laudo', icon: 'gavel', color: 'text-violet-500', data: l.criadoEm.split('T')[0] }));
+        const normalizeId = (id) => String(id || '').replace('#', '');
+        const cId = normalizeId(pacienteSelecionado.id);
+
+        const evs = evolutions.filter(ev => normalizeId(ev.pacienteId) === cId).map(e => ({ ...e, type: 'Evolução', icon: 'clinical_notes', color: 'text-blue-500' }));
+        const anam = anamneses.filter(a => normalizeId(a.pacienteId) === cId).map(a => ({ ...a, type: 'Anamnese', icon: 'assignment', color: 'text-rose-500', data: a.criadoEm.split('T')[0] }));
+        const laud = laudos.filter(l => normalizeId(l.pacienteId) === cId).map(l => ({ ...l, type: 'Laudo', icon: 'gavel', color: 'text-violet-500', data: l.criadoEm.split('T')[0] }));
         
         return [...evs, ...anam, ...laud].sort((a, b) => new Date(b.data || b.criadoEm) - new Date(a.data || a.criadoEm));
     };
