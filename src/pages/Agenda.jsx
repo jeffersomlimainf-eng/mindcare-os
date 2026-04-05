@@ -168,7 +168,6 @@ const Agenda = () => {
         const diaISO = formatDateLocal(diaDate);
         return appointments.filter(c => c.data === diaISO);
     };
-
     const gerarFinanceiroConcluido = async (c, patientId) => {
         const p = patients.find(item => item.id === patientId);
         if (!p) return;
@@ -182,7 +181,12 @@ const Agenda = () => {
             const dataBR = c.data ? c.data.split('-').reverse().join('/') : '';
             const dataCurta = dataBR ? dataBR.substring(0, 5) : '';
             const desc = `Sessão — ${c.paciente || c.patient_name || 'Sem Nome'} (Ref. ${dataCurta})`;
-            const jaExiste = transactions.some(t => t.description === desc || t.desc === desc);
+            
+            // BLINDAGEM: Verifica duplicidade primeiro pelo ID do agendamento (perfeito) e depois pela descrição (backup)
+            const jaExiste = transactions.some(t => 
+                (t.appointmentId === c.id) || 
+                (t.description === desc || t.desc === desc)
+            );
             
             if (!jaExiste) {
                 try {
@@ -196,7 +200,8 @@ const Agenda = () => {
                         categoria: 'clinica',
                         subcategoria: 'sessao',
                         pacienteId: patientId,
-                        pacienteNome: c.paciente || c.patient_name
+                        pacienteNome: c.paciente || c.patient_name,
+                        appointmentId: c.id // Vincular no banco via group_id
                     });
                     showToast('Lançamento no financeiro criado!', 'success');
                 } catch (err) {
@@ -228,39 +233,38 @@ const Agenda = () => {
             showToast(`Consulta de ${dados.paciente} atualizada!`, 'success');
             
             if (payload.status === 'concluido') {
-                gerarFinanceiroConcluido(payload, dados.pacienteId);
+                gerarFinanceiroConcluido({ ...payload, id: consultaEditando.id }, dados.pacienteId);
             }
         } else {
             const qtd = dados.qtdReplicar || 1;
-            const promises = [];
+            
+            if (qtd === 1) {
+                // Caso simples: Inserção única
+                addAppointment(payload).then(() => {
+                    showToast(`Consulta agendada para ${dados.data}!`, 'success');
+                });
+            } else {
+                // Caso avançado: BULK INSERT (Economiza processamento e evita bugs de carregamento parcial)
+                const lote = [];
+                for (let i = 0; i < qtd; i++) {
+                    const dLoop = new Date(dados.ano, dados.mes, dados.dia);
+                    if (dados.recorrencia === 'semanal') dLoop.setDate(dLoop.getDate() + (i * 7));
+                    else if (dados.recorrencia === 'quinzenal') dLoop.setDate(dLoop.getDate() + (i * 14));
+                    else if (dados.recorrencia === 'mensal') dLoop.setMonth(dLoop.getMonth() + i);
 
-            for (let i = 0; i < qtd; i++) {
-                const dLoop = new Date(dados.ano, dados.mes, dados.dia);
-                if (dados.recorrencia === 'semanal') {
-                    dLoop.setDate(dLoop.getDate() + (i * 7));
-                } else if (dados.recorrencia === 'quinzenal') {
-                    dLoop.setDate(dLoop.getDate() + (i * 14));
-                } else if (dados.recorrencia === 'mensal') {
-                    dLoop.setMonth(dLoop.getMonth() + i);
+                    lote.push({
+                        ...payload,
+                        data: formatDateLocal(dLoop)
+                    });
                 }
 
-                const payloadLoop = {
-                    ...payload,
-                    data: formatDateLocal(dLoop)
-                };
-                
-                // silent=true para i > 0 (silencia banners repetidos)
-                promises.push(addAppointment(payloadLoop, i > 0));
+                addAppointment(lote)
+                    .then(() => showToast(`${qtd} consultas agendadas com sucesso (Otimizado)!`, 'success'))
+                    .catch(err => {
+                        console.error('[Agenda] Erro no agendamento em lote:', err);
+                        showToast('Erro ao criar sessões recorrentes.', 'error');
+                    });
             }
-
-            Promise.all(promises)
-                .then(() => {
-                    if (qtd > 1) showToast(`${qtd} consultas agendadas com sucesso!`, 'success');
-                })
-                .catch(err => {
-                    console.error('[Agenda] Erro ao replicar:', err);
-                    showToast('Algumas consultas não puderam ser agendadas.', 'error');
-                });
         }
         setConsultaEditando(null);
     };
@@ -319,7 +323,9 @@ const Agenda = () => {
         if (novoStatus === 'concluido') {
             const c = appointments.find(ap => ap.id === id);
             if (c) {
-                gerarFinanceiroConcluido(c, c.pacienteId);
+                // Garantir que temos o ID do paciente, mesmo que o objeto venha com chaves diferentes
+                const pId = c.pacienteId || c.patient_id || c.patientId;
+                gerarFinanceiroConcluido(c, pId);
             }
         }
     };
@@ -655,6 +661,15 @@ const Agenda = () => {
                                                                         title="Iniciar Sessão"
                                                                     >
                                                                         <span className="material-symbols-outlined text-sm">play_arrow</span>
+                                                                    </button>
+                                                                )}
+                                                                {(c.status === 'em_sessao' || c.status === 'confirmado' || c.status === 'aguardando') && (
+                                                                    <button 
+                                                                        onClick={(e) => { e.stopPropagation(); mudarStatusConsulta(c.id, 'concluido'); }}
+                                                                        className="size-6 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow-sm text-slate-600 hover:text-emerald-500 hover:scale-105 hover:shadow-md transition-all font-bold"
+                                                                        title="Concluir Sessão (Gera Receita)"
+                                                                    >
+                                                                        <span className="material-symbols-outlined text-sm">check</span>
                                                                     </button>
                                                                 )}
                                                             </div>

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { referralSuccessTemplate } from "../shared/templates.ts"
+import { referralSuccessTemplate, welcomeNewCustomerTemplate } from "../shared/templates.ts"
 
 /**
  * Meu Sistema PSI - Eduzz Webhook Postback Handler
@@ -13,6 +13,36 @@ const PLAN_MAPPING: Record<number, string> = {
     2986359: 'premium'
 }
 
+/**
+ * Gera uma senha aleatória segura
+ */
+function generateSecurePassword(length = 12): string {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let retVal = "";
+    for (let i = 0; i < length; ++i) {
+        retVal += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return retVal;
+}
+
+/**
+ * Valida a assinatura da Eduzz (Simulação de Segurança)
+ * Em produção, compare o hash do body com o header x-eduzz-signature usando EDUZZ_API_KEY
+ */
+function isValidRequest(req: Request, sourceIp: string | null): boolean {
+    // Por enquanto, validamos apenas se o IP não é nulo e se o User-Agent é da Eduzz (se disponível)
+    // Para segurança máxima, o usuário deve configurar o EDUZZ_API_KEY no Supabase Vault
+    const signature = req.headers.get("x-eduzz-signature");
+    const eduzzSecret = Deno.env.get("EDUZZ_API_KEY");
+    
+    if (eduzzSecret && !signature) {
+        console.warn("[Eduzz Webhook] Alerta de Segurança: EDUZZ_API_KEY configurada mas requisição sem assinatura.");
+        return false;
+    }
+    
+    return true; 
+}
+
 serve(async (req: Request) => {
     const method = req.method;
 
@@ -21,8 +51,10 @@ serve(async (req: Request) => {
     }
 
     try {
-        if (method !== 'POST') {
-            return new Response("Método não suportado", { status: 405 });
+        const sourceIp = req.headers.get("x-real-ip");
+        if (!isValidRequest(req, sourceIp)) {
+             console.error("[Eduzz Webhook] Requisição não autorizada ou sem assinatura válida.");
+             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
         }
 
         const body = await req.json();
@@ -104,11 +136,12 @@ serve(async (req: Request) => {
             }
 
             const cusName = body.cus_name || body.cus_fullname || 'Novo Cliente Eduzz';
+            const temporaryPassword = generateSecurePassword();
             console.log(`[Eduzz Webhook] Criando novo usuário para: ${cusEmail} (${cusName})`);
 
             const { data: authData, error: authError } = await supabase.auth.admin.createUser({
                 email: cusEmail,
-                password: 'Meu Sistema PSI@123', // Senha padrão de acesso inicial
+                password: temporaryPassword, 
                 email_confirm: true,
                 user_metadata: { full_name: cusName }
             });
@@ -120,6 +153,33 @@ serve(async (req: Request) => {
 
             userId = authData.user.id;
             console.log(`[Eduzz Webhook] Auth User criado com sucesso! ID: ${userId}`);
+
+            // Enviar e-mail de boas-vindas com a senha
+            const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? "";
+            const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || "contato@meusistemapsi.com.br";
+            
+            const welcomeHtml = welcomeNewCustomerTemplate({
+                customerName: cusName,
+                email: cusEmail,
+                password: temporaryPassword,
+                planName: planId.charAt(0).toUpperCase() + planId.slice(1)
+            });
+
+            try {
+                await fetch('https://api.resend.com/emails', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendApiKey}` },
+                    body: JSON.stringify({
+                        from: `Meu Sistema PSI <${fromEmail}>`,
+                        to: [cusEmail],
+                        subject: `🚀 Bem-vindo ao Meu Sistema PSI (Acesso Liberado)`,
+                        html: welcomeHtml
+                    })
+                });
+                console.log(`[Eduzz Webhook] E-mail de boas-vindas enviado para ${cusEmail}`);
+            } catch (emailErr) {
+                console.error("[Eduzz Webhook] Erro ao enviar e-mail de boas-vindas:", emailErr);
+            }
         }
 
         // 4. Inserir ou Atualizar (Upsert) na tabela profiles

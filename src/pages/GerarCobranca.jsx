@@ -10,15 +10,18 @@ import { invoiceReminderTemplate } from '../constants/emailTemplates';
 const GerarCobranca = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { transactions, updateTransaction } = useFinance();
+    const { transactions, updateTransaction, refreshData } = useFinance();
     const { user } = useUser();
 
     const [pacienteEmail, setPacienteEmail] = useState('');
+    const [carregandoDados, setCarregandoDados] = useState(true);
 
     const ids = id ? id.split(',') : [];
     const transacoesSel = transactions.filter(t => ids.includes(t.id));
 
     const [desc, setDesc] = useState('');
+// ... (omitting middle part, using multi_replace instead if needed, but let's try a single one if possible)
+// Wait, I should use multi_replace for safety as it's a big change.
     const [valor, setValor] = useState('');
     const [vencimento, setVencimento] = useState('');
     const [copiado, setCopiado] = useState(false);
@@ -42,6 +45,11 @@ const GerarCobranca = () => {
 
     const linkPublico = `${window.location.origin}/cobranca/${id}${qs ? '?' + qs : ''}`;
 
+    // Forçar atualização dos dados financeiros ao montar a página
+    useEffect(() => {
+        if (refreshData) refreshData();
+    }, []);
+
     useEffect(() => {
         const carregarPaciente = async (patId) => {
             try {
@@ -53,42 +61,71 @@ const GerarCobranca = () => {
                 if (data?.email) setPacienteEmail(data.email);
             } catch (e) {
                 console.error('[GerarCobranca] Erro ao carregar paciente:', e);
+            } finally {
+                setCarregandoDados(false);
             }
         };
 
-        if (transacoesSel.length > 0) {
-            const prim = transacoesSel[0];
-            const nomePaciente = prim.pacienteNome || prim.patient_name || 'Paciente';
+        const prepararDados = async () => {
+            if (transacoesSel.length > 0) {
+                const primRaw = transacoesSel[0];
+                let prim = { ...primRaw };
 
-            // Calcular descrição agrupada (mesma lógica)
-            const refs = transacoesSel.map(t => {
-                const match = t.desc?.match(/\(Ref\. (.*?)\)/);
-                if (match && match[1]) return match[1];
-                const dv = t.dataVencimento || t.due_date;
-                if (dv && typeof dv === 'string') {
-                    const p = dv.split('-');
-                    if (p.length === 3) return `${p[2]}/${p[1]}`;
+                // Se não temos o ID do paciente no cache, tentamos buscar a transação atualizada no banco
+                if (!prim.patient_id && !prim.pacienteId) {
+                    const { data: latest } = await supabase
+                        .from('finance')
+                        .select('*')
+                        .eq('id', prim.id)
+                        .single();
+                    if (latest) {
+                        prim = { ...prim, ...latest };
+                        // Atualizar as chaves para o padrão do app
+                        if (latest.patient_id) prim.pacienteId = latest.patient_id;
+                        if (latest.patient_name) prim.pacienteNome = latest.patient_name;
+                    }
                 }
-                return '';
-            }).filter(Boolean);
-            const uniqueRefs = [...new Set(refs)].join(', ');
 
-            const valueTotal = transacoesSel.reduce((sum, t) => sum + (t.valor || 0), 0);
-            
-            const defaultDesc = ids.length === 1 
-                ? (prim.desc || 'Sessão/Consulta') 
-                : `Sessões — ${nomePaciente} (Ref. ${uniqueRefs || 'Período'})`;
+                const nomePaciente = prim.pacienteNome || prim.patient_name || 'Paciente';
 
-            setDesc(defaultDesc);
-            setValor(valueTotal.toFixed(2));
+                // Calcular descrição agrupada
+                const refs = transacoesSel.map(t => {
+                    const match = t.desc?.match(/\(Ref\. (.*?)\)/);
+                    if (match && match[1]) return match[1];
+                    const dv = t.dataVencimento || t.due_date;
+                    if (dv && typeof dv === 'string') {
+                        const p = dv.split('-');
+                        if (p.length === 3) return `${p[2]}/${p[1]}`;
+                    }
+                    return '';
+                }).filter(Boolean);
+                const uniqueRefs = [...new Set(refs)].join(', ');
 
-            const dates = transacoesSel.map(t => t.dataVencimento || t.due_date).filter(Boolean);
-            const maxDate = dates.length > 0 ? dates.sort().reverse()[0] : new Date().toISOString().split('T')[0];
-            setVencimento(maxDate);
+                const valueTotal = transacoesSel.reduce((sum, t) => sum + (t.valor || 0), 0);
+                
+                const defaultDesc = ids.length === 1 
+                    ? (prim.desc || 'Sessão/Consulta') 
+                    : `Sessões — ${nomePaciente} (Ref. ${uniqueRefs || 'Período'})`;
 
-            const pId = prim.patient_id || prim.pacienteId;
-            if (pId) carregarPaciente(pId);
-        }
+                setDesc(defaultDesc);
+                setValor(valueTotal.toFixed(2));
+
+                const dates = transacoesSel.map(t => t.dataVencimento || t.due_date).filter(Boolean);
+                const maxDate = dates.length > 0 ? dates.sort().reverse()[0] : new Date().toISOString().split('T')[0];
+                setVencimento(maxDate);
+
+                const pId = prim.patient_id || prim.pacienteId;
+                if (pId) {
+                    await carregarPaciente(pId);
+                } else {
+                    setCarregandoDados(false);
+                }
+            } else {
+                setCarregandoDados(false);
+            }
+        };
+
+        prepararDados();
     }, [transacoesSel.length, transactions.length, id]);
 
     const handleUpdateLinkSent = () => {
@@ -214,6 +251,31 @@ const GerarCobranca = () => {
     const pacienteNome = prim.pacienteNome || prim.patient_name || 'Paciente';
     const isPendente = transacoesSel.some(t => t.status === 'Pendente');
     const semPix = !chavePix;
+
+    // Auditoria: Verificar se todos os itens selecionados pertencem ao mesmo paciente
+    const patientIds = [...new Set(transacoesSel.map(t => t.patient_id || t.pacienteId).filter(Boolean))];
+    const isPacienteConsistente = patientIds.length <= 1;
+    const idsDivergentes = !isPacienteConsistente;
+
+    if (idsDivergentes) {
+        return (
+            <div className="max-w-xl mx-auto mt-20 p-8 bg-white dark:bg-slate-900 rounded-3xl border-2 border-red-100 dark:border-red-900/30 shadow-2xl text-center space-y-6">
+                <div className="size-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto">
+                    <span className="material-symbols-outlined text-red-500 text-4xl">group_off</span>
+                </div>
+                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Seleção de Pacientes Divergente</h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                    Você selecionou débitos pertencentes a <strong>{patientIds.length} pacientes diferentes</strong>. 
+                    Por segurança, não é possível gerar um link de cobrança agrupado para múltiplos pacientes.
+                </p>
+                <div className="pt-4">
+                    <button onClick={() => navigate('/financeiro')} className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold text-sm hover:scale-105 transition-all">
+                        Voltar ao Financeiro
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-20">
@@ -411,7 +473,10 @@ const GerarCobranca = () => {
                             <span className="text-[10px] font-black uppercase tracking-widest">Preview da Fatura</span>
                         </div>
                         <div className="text-xl font-black tracking-tight mb-1">{desc || '—'}</div>
-                        {pacienteNome && <div className="text-sm opacity-80 mb-3">Para: {pacienteNome}</div>}
+                        <div className="flex items-center gap-2 mb-3 bg-white/10 w-fit px-3 py-1 rounded-lg">
+                            <span className="material-symbols-outlined text-xs">person</span>
+                            <span className="text-xs font-bold">Destino: {pacienteNome}</span>
+                        </div>
                         <div className="text-3xl font-black tabular-nums mb-1">
                             {Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </div>

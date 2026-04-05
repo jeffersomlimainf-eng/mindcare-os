@@ -51,20 +51,30 @@ export const AppointmentProvider = ({ children }) => {
 
     const addAppointment = async (appointment, silent = false) => {
         try {
-            const novo = await db.insert('appointments', {
-                ...appointment,
-                userId: user?.id,
-                status: appointment.status || 'confirmado'
-            });
-            setAppointments(prev => [...prev, novo]);
+            const isArray = Array.isArray(appointment);
+            const payload = isArray 
+                ? appointment.map(a => ({ ...a, userId: user?.id, status: a.status || 'confirmado' }))
+                : { ...appointment, userId: user?.id, status: appointment.status || 'confirmado' };
+
+            const novo = await db.insert('appointments', payload);
+            
+            if (isArray) {
+                setAppointments(prev => [...prev, ...novo]);
+            } else {
+                setAppointments(prev => [...prev, novo]);
+            }
+
             if (!silent) {
+                const itemParaMsg = isArray ? novo[0] : novo;
+                const total = isArray ? novo.length : 1;
                 addNotification({
-                title: 'Nova Consulta Agendada',
-                // BUG-16 FIX: optional chaining para evitar TypeError se novo.data for undefined
-                message: `${novo.paciente || novo.patient_name} agendado para ${(novo.data || '').split('-').reverse().join('/') || 'data informada'}.`,
-                type: 'info',
-                icon: 'event'
-            });
+                    title: isArray ? 'Consultas Agendadas' : 'Nova Consulta Agendada',
+                    message: isArray 
+                        ? `${total} consultas criadas para ${itemParaMsg.paciente || itemParaMsg.patient_name}.`
+                        : `${itemParaMsg.paciente || itemParaMsg.patient_name} agendado para ${(itemParaMsg.data || '').split('-').reverse().join('/') || 'data informada'}.`,
+                    type: 'info',
+                    icon: 'event'
+                });
             }
             return novo;
         } catch (error) {

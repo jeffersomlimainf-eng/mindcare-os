@@ -118,6 +118,7 @@ const Pacientes = () => {
     const [modalAgendaAberto, setModalAgendaAberto] = useState(false);
     const [pacienteParaAgenda, setPacienteParaAgenda] = useState(null);
     const [pacienteParaExcluir, setPacienteParaExcluir] = useState(null);
+    const [erroExclusao, setErroExclusao] = useState(null);
     const [vista, setVista] = useState('tabela'); 
     const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
     const [helpOpen, setHelpOpen] = useState(false);
@@ -201,14 +202,20 @@ const Pacientes = () => {
         }
     };
 
-    const handleConfirmarExclusao = () => {
+    const handleConfirmarExclusao = async () => {
         if (pacienteParaExcluir) {
             try {
-                console.log(`[Pacientes] Excluindo paciente: ${pacienteParaExcluir.id}`);
-                deletePatient(pacienteParaExcluir.id);
+                setErroExclusao(null);
+                console.log(`[Pacientes] Tentando excluir paciente: ${pacienteParaExcluir.id}`);
+                await deletePatient(pacienteParaExcluir.id);
                 setPacienteParaExcluir(null);
             } catch (error) {
                 console.error('[Pacientes] Erro ao excluir paciente:', error);
+                if (error.code === 'CLINICAL_DATA_EXISTS') {
+                    setErroExclusao(`Este paciente não pode ser excluído porque possui registros clínicos vinculados (${error.table}). Por favor, remova os documentos do prontuário primeiro.`);
+                } else {
+                    setErroExclusao('Ocorreu um erro inesperado ao tentar excluir o paciente.');
+                }
             }
         }
     };
@@ -244,14 +251,37 @@ const Pacientes = () => {
 
             {/* Modal de Confirmação de Exclusão */}
             {pacienteParaExcluir && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40">
-                    <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform animate-in zoom-in-95 duration-200">
                         <div className="p-6 text-center">
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Excluir Cadastro?</h3>
-                            <p className="text-sm text-slate-500 mb-6">Esta ação não pode ser desfeita para {pacienteParaExcluir.nome}.</p>
+                            <div className={`size-16 rounded-full flex items-center justify-center mx-auto mb-4 ${erroExclusao ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-500' : 'bg-red-100 dark:bg-red-900/20 text-red-500'}`}>
+                                <span className="material-symbols-outlined text-3xl">{erroExclusao ? 'warning' : 'delete_forever'}</span>
+                            </div>
+                            
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 leading-tight">
+                                {erroExclusao ? 'Ação Bloqueada' : 'Excluir Cadastro?'}
+                            </h3>
+                            
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                                {erroExclusao || `Esta ação removerá todos os dados básicos de ${pacienteParaExcluir.nome}. O histórico financeiro será mantido de forma anônima.`}
+                            </p>
+
                             <div className="flex gap-3">
-                                <button onClick={() => setPacienteParaExcluir(null)} className="flex-1 py-2 border border-slate-200 dark:border-slate-800 rounded-lg font-bold">Cancelar</button>
-                                <button onClick={handleConfirmarExclusao} className="flex-1 py-2 bg-red-500 text-white rounded-lg font-bold">Excluir</button>
+                                <button 
+                                    onClick={() => { setPacienteParaExcluir(null); setErroExclusao(null); }} 
+                                    className="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white rounded-xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-slate-200 dark:border-slate-700"
+                                >
+                                    {erroExclusao ? 'Entendi' : 'Cancelar'}
+                                </button>
+                                
+                                {!erroExclusao && (
+                                    <button 
+                                        onClick={handleConfirmarExclusao} 
+                                        className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm hover:bg-red-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-red-500/20"
+                                    >
+                                        Excluir Agora
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>

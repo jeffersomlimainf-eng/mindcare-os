@@ -149,3 +149,44 @@ export const referralSuccessTemplate = ({
 
     return baseWrapper(content, '#10b981');
 };
+
+export const welcomeNewCustomerTemplate = ({
+    customerName,
+    email,
+    password,
+    planName
+}: any) => {
+    const content = `
+        <h2 style="color: #1e293b; font-size: 22px; margin-bottom: 10px;">Seja bem-vindo, ${customerName}! 🚀</h2>
+        <p style="color: #64748b; font-size: 16px; margin-bottom: 25px;">Sua assinatura do plano <strong>${planName}</strong> foi confirmada com sucesso.</p>
+        
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
+            <p style="margin: 0 0 15px 0; font-size: 14px; color: #64748b; font-weight: bold; text-transform: uppercase;">Suas Credenciais de Acesso:</p>
+            
+            <div style="margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 12px; color: #94a3b8;">E-mail:</p>
+                <p style="margin: 0; font-size: 16px; font-weight: bold; color: #1e293b;">${email}</p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 12px; color: #94a3b8;">Senha Temporária:</p>
+                <p style="margin: 0; font-size: 16px; font-weight: bold; color: #1e293b; letter-spacing: 1px;">${password}</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://meusistemapsi.com.br/login" class="btn">Acessar Meu Painel</a>
+        </div>
+
+        <p style="font-size: 14px; color: #e11d48; font-weight: bold; margin-top: 20px;">
+            ⚠️ IMPORTANTE: Por segurança, altere sua senha no primeiro acesso em "Configurações do Perfil".
+        </p>
+
+        <p style="font-size: 14px; color: #64748b; margin-top: 30px;">
+            Estamos à disposição para ajudar no que for preciso.<br>
+            <strong>Equipe Meu Sistema PSI</strong>
+        </p>
+    `;
+
+    return baseWrapper(content);
+};

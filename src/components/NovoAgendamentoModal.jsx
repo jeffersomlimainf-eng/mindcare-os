@@ -201,7 +201,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
 
         onSave && onSave({
             paciente: pacienteSelecionado?.nome || pacienteBusca,
-            pacienteId: pacienteSelecionado?.id,
+            pacienteId: pacienteSelecionado?.id || consultaEditando?.pacienteId || consultaEditando?.patient_id,
             tipo,
             hora: hora === 'custom' ? customHora : hora,
             duracao: duracao === 'custom' ? Math.max(1, parseInt(customDuracao) || 1) : parseInt(duracao),

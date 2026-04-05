@@ -51,22 +51,25 @@ class SupabaseDB {
 
     async insert(collectionName, item) {
         const table = this._getTableName(collectionName);
-        const payload = {
-            ...this._mapKeysToDB(item, table)
-        };
+        const isArray = Array.isArray(item);
+        const payload = isArray 
+            ? item.map(i => this._mapKeysToDB(i, table))
+            : this._mapKeysToDB(item, table);
 
-        const { data, error } = await supabase
-            .from(table)
-            .insert([payload])
-            .select()
-            .single();
+        const query = supabase.from(table).insert(isArray ? payload : [payload]).select();
+        
+        // Se for um único item, retornamos ele diretamente via .single()
+        const { data, error } = isArray ? await query : await query.single();
 
         if (error) {
             console.error(`[db.insert] ERRO do Supabase ao inserir na tabela '${table}':`, JSON.stringify(error, null, 2));
             console.error(`[db.insert] Payload que tentamos enviar:`, JSON.stringify(payload, null, 2));
             throw error;
         }
-        return this._mapKeysFromDB(data);
+        
+        return isArray 
+            ? data.map(d => this._mapKeysFromDB(d))
+            : this._mapKeysFromDB(data);
     }
 
     async update(collectionName, id, updates) {
@@ -103,7 +106,7 @@ class SupabaseDB {
         const baseColumns = ['id', 'user_id', 'tenant_id', 'created_at', 'updated_at'];
         
         const schemas = {
-            'patients': [...baseColumns, 'name', 'email', 'phone', 'cpf', 'birth_date', 'gender', 'status', 'color', 'initials', 'address_zip', 'address_street', 'address_number', 'address_neighborhood', 'address_city', 'address_state', 'complaint', 'history', 'price_per_session', 'health_plan', 'is_minor', 'responsible_data', 'marital_status', 'profession', 'bairro'],
+            'patients': [...baseColumns, 'name', 'email', 'phone', 'cpf', 'birth_date', 'gender', 'status', 'color', 'initials', 'address_zip', 'address_street', 'address_number', 'address_neighborhood', 'address_city', 'address_state', 'complaint', 'history', 'price_per_session', 'health_plan', 'is_minor', 'responsible_data', 'marital_status', 'profession', 'bairro', 'emergency_contact', 'allergies', 'medications', 'referral_source'],
             'appointments': [...baseColumns, 'patient_id', 'patient_name', 'data', 'time_start', 'duration', 'status', 'type', 'recurrence', 'obs', 'reminder_sent', 'reminder_enabled'],
             'evolutions': [...baseColumns, 'patient_id', 'patient_name', 'data_hora', 'type', 'status', 'professional_name', 'content_soap', 'techniques', 'observations', 'humor', 'risk_level', 'format', 'duration_minutes', 'session_number'],
             'finance': [...baseColumns, 'type', 'description', 'value', 'date', 'due_date', 'status', 'payment_method', 'category', 'subcategory', 'group_id', 'current_installment', 'total_installments', 'frequency', 'patient_id', 'patient_name', 'pix_key', 'pix_key_type', 'professional_name', 'professional_cpf_cnpj', 'professional_email', 'professional_phone', 'link_sent', 'link_visited_count'],
@@ -207,7 +210,10 @@ class SupabaseDB {
             'planoStatus': 'plan_status',
             'planoValor': 'plan_value',
             'reminderSent': 'reminder_sent',
-            'reminderEnabled': 'reminder_enabled'
+            'reminderEnabled': 'reminder_enabled',
+            'emergencyContact': 'emergency_contact',
+            'referralSource': 'referral_source',
+            'appointmentId': 'group_id'
         };
 
         const allowedColumns = this._getAllowedColumns(table);
@@ -321,6 +327,7 @@ class SupabaseDB {
             'content_soap': 'conteudo',
             'type': 'tipo',
             'recurrence': 'recorrencia',
+            'group_id': 'appointmentId',
             'date': 'data',
             'data_atendimento': 'dataAtendimento',
             'expectativas': 'expectativas',

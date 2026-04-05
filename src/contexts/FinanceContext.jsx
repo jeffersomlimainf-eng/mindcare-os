@@ -146,24 +146,20 @@ export const FinanceProvider = ({ children }) => {
     // BUG-02 FIX: filtro por campo 'tipo', não pelo sinal matemático do valor
     const stats = useMemo(() => {
         const agora = new Date();
-        const anoAtual = agora.getFullYear();
-        const mesAtual = agora.getMonth(); // 0-11
+        const currentYM = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}`; // Ex: "2026-04"
 
-        const inCurrentMonth = (dateStr) => {
-            if (!dateStr) return false;
-            const d = _parseDate(dateStr);
-            return d && d.getFullYear() === anoAtual && d.getMonth() === mesAtual;
-        };
-
-        const currentMonthTransactions = transactions.filter(t => inCurrentMonth(t.dataVencimento));
+        // Filtro otimizado: compara apenas os 7 primeiros caracteres da string (YYYY-MM)
+        const currentMonthTransactions = transactions.filter(t => 
+            t.dataVencimento && t.dataVencimento.startsWith(currentYM)
+        );
 
         return {
             receitaMensal: currentMonthTransactions
                 .filter(t => t?.tipo?.toLowerCase() === 'receita')
-                .reduce((acc, t) => acc + Math.abs(t?.valor || 0), 0),
+                .reduce((acc, t) => acc + (Number(t?.valor) || 0), 0),
             despesaMensal: currentMonthTransactions
                 .filter(t => t?.tipo?.toLowerCase() === 'despesa')
-                .reduce((acc, t) => acc + Math.abs(t?.valor || 0), 0)
+                .reduce((acc, t) => acc + (Number(t?.valor) || 0), 0)
         };
     }, [transactions]);
 
@@ -174,6 +170,7 @@ export const FinanceProvider = ({ children }) => {
             addTransaction,
             updateTransaction,
             deleteTransaction,
+            refreshData,
             getContasVencidas,
             getContasVencemHoje,
             getContasProximas,

@@ -1,7 +1,7 @@
 import ReactGA from "react-ga4";
 
 const GA_MEASUREMENT_ID = "G-PRPGGDR7NJ";
-const SUPABASE_URL = "https://rwqiptuxjnnuoolxslio.supabase.co";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export const initGA = () => {
   ReactGA.initialize(GA_MEASUREMENT_ID);

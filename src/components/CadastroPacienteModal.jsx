@@ -13,6 +13,28 @@ const maskCPF = (value) => {
         .replace(/(-\d{2})\d+?$/, '$1');
 };
 
+const validateCPF = (cpf) => {
+    const cleanCPF = cpf.replace(/\D/g, '');
+    if (cleanCPF.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(cleanCPF)) return false;
+
+    let sum = 0;
+    let remainder;
+
+    for (let i = 1; i <= 9; i++) sum = sum + parseInt(cleanCPF.substring(i - 1, i)) * (11 - i);
+    remainder = (sum * 10) % 11;
+    if ((remainder === 10) || (remainder === 11)) remainder = 0;
+    if (remainder !== parseInt(cleanCPF.substring(9, 10))) return false;
+
+    sum = 0;
+    for (let i = 1; i <= 10; i++) sum = sum + parseInt(cleanCPF.substring(i - 1, i)) * (12 - i);
+    remainder = (sum * 10) % 11;
+    if ((remainder === 10) || (remainder === 11)) remainder = 0;
+    if (remainder !== parseInt(cleanCPF.substring(10, 11))) return false;
+
+    return true;
+};
+
 const maskPhone = (value) => {
     let r = value.replace(/\D/g, '');
     r = r.replace(/^0/, '');
@@ -35,6 +57,15 @@ const maskCEP = (value) => {
         .replace(/(-\d{3})\d+?$/, '$1');
 };
 
+const formatNameCase = (str) => {
+    if (!str) return '';
+    const preposicoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+    return str.toLowerCase().split(' ').map((word, index) => {
+        if (word.length <= 3 && preposicoes.includes(word) && index !== 0) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+};
+
 const calculateAge = (birthDate) => {
     if (!birthDate) return null;
     const today = new Date();
@@ -51,7 +82,7 @@ const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
-const Field = ({ label, value, onChange, type = 'text', placeholder = '', error = false, success = false, detail = null }) => (
+const Field = ({ label, value, onChange, onBlur, type = 'text', placeholder = '', error = false, success = false, detail = null }) => (
     <div className="relative">
         <div className="flex justify-between items-center mb-1.5">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">{label}</label>
@@ -64,6 +95,7 @@ const Field = ({ label, value, onChange, type = 'text', placeholder = '', error 
                 value={value}
                 placeholder={placeholder}
                 onChange={onChange}
+                onBlur={onBlur}
             />
             {success && <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 text-lg">check_circle</span>}
             {error && <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-rose-500 text-lg">error</span>}
@@ -82,7 +114,11 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
         dadosResponsavel: { nome: '', cpf: '', dataNascimento: '', telefone: '' },
         precoSessao: '',
         estadoCivil: '',
-        profissao: ''
+        profissao: '',
+        emergency_contact: '',
+        allergies: '',
+        medications: '',
+        referral_source: ''
     });
     const [isSaving, setIsSaving] = useState(false);
 
@@ -133,6 +169,10 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                 estadoCivil: paciente.estadoCivil || '',
                 profissao: paciente.profissao || '',
                 plano: paciente.plano || '',
+                emergency_contact: paciente.emergency_contact || '',
+                allergies: paciente.allergies || '',
+                medications: paciente.medications || '',
+                referral_source: paciente.referral_source || '',
             });
         } else {
             setForm({ 
@@ -143,7 +183,11 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                 dadosResponsavel: { nome: '', cpf: '', dataNascimento: '', telefone: '' },
                 precoSessao: '',
                 estadoCivil: '',
-                profissao: ''
+                profissao: '',
+                emergency_contact: '',
+                allergies: '',
+                medications: '',
+                referral_source: ''
             });
         }
     }, [paciente, isOpen]);
@@ -151,7 +195,20 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
     const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
 
     const handleSalvar = async () => {
-        if (!form.nome || !form.telefone) { showToast('Preencha ao menos nome e telefone', 'warning'); return; }
+        if (!form.nome || !form.telefone || !form.cpf) { 
+            showToast('Preencha Nome, CPF e Telefone (campos obrigatórios)', 'warning'); 
+            return; 
+        }
+
+        if (form.cpf && !validateCPF(form.cpf)) {
+            showToast('O CPF informado é inválido.', 'error');
+            return;
+        }
+
+        if (form.isMenor && form.dadosResponsavel?.cpf && !validateCPF(form.dadosResponsavel.cpf)) {
+            showToast('O CPF do responsável é inválido.', 'error');
+            return;
+        }
         
         setIsSaving(true);
         try {
@@ -192,14 +249,17 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                                 label="Nome Completo *"
                                 value={form.nome}
                                 onChange={e => set('nome', e.target.value)}
+                                onBlur={e => set('nome', formatNameCase(e.target.value))}
                                 placeholder="Nome do paciente"
                             />
                         </div>
                         <Field
-                            label="CPF"
+                            label="CPF *"
                             value={form.cpf}
                             onChange={e => set('cpf', maskCPF(e.target.value))}
                             placeholder="000.000.000-00"
+                            success={form.cpf.length === 14 && validateCPF(form.cpf)}
+                            error={form.cpf.length > 0 && form.cpf.length < 14}
                         />
                         <Field
                             label="Data de Nascimento"
@@ -289,6 +349,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                                         label="Nome do Responsável *"
                                         value={form.dadosResponsavel.nome}
                                         onChange={e => set('dadosResponsavel', { ...form.dadosResponsavel, nome: e.target.value })}
+                                        onBlur={e => set('dadosResponsavel', { ...form.dadosResponsavel, nome: formatNameCase(e.target.value) })}
                                         placeholder="Nome completo do pai, mãe ou tutor"
                                     />
                                 </div>
@@ -297,6 +358,8 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                                     value={form.dadosResponsavel.cpf}
                                     onChange={e => set('dadosResponsavel', { ...form.dadosResponsavel, cpf: maskCPF(e.target.value) })}
                                     placeholder="000.000.000-00"
+                                    success={form.dadosResponsavel.cpf.length === 14 && validateCPF(form.dadosResponsavel.cpf)}
+                                    error={form.dadosResponsavel.cpf.length > 0 && form.dadosResponsavel.cpf.length < 14}
                                 />
                                 <Field
                                     label="Telefone do Responsável"
@@ -411,10 +474,44 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
 
                             <div className="md:col-span-2">
                                 <Field
-                                    label="Plano de Saúde / Convênio"
-                                    value={form.plano}
-                                    onChange={e => set('plano', e.target.value)}
-                                    placeholder="Ex: Unimed, Bradesco, Particular..."
+                                    label="Contato de Emergência (Nome e Telefone)"
+                                    value={form.emergency_contact}
+                                    onChange={e => set('emergency_contact', e.target.value)}
+                                    onBlur={e => {
+                                        const val = e.target.value;
+                                        // Apenas capitaliza o início e deixa o restante (telefone) como o usuário digitou
+                                        // ou tenta um ajuste fino se houver um padrão claro
+                                        set('emergency_contact', formatNameCase(val));
+                                    }}
+                                    placeholder="Ex: Maria (Mãe) - (11) 99999-0000"
+                                />
+                            </div>
+
+                            <div className="md:col-span-1">
+                                <Field
+                                    label="💊 Medicamentos em Uso"
+                                    value={form.medications}
+                                    onChange={e => set('medications', e.target.value)}
+                                    placeholder="Ex: Rivotril, Fluoxetina..."
+                                />
+                            </div>
+
+                            <div className="md:col-span-1">
+                                <Field
+                                    label="⚠️ Alergias Conhecidas"
+                                    value={form.allergies}
+                                    onChange={e => set('allergies', e.target.value)}
+                                    placeholder="Ex: Dipirona, Corantes..."
+                                />
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Como conheceu a clínica? (Indicação)</label>
+                                <input
+                                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm"
+                                    value={form.referral_source}
+                                    onChange={e => set('referral_source', e.target.value)}
+                                    placeholder="Ex: Instagram, Indicação de Amigo, Google..."
                                 />
                             </div>
                         </div>

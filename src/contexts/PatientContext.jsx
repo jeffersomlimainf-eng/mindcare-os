@@ -102,10 +102,64 @@ export const PatientProvider = ({ children }) => {
         }
     };
 
+    const checkPatientClinicalData = async (id) => {
+        try {
+            // Tabelas criticas que bloqueiam a deleção do paciente
+            const tables = [
+                'evolutions', 
+                'docs_laudo', 
+                'docs_atestado', 
+                'docs_declaracao', 
+                'docs_anamnese', 
+                'docs_encaminhamento',
+                'docs_tcle',
+                'appointments'
+            ];
+
+            for (const table of tables) {
+                const { data, error } = await supabase
+                    .from(table)
+                    .select('id')
+                    .eq('patient_id', id)
+                    .limit(1);
+
+                if (error) {
+                    console.error(`[PatientContext] Erro ao verificar tabela ${table}:`, error);
+                    continue;
+                }
+
+                if (data && data.length > 0) {
+                    return { hasData: true, table };
+                }
+            }
+
+            return { hasData: false };
+        } catch (error) {
+            console.error('[PatientContext] Erro na verificação clínica:', error);
+            return { hasData: false };
+        }
+    };
+
     const deletePatient = async (id) => {
         try {
+            // Auditoria preventiva: Verificar se há documentos órfãos
+            const clinicalStatus = await checkPatientClinicalData(id);
+            if (clinicalStatus.hasData) {
+                const error = new Error('Paciente possui registros clínicos vinculados.');
+                error.code = 'CLINICAL_DATA_EXISTS';
+                error.table = clinicalStatus.table;
+                throw error;
+            }
+
             await db.delete('patients', id);
             setPatients(prev => prev.filter(p => p.id !== id));
+            
+            addNotification({
+                title: 'Paciente Excluído',
+                message: 'O cadastro foi removido com sucesso.',
+                type: 'info',
+                icon: 'delete_sweep'
+            });
         } catch (error) {
             console.error('[PatientContext] Erro ao deletar paciente:', error);
             throw error;

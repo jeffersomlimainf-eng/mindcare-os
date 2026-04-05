@@ -48,18 +48,19 @@ export const UserProvider = ({ children }) => {
         try {
             const userId = typeof sessionUserOrId === 'string' ? sessionUserOrId : sessionUserOrId.id;
             
-            let { data, error } = await supabase
+            // 1. Fetch user profile
+            const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
                 .maybeSingle();
 
-            if (error) {
-                throw error;
-            }
+            if (error) throw error;
+
+            let profileData = data;
 
             // Se o perfil não existe, cria um automaticamente (Google Auth / Race condition do email signup)
-            if (!data && typeof sessionUserOrId === 'object' && sessionUserOrId !== null) {
+            if (!profileData && typeof sessionUserOrId === 'object' && sessionUserOrId !== null) {
                 console.log('[UserContext] Perfil não encontrado. Criando dinamicamente...');
                 const sessionUser = sessionUserOrId;
                 const newProfile = {
@@ -86,84 +87,79 @@ export const UserProvider = ({ children }) => {
                     console.error("Erro ao inserir perfil automático:", insertError);
                     throw insertError;
                 }
-                data = insertedData;
-            } else if (!data) {
+                profileData = insertedData;
+            } else if (!profileData) {
                 throw new Error("Perfil retornado vazio. Usuário não encontrado na tabela profiles.");
             }
 
-            if (data) {
-                // Se NÃO for admin, verifique se o ADMIN dele (o tenant_id) está com o plano ativo
-                let isClinicBlocked = false;
-                let effectivePlanStatus = data.plan_status;
+            // 2. Decide if we need to fetch admin status
+            let isClinicBlocked = false;
+            let effectivePlanStatus = profileData.plan_status;
+            const blockedStatuses = ['Inadimplente', 'Suspenso', 'Bloqueado', 'Cancelado'];
 
-                const blockedStatuses = ['Inadimplente', 'Suspenso', 'Bloqueado', 'Cancelado'];
-
-                if (data.role !== 'admin' && data.tenant_id) {
-                    const { data: adminData, error: adminError } = await supabase
-                        .from('profiles')
-                        .select('plan_status')
-                        .eq('id', data.tenant_id)
-                        .maybeSingle();
-                    
-                    if (!adminError && adminData) {
-                        if (blockedStatuses.includes(adminData.plan_status)) {
-                            isClinicBlocked = true;
-                            effectivePlanStatus = adminData.plan_status;
-                        }
-                    }
-                } else if (data.role === 'admin') {
-                    // Se for admin, o próprio status manda
-                    if (blockedStatuses.includes(data.plan_status)) {
+            if (profileData.role !== 'admin' && profileData.tenant_id) {
+                // Fetch admin status in parallel if we had the tenant_id, 
+                // but since we just got it, we fetch it now.
+                const { data: adminData, error: adminError } = await supabase
+                    .from('profiles')
+                    .select('plan_status')
+                    .eq('id', profileData.tenant_id)
+                    .maybeSingle();
+                
+                if (!adminError && adminData) {
+                    if (blockedStatuses.includes(adminData.plan_status)) {
                         isClinicBlocked = true;
+                        effectivePlanStatus = adminData.plan_status;
                     }
                 }
-
-                const profileObj = {
-                    id: data.id,
-                    tenantId: data.tenant_id,
-                    nome: data.full_name,
-                    email: data.email,
-                    role: data.role,
-                    crp: data.crp,
-                    telefone: data.phone,
-                    especialidade: data.specialty,
-                    plan_id: data.plan_id,
-                    plan_value: data.plan_value,
-                    plan_start_date: data.plan_start_date,
-                    plan_billing_type: data.plan_billing_type,
-                    plan_payment_method: data.plan_payment_method,
-                    plan_status: effectivePlanStatus,
-                    isClinicBlocked: isClinicBlocked,
-                    // BUG-17 FIX: popular isInadimplente de acordo com o status efetivo
-                    isInadimplente: blockedStatuses.includes(effectivePlanStatus),
-                    is_trial: data.is_trial ?? true, 
-                    trial_end_date: data.trial_end_date,
-                    onboardingCompleted: data.onboarding_completed ?? true,
-                    cpf_cnpj: data.cpf_cnpj || '',
-                    clinic_name: data.clinic_name || '',
-                    clinic_cnpj: data.clinic_cnpj || '',
-                    avatar_url: data.avatar_url || null,
-                    configuracoes: data.configurations || defaultUser.configuracoes,
-                    clinica: { 
-                        nome: data.clinic_name || '', 
-                        cnpjCpf: data.clinic_cnpj || '', 
-                        logo: null, 
-                        assinatura: null 
-                    }
-                };
-                setUser(profileObj);
-                return profileObj;
+            } else if (profileData.role === 'admin') {
+                if (blockedStatuses.includes(profileData.plan_status)) {
+                    isClinicBlocked = true;
+                }
             }
+
+            const profileObj = {
+                id: profileData.id,
+                tenantId: profileData.tenant_id,
+                nome: profileData.full_name,
+                email: profileData.email,
+                role: profileData.role,
+                crp: profileData.crp,
+                telefone: profileData.phone,
+                especialidade: profileData.specialty,
+                plan_id: profileData.plan_id,
+                plan_value: profileData.plan_value,
+                plan_start_date: profileData.plan_start_date,
+                plan_billing_type: profileData.plan_billing_type,
+                plan_payment_method: profileData.plan_payment_method,
+                plan_status: effectivePlanStatus,
+                isClinicBlocked: isClinicBlocked,
+                isInadimplente: blockedStatuses.includes(effectivePlanStatus),
+                is_trial: profileData.is_trial ?? true, 
+                trial_end_date: profileData.trial_end_date,
+                onboardingCompleted: profileData.onboarding_completed ?? true,
+                cpf_cnpj: profileData.cpf_cnpj || '',
+                clinic_name: profileData.clinic_name || '',
+                clinic_cnpj: profileData.clinic_cnpj || '',
+                avatar_url: profileData.avatar_url || null,
+                configuracoes: profileData.configurations || defaultUser.configuracoes,
+                clinica: { 
+                    nome: profileData.clinic_name || '', 
+                    cnpjCpf: profileData.clinic_cnpj || '', 
+                    logo: null, 
+                    assinatura: null 
+                }
+            };
+
+            setUser(profileObj);
+            return profileObj;
             
-            throw new Error("Perfil retornado vazio. Usuário não encontrado na tabela profiles.");
         } catch (error) {
             console.error("Erro Supabase Profile:", error);
-            // 1. Destruição de Sessão no Catch (UserContext.jsx)
             await supabase.auth.signOut().catch(() => {});
             setUser(defaultUser);
             return null;
         } finally {
-            // 3. Fuga do Spinner (Garantia aqui e no handleAuth)
             setLoading(false);
         }
     };
@@ -321,8 +317,6 @@ export const UserProvider = ({ children }) => {
 
     const loginWithGoogle = async () => {
         try {
-            await supabase.auth.signOut().catch(() => {});
-
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {

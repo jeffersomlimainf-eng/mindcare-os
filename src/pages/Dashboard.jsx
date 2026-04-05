@@ -218,8 +218,8 @@ Retorne SEMPRE no seguinte formato (Markdown):
 • [O que investigar na próxima sessão]
 ---`;
 
-            const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
+            const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+            const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
             const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-assist`, {
                 method: 'POST',

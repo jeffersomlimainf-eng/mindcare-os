@@ -231,7 +231,7 @@ const AdminDashboard = () => {
                 userData: {
                     nome: newClient.nome,
                     email: newClient.email,
-                    password: 'Meu Sistema PSI@123', // Senha padrão temporária
+                    password: Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + '!', // Senha randômica segura
                     fone: newClient.fone,
                     clinica: newClient.clinica,
                     plano: newClient.plano,

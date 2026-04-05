@@ -42,6 +42,19 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
             setCategoria(lancamentoEditando.categoria || 'clinica');
             setSubcategoria(lancamentoEditando.subcategoria || '');
             setRepetir(false);
+
+            // BUG-FIX: Carregar o paciente vinculado ao registro para não perder o ID no salvamento
+            const pId = lancamentoEditando.pacienteId || lancamentoEditando.patient_id;
+            if (pId) {
+                const p = patients.find(p => p.id === pId);
+                if (p) {
+                    setPacienteSelecionado(p);
+                    setBuscaPaciente(p.nome || p.name || '');
+                }
+            } else {
+                setPacienteSelecionado(null);
+                setBuscaPaciente('');
+            }
         } else {
             setTipo(initialType);
             setDesc('');
@@ -107,12 +120,12 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                 const dvFormatted = dvBase.toISOString().split('T')[0];
 
                 const payload = {
-                    tipo,
+                    tipo: tipo.toLowerCase(),
                     desc: numParcelas > 1 ? `${desc} (${i + 1}/${numParcelas})` : desc,
                     valor: numericValor,
                     data: dFormatted,
                     dataVencimento: dvFormatted,
-                    status,
+                    status: status.toLowerCase(),
                     formaPag,
                     categoria,
                     subcategoria,
@@ -140,54 +153,54 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
     const renderReceitaFields = () => (
         <div className="space-y-6">
             {/* Seleção de Paciente (Destaque) */}
-            {!lancamentoEditando && (
-                <div className="relative group">
-                    <label className="block text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2 ml-1">Paciente do Atendimento</label>
-                    <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-emerald-500 text-lg group-focus-within:scale-110 transition-transform">person_search</span>
-                        <input
-                            className="w-full h-12 pl-11 pr-4 rounded-2xl bg-emerald-50/30 dark:bg-emerald-900/10 border-2 border-emerald-100 dark:border-emerald-800/30 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none text-sm font-bold transition-all"
-                            placeholder="Pesquisar por nome ou ID..."
-                            value={buscaPaciente}
-                            onChange={e => {
-                                setBuscaPaciente(e.target.value);
-                                setMostrarSugestoes(true);
-                                if (!e.target.value) setPacienteSelecionado(null);
-                            }}
-                            onFocus={() => setMostrarSugestoes(true)}
-                            onBlur={() => setTimeout(() => setMostrarSugestoes(false), 200)}
-                        />
-                        {buscaPaciente && (
-                            <button
-                                onClick={() => { setBuscaPaciente(''); setPacienteSelecionado(null); }}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 hover:text-emerald-600"
-                            >
-                                <span className="material-symbols-outlined text-lg">cancel</span>
-                            </button>
-                        )}
-                    </div>
-
-                    {mostrarSugestoes && buscaPaciente && pacientesFiltrados.length > 0 && (
-                        <div className="absolute z-[60] left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-h-60 overflow-y-auto">
-                            {pacientesFiltrados.map(p => (
-                                <button
-                                    key={p.id}
-                                    onClick={() => handleSelecionarPaciente(p)}
-                                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors text-left border-b border-slate-50 dark:border-slate-800 last:border-0"
-                                >
-                                    <div className={`size-9 rounded-full flex items-center justify-center text-[10px] font-black shadow-sm ${p.cor}`}>
-                                        {p.iniciais}
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{p.nome}</p>
-                                        <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{p.id}</p>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
+            <div className="relative group">
+                <label className="block text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2 ml-1">Paciente do Atendimento</label>
+                <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-emerald-500 text-lg group-focus-within:scale-110 transition-transform">person_search</span>
+                    <input
+                        className="w-full h-12 pl-11 pr-4 rounded-2xl bg-emerald-50/30 dark:bg-emerald-900/10 border-2 border-emerald-100 dark:border-emerald-800/30 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none text-sm font-bold transition-all"
+                        placeholder="Pesquisar por nome ou ID..."
+                        value={buscaPaciente}
+                        onChange={e => {
+                            setBuscaPaciente(e.target.value);
+                            setMostrarSugestoes(true);
+                            if (!e.target.value) setPacienteSelecionado(null);
+                        }}
+                        onFocus={() => setMostrarSugestoes(true)}
+                        onBlur={() => setTimeout(() => setMostrarSugestoes(false), 200)}
+                    />
+                    {buscaPaciente && (
+                        <button
+                            onClick={() => { setBuscaPaciente(''); setPacienteSelecionado(null); }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 hover:text-emerald-600"
+                        >
+                            <span className="material-symbols-outlined text-lg">cancel</span>
+                        </button>
                     )}
                 </div>
-            )}
+
+                {mostrarSugestoes && buscaPaciente && pacientesFiltrados.length > 0 && (
+                    <div className="absolute z-[60] left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-h-60 overflow-y-auto">
+                        {pacientesFiltrados.map(p => (
+                            <button
+                                key={p.id}
+                                onClick={() => handleSelecionarPaciente(p)}
+                                aria-label={`Selecionar paciente ${p.nome}`}
+                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors text-left border-b border-slate-50 dark:border-slate-800 last:border-0"
+                            >
+                                <div className={`size-9 rounded-full flex items-center justify-center text-[10px] font-black shadow-sm ${p.cor}`}>
+                                    {p.iniciais}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{p.nome}</p>
+                                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{p.id}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Valor */}

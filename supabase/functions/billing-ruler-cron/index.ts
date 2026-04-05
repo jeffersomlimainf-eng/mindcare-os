@@ -101,6 +101,8 @@ serve(async (req) => {
                         .eq('id', debt.id)
 
                     sentCount++
+                } else if (stage) {
+                    console.warn(`[Cron] Débito ${debt.id} (${debt.short_description || debt.description}) ignorado por falta de paciente ou e-mail. Stage: ${stage}`)
                 }
             }
 
