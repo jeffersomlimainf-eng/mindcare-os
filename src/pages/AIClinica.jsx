@@ -136,15 +136,27 @@ ${fullDatabaseContext}
                 content: m.text
             }));
 
-            const { data, error } = await supabase.functions.invoke('ai-assist', {
-                body: {
+            const { data: { session } } = await supabase.auth.getSession();
+            const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
+
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-assist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+                    'apikey': SUPABASE_ANON_KEY
+                },
+                body: JSON.stringify({
                     messages: [...history, { role: 'user', content: currentInput }],
                     systemPrompt,
                     temperature: 0.7
-                }
+                })
             });
 
-            if (error) throw new Error(`Erro na conexão: ${error.message}`);
+            if (!response.ok) throw new Error(`Status ${response.status}: Falha de conexão na Edge Function`);
+            const data = await response.json();
+            
             if (data?.error) throw new Error(`Erro da IA: ${data.error}`);
             if (!data?.choices?.[0]) throw new Error('Resposta inesperada da IA.');
 
