@@ -9,6 +9,7 @@ import NotificationDropdown from '../components/NotificationDropdown';
 import TenantSwitcher from '../components/TenantSwitcher';
 import { useUser } from '../contexts/UserContext';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
+import SmartNotificationsEngine from '../components/SmartNotificationsEngine';
 
 const titulos = {
     '/dashboard': 'Painel Principal',
@@ -78,6 +79,7 @@ const DashboardLayout = () => {
 
     return (
         <>
+            <SmartNotificationsEngine />
             <NovoAgendamentoModal
                 isOpen={modalNovaConsulta}
                 onClose={() => setModalNovaConsulta(false)}
