@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeclaracoes } from '../contexts/DeclaracaoContext';
+import { formatDisplayId } from '../utils/formatId';
 
 const DeclaracoesLista = () => {
     const navigate = useNavigate();
@@ -135,12 +136,12 @@ const DeclaracoesLista = () => {
                                             </div>
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{d.pacienteNome || 'Pendente'}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">ID: {d.pacienteId || 'Externo'}</p>
+                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">{formatDisplayId(d.pacienteId, 'PAC') || 'Externo'}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{d.documentoId}</p>
+                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{formatDisplayId(d.documentoId, 'DEC')}</p>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <p className="text-xs font-bold text-slate-600 dark:text-slate-400">{d.dataAtendimento ? new Date(d.dataAtendimento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</p>

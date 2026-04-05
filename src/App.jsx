@@ -50,6 +50,7 @@ const Vendas4 = lazy(() => import('./pages/Vendas4'));
 const Blog = lazy(() => import('./pages/Blog'));
 const Artigo = lazy(() => import('./pages/Artigo'));
 const PorQueNos = lazy(() => import('./pages/PorQueNos'));
+const Precos = lazy(() => import('./pages/Precos'));
 const SuspendedClinic = lazy(() => import('./pages/SuspendedClinic'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -143,6 +144,7 @@ function App() {
                     <Route path="/blog" element={<PublicRoute><Blog /></PublicRoute>} />
                     <Route path="/blog/:slug" element={<PublicRoute><Artigo /></PublicRoute>} />
                     <Route path="/melhor-sistema-para-psicologos" element={<PublicRoute><PorQueNos /></PublicRoute>} />
+                    <Route path="/precos" element={<PublicRoute><Precos /></PublicRoute>} />
                     <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                     <Route path="/cadastrar" element={<PublicRoute><Register /></PublicRoute>} />
                     <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />

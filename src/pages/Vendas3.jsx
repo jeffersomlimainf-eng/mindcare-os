@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Check, Shield, Heart, MessageCircle,
   Mail, ArrowRight, Star, Sparkles, CreditCard, Clock, Lock
@@ -81,15 +81,31 @@ export default function Vendas3() {
     return () => clearInterval(interval);
   }, [currentSlide]);
 
+  const shouldReduceMotion = useReducedMotion();
+
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
 
   const scaleUp = {
-    hidden: { opacity: 0, scale: 0.95 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, scale: shouldReduceMotion ? 1 : 0.95 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } }
   };
+
+  // Helper para props de animação segura
+  const safeAnimation = (variants) => ({
+    initial: "hidden",
+    animate: "visible",
+    variants: variants
+  });
+
+  const scrollAnimation = (variants) => ({
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: { once: true, margin: "-50px" },
+    variants: variants
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-purple-500 selection:text-white">
@@ -108,7 +124,7 @@ export default function Vendas3() {
           <div className="hidden md:flex items-center gap-8">
             <a href="#funcionalidades" className="text-sm font-medium text-slate-600 hover:text-purple-600 transition-colors">Funcionalidades</a>
             <a href="#seguranca" className="text-sm font-medium text-slate-600 hover:text-purple-600 transition-colors">Segurança</a>
-            <a href="#precos" className="text-sm font-medium text-slate-600 hover:text-purple-600 transition-colors">Preços</a>
+            <Link to="/precos" className="text-sm font-medium text-slate-600 hover:text-purple-600 transition-colors">Preços</Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -128,34 +144,34 @@ export default function Vendas3() {
           <div className="absolute top-[-10%] left-[50%] -translate-x-1/2 w-[800px] h-[500px] bg-purple-200/20 rounded-full blur-[120px] pointer-events-none" />
           
           <div className="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center">
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/60 backdrop-blur-md border border-purple-50 rounded-full text-purple-700 text-xs font-semibold shadow-sm mb-8">
+            <motion.div {...safeAnimation(fadeUp)} className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/60 backdrop-blur-md border border-purple-50 rounded-full text-purple-700 text-xs font-semibold shadow-sm mb-8">
               <Sparkles className="w-4 h-4 text-purple-400" />
               SISTEMA FEITO POR PSICÓLOGOS PARA PSICÓLOGOS
             </motion.div>
 
-            <motion.h1 initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.1 }} className="text-5xl md:text-7xl font-serif text-slate-900 leading-[1.1] mb-6">
+            <motion.h1 {...safeAnimation(fadeUp)} transition={{ delay: 0.1 }} className="text-5xl md:text-7xl font-serif text-slate-900 leading-[1.1] mb-6">
               Organize sua clínica com <br className="hidden md:block"/>
               <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">simplicidade e sintropia.</span>
             </motion.h1>
 
-            <motion.p initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.2 }} className="text-lg md:text-xl text-slate-600 max-w-2xl font-light mb-10 leading-relaxed">
+            <motion.p {...safeAnimation(fadeUp)} transition={{ delay: 0.2 }} className="text-lg md:text-xl text-slate-600 max-w-2xl font-light mb-10 leading-relaxed">
               Prontuário eletrônico seguro, agenda inteligente com WhatsApp e gestão financeira em um design pensado para quem busca o melhor sistema para psicólogos.
             </motion.p>
 
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.3 }} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <motion.div {...safeAnimation(fadeUp)} transition={{ delay: 0.3 }} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <Link to="/cadastrar" className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-lg rounded-full shadow-[0_10px_40px_-10px_rgba(147,51,234,0.5)] hover:from-purple-700 hover:to-indigo-700 hover:scale-[1.02] transform transition-all duration-300">
                 Experimentar Sem Compromisso
               </Link>
             </motion.div>
 
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.4 }} className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 font-medium">
+            <motion.div {...safeAnimation(fadeUp)} transition={{ delay: 0.4 }} className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 font-medium">
               <span className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> 30 dias grátis</span>
               <span className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Sem fidelidade</span>
               <span className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Não pede cartão hoje</span>
             </motion.div>
           </div>
 
-          <motion.div initial="hidden" animate="visible" variants={scaleUp} transition={{ delay: 0.5 }} className="mt-20 max-w-5xl mx-auto relative px-4 sm:px-0">
+          <motion.div {...safeAnimation(scaleUp)} transition={{ delay: 0.5 }} className="mt-20 max-w-5xl mx-auto relative px-4 sm:px-0">
             <div className="rounded-3xl overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] border-[8px] border-white/60 backdrop-blur-sm">
               <img
                 src={dashboardImg}
@@ -170,7 +186,7 @@ export default function Vendas3() {
         {/* Funcionalidades Elevadas */}
         <section id="funcionalidades" className="py-24 md:py-32">
           <div className="max-w-7xl mx-auto px-6">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} className="text-center max-w-2xl mx-auto mb-20">
+            <motion.div {...scrollAnimation(fadeUp)} className="text-center max-w-2xl mx-auto mb-20">
               <h2 className="text-4xl md:text-5xl font-serif text-sintropia-text mb-6">Tudo que seu consultório precisa.</h2>
               <p className="text-lg text-sintropia-sub font-light">Sem excessos. Apenas o essencial, magnificamente projetado.</p>
             </motion.div>
@@ -181,7 +197,7 @@ export default function Vendas3() {
                 { icon: Shield, title: "Prontuário Seguro LGPD", desc: "Seus dados criptografados. Armazene evoluções e anamneses com o máximo de segurança exigido pela lei." },
                 { icon: Sparkles, title: "Evoluções com IA", desc: "Ganhe tempo clínico. Nossa IA resume sessões e sugere evoluções organizadas em instantes." }
               ].map((item, i) => (
-                <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeUp} transition={{ delay: i * 0.1 }}
+                <motion.div key={i} {...scrollAnimation(fadeUp)} transition={{ delay: i * 0.1 }}
                   className="bg-white rounded-3xl p-10 border border-slate-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] hover:-translate-y-2 transition-transform duration-300">
                   <div className="w-14 h-14 bg-sintropia-bg rounded-2xl flex items-center justify-center text-sintropia-accent mb-8">
                     <item.icon className="w-7 h-7" />
@@ -197,12 +213,12 @@ export default function Vendas3() {
         {/* Pricing / Impression Section */}
         <section id="precos" className="py-24 md:py-32 bg-white relative overflow-hidden">
           <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+            <motion.div {...scrollAnimation(fadeUp)}>
               <h2 className="text-5xl md:text-6xl font-serif text-sintropia-text mb-8">Experimente o futuro da gestão clínica.</h2>
               <p className="text-xl text-sintropia-sub mb-14 font-light">Abra sua conta agora. Os primeiros 30 dias são por nossa conta.</p>
             </motion.div>
             
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleUp} className="bg-white rounded-[40px] p-10 md:p-16 border border-purple-50 shadow-[0_40px_80px_-20px_rgba(147,51,234,0.15)] relative overflow-hidden isolate">
+            <motion.div {...scrollAnimation(scaleUp)} className="bg-white rounded-[40px] p-10 md:p-16 border border-purple-50 shadow-[0_40px_80px_-20px_rgba(147,51,234,0.15)] relative overflow-hidden isolate">
               <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-purple-100/30 rounded-full blur-[80px] -z-10 translate-x-1/3 -translate-y-1/3" />
               
               <h3 className="text-4xl md:text-5xl font-serif text-slate-900 mb-6">Cadastre-se Grátis</h3>
@@ -245,7 +261,7 @@ export default function Vendas3() {
             <div className="flex flex-col gap-24">
               {/* Feature 1: Atendimento */}
               <div className="grid md:grid-cols-2 gap-16 items-center">
-                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+                <motion.div {...scrollAnimation(fadeUp)}>
                   <h3 className="text-3xl font-serif text-slate-900 mb-6">Presença e Humanização</h3>
                   <p className="text-lg text-slate-600 font-light leading-relaxed mb-8">
                     Trabalhe com sintropia em seus atendimentos. Tenha o prontuário do paciente sempre à mão, seja em um notebook ou tablet, sem perder o contato visual e a conexão humana.
@@ -254,17 +270,17 @@ export default function Vendas3() {
                     <Check className="w-5 h-5" /> Foco total no paciente
                   </div>
                 </motion.div>
-                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleUp} className="rounded-[40px] overflow-hidden shadow-2xl">
+                <motion.div {...scrollAnimation(scaleUp)} className="rounded-[40px] overflow-hidden shadow-2xl">
                   <img src={userPatient} alt="Atendimento clínico com sistema" className="w-full h-auto" />
                 </motion.div>
               </div>
 
               {/* Feature 2: Mobilidade */}
               <div className="grid md:grid-cols-2 gap-16 items-center">
-                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleUp} className="order-2 md:order-1 rounded-[40px] overflow-hidden shadow-2xl">
+                <motion.div {...scrollAnimation(scaleUp)} className="order-2 md:order-1 rounded-[40px] overflow-hidden shadow-2xl">
                   <img src={userTablet} alt="Mobilidade com tablet" className="w-full h-auto" />
                 </motion.div>
-                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-1 md:order-2">
+                <motion.div {...scrollAnimation(fadeUp)} className="order-1 md:order-2">
                   <h3 className="text-3xl font-serif text-slate-900 mb-6">Liberdade de Movimento</h3>
                   <p className="text-lg text-slate-600 font-light leading-relaxed mb-8">
                     Acesse seu consultório de qualquer lugar. Nosso programa para psicólogos foi desenhado para ser fluido em dispositivos móveis, garantindo que você nunca perca uma informação importante.
@@ -283,7 +299,7 @@ export default function Vendas3() {
                   { img: pacientesImg, title: "Pacientes" },
                   { img: tabletShowcase, title: "Interface Tablet" }
                 ].map((item, i) => (
-                  <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: i * 0.1 }}
+                  <motion.div key={i} {...scrollAnimation(fadeUp)} transition={{ delay: i * 0.1 }}
                     className="relative group cursor-pointer overflow-hidden rounded-3xl shadow-lg aspect-square">
                     <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
@@ -299,10 +315,10 @@ export default function Vendas3() {
         {/* FAQ Section */}
         <section className="py-24 md:py-32 bg-sintropia-bg">
           <div className="max-w-3xl mx-auto px-6">
-            <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-3xl md:text-4xl font-serif text-center mb-16 text-sintropia-text">Dúvidas Frequentes</motion.h2>
+            <motion.h2 {...scrollAnimation(fadeUp)} className="text-3xl md:text-4xl font-serif text-center mb-16 text-sintropia-text">Dúvidas Frequentes</motion.h2>
             <div className="space-y-4">
               {faqItems.map((item, index) => (
-                <motion.div key={index} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: index * 0.1 }} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                <motion.div key={index} {...scrollAnimation(fadeUp)} transition={{ delay: index * 0.1 }} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                   <button 
                     onClick={() => setOpenFaq(openFaq === index ? null : index)} 
                     className="w-full px-8 py-6 flex items-center justify-between text-left focus:outline-none"

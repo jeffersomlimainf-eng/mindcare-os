@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { 
   MessageCircle, Heart, Shield, Sparkles, 
   ArrowRight, Search, Clock, Calendar, User, 
@@ -51,10 +51,25 @@ export default function Blog() {
     return matchesCategory && matchesSearch;
   });
 
+  const shouldReduceMotion = useReducedMotion();
+
   const fadeUp = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
   };
+
+  const safeAnimation = (variants) => ({
+    initial: "hidden",
+    animate: "visible",
+    variants: variants
+  });
+
+  const scrollAnimation = (variants) => ({
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: { once: true, margin: "-50px" },
+    variants: variants
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-purple-100 selection:text-purple-900">
@@ -63,7 +78,7 @@ export default function Blog() {
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-white border-b border-purple-50 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-purple-50/50 to-transparent -z-0" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} className="max-w-3xl">
+          <motion.div {...safeAnimation(fadeUp)} className="max-w-3xl">
             <span className="inline-block px-4 py-1 rounded-full bg-purple-50 text-purple-600 font-medium text-xs uppercase tracking-widest mb-6 border border-purple-100">
               Espaço de Cuidado & Educação
             </span>
@@ -125,10 +140,7 @@ export default function Blog() {
             {filteredPosts.map((post, i) => (
               <motion.article 
                 key={post.slug} 
-                initial="hidden" 
-                whileInView="visible" 
-                viewport={{ once: true }} 
-                variants={fadeUp} 
+                {...scrollAnimation(fadeUp)}
                 transition={{ delay: (i % 3) * 0.1 }}
                 className="flex flex-col group h-full"
               >
@@ -187,14 +199,14 @@ export default function Blog() {
       <section id="sobre" className="py-24 md:py-32 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="relative">
+            <motion.div {...scrollAnimation(fadeUp)} className="relative">
               <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative z-10">
                 <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800" alt="Psicóloga Profissional" className="w-full h-full object-cover" />
               </div>
               <div className="absolute -bottom-8 -right-8 w-48 h-48 bg-purple-200 rounded-full blur-[60px] opacity-50 -z-0" />
             </motion.div>
             
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+            <motion.div {...scrollAnimation(fadeUp)}>
               <h2 className="text-4xl font-serif text-slate-900 mb-6 italic">Acolhimento e Ciência</h2>
               <p className="text-lg text-slate-600 font-light mb-8 leading-relaxed">
                 Nossos atendimentos são baseados no respeito à singularidade de cada indivíduo. Oferecemos um suporte profissional pautado na ética e no compromisso com a saúde mental, acolhendo pacientes de todas as idades e contextos.
@@ -226,7 +238,7 @@ export default function Blog() {
       <section className="py-24 md:py-40 bg-slate-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-transparent pointer-events-none" />
         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          <motion.div {...scrollAnimation(fadeUp)}>
             <Heart className="w-16 h-16 text-purple-500 mx-auto mb-10 animate-pulse" />
             <h2 className="text-5xl md:text-7xl font-serif mb-10 italic">O cuidado que sua mente merece.</h2>
             <p className="text-xl md:text-2xl text-slate-400 mb-16 font-light leading-relaxed max-w-2xl mx-auto">

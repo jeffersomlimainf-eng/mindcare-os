@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTcles } from '../contexts/TcleContext';
+import { formatDisplayId } from '../utils/formatId';
 
 const TclesLista = () => {
     const navigate = useNavigate();
@@ -12,7 +13,8 @@ const TclesLista = () => {
     const statusFiltros = ['Todos', 'Pendente', 'Assinado', 'Revogado'];
 
     const filtrados = tcles.filter(t => {
-        const matchBusca = (t.pacienteNome || '').toLowerCase().includes(busca.toLowerCase());
+        const matchBusca = (t.pacienteNome || '').toLowerCase().includes(busca.toLowerCase()) ||
+            formatDisplayId(t.id, 'TCL').toLowerCase().includes(busca.toLowerCase());
         const matchStatus = filtroStatus === 'Todos' || t.status === filtroStatus;
         return matchBusca && matchStatus;
     });
@@ -131,7 +133,11 @@ const TclesLista = () => {
                                             </div>
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{t.pacienteNome || 'Pendente'}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">{t.pacienteCpf || '—'}</p>
+                                                <div className="flex items-center gap-1">
+                                                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">{t.pacienteCpf || '—'}</p>
+                                                    <span className="text-[10px] text-slate-300">·</span>
+                                                    <p className="text-[10px] text-primary font-bold uppercase tracking-wide">{formatDisplayId(t.id, 'TCL')}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>

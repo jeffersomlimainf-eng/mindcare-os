@@ -6,6 +6,7 @@ import { useModels } from '../contexts/ModelContext';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
 import { exportToPDF, exportToWord } from '../utils/exportUtils';
+import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 const LaudoPsicologico = () => {
     const { id } = useParams();
@@ -226,7 +227,7 @@ const LaudoPsicologico = () => {
     const handleExportPDF = async () => {
         if (!documentoRef.current) return;
         try {
-            const filename = `laudo_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${dados.documentoId || 'novo'}.pdf`;
+            const filename = `laudo_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.pdf`;
             await exportToPDF(documentoRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
         } catch (error) {
@@ -239,7 +240,7 @@ const LaudoPsicologico = () => {
         try {
             const dataForWord = {
                 titulo: 'Laudo Psicológico',
-                subtitulo: `Documento ID: #${dados.documentoId || 'Novo'}`,
+                subtitulo: `Documento: ${formatDisplayId(dados.documentoId, 'LAU')}`,
                 paciente: {
                     nome: dados.pacienteNome,
                     cpf: dados.pacienteCpf,
@@ -258,7 +259,7 @@ const LaudoPsicologico = () => {
                     especialidade: user.especialidade
                 }
             };
-            const filename = `laudo_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${dados.documentoId || 'novo'}.docx`;
+            const filename = `laudo_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.docx`;
             await exportToWord(dataForWord, filename);
             showToast('Word gerado com sucesso!', 'success');
         } catch (error) {
@@ -267,7 +268,7 @@ const LaudoPsicologico = () => {
     };
 
     const handleWhatsApp = () => {
-        const texto = `Olá ${dados.pacienteNome}, segue informação sobre o seu laudo psicológico (${dados.documentoId || 'novo'}). Para mais detalhes, entre em contato com a clínica.`;
+        const texto = `Olá ${dados.pacienteNome}, segue informação sobre o seu laudo psicológico (${formatDisplayId(dados.documentoId, 'LAU')}). Para mais detalhes, entre em contato com a clínica.`;
         window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
     };
 
@@ -306,7 +307,7 @@ const LaudoPsicologico = () => {
                     <p className="text-sm text-slate-500">
                         {isNovo && !laudoId
                             ? 'Crie um laudo conforme a Resolução CFP nº 06/2019.'
-                            : `Documento ${dados.documentoId || ''} · ${dados.pacienteNome}`}
+                            : `Documento ${formatDisplayId(dados.documentoId, 'LAU')} · ${dados.pacienteNome}`}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -348,7 +349,7 @@ const LaudoPsicologico = () => {
                             </div>
                             <div className="text-right">
                                 <h3 className="text-xl font-black uppercase tracking-wider text-slate-800">Laudo Psicológico</h3>
-                                <p className="text-[10px] font-bold text-slate-400 mt-1">Documento ID: #{dados.documentoId || 'Novo'}</p>
+                                <p className="text-[10px] font-bold text-slate-400 mt-1">Documento: {formatDisplayId(dados.documentoId, 'LAU')}</p>
                             </div>
                         </div>
 
@@ -527,7 +528,7 @@ const LaudoPsicologico = () => {
                                                     </div>
                                                     <div>
                                                         <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{p.nome}</span>
-                                                        <p className="text-[10px] text-slate-400">{p.id} · {p.email || p.telefone}</p>
+                                                        <p className="text-[10px] text-slate-400">{formatDisplayId(p.id, 'PAC')} · {p.email || p.telefone}</p>
                                                     </div>
                                                 </button>
                                             ))
@@ -544,7 +545,7 @@ const LaudoPsicologico = () => {
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-xs font-bold text-slate-900 dark:text-white">{dados.pacienteNome}</p>
-                                        <p className="text-[10px] text-slate-400">{dados.pacienteId}</p>
+                                        <p className="text-[10px] text-slate-400">{formatDisplayId(dados.pacienteId, 'PAC')}</p>
                                     </div>
                                     <span className="material-symbols-outlined text-primary text-sm">check_circle</span>
                                 </div>

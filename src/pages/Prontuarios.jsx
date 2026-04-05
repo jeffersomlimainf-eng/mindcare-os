@@ -9,6 +9,7 @@ import { useAnamneses } from '../contexts/AnamneseContext';
 import { useEncaminhamentos } from '../contexts/EncaminhamentoContext';
 import { showToast } from '../components/Toast';
 import { handleNavegacaoDocumento } from '../utils/navigation';
+import { formatDisplayId, getDocumentPrefix } from '../utils/formatId';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
 
@@ -314,7 +315,7 @@ const Prontuarios = () => {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{p.nome}</p>
-                                                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">ID: {p.id}</p>
+                                                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">ID: {formatDisplayId(p.id, getDocumentPrefix(p.tipo))}</p>
                                                 </div>
                                             </div>
                                         </td>

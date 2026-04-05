@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { 
   ArrowLeft, Clock, Calendar, Share2, 
   MessageCircle, Heart, ChevronRight, 
@@ -52,10 +52,25 @@ export default function Artigo() {
     .sort(() => 0.5 - Math.random())
     .slice(0, 3);
 
+  const shouldReduceMotion = useReducedMotion();
+
   const fadeUp = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
   };
+
+  const safeAnimation = (variants) => ({
+    initial: "hidden",
+    animate: "visible",
+    variants: variants
+  });
+
+  const scrollAnimation = (variants) => ({
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: { once: true, margin: "-50px" },
+    variants: variants
+  });
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-purple-100 selection:text-purple-900">
@@ -67,7 +82,7 @@ export default function Artigo() {
             <ArrowLeft className="w-4 h-4" /> Voltar ao Blog
           </Link>
           
-          <motion.div initial="hidden" animate="visible" variants={fadeUp}>
+          <motion.div {...safeAnimation(fadeUp)}>
             <div className="flex items-center gap-4 text-xs font-bold text-purple-600 uppercase tracking-widest mb-6">
               <span className="bg-purple-100 px-3 py-1 rounded-full">{post.category}</span>
               <span className="w-1 h-1 bg-slate-300 rounded-full" />
@@ -105,10 +120,7 @@ export default function Artigo() {
       <main className="py-20">
         <article className="max-w-3xl mx-auto px-6">
           <motion.div 
-            initial="hidden" 
-            whileInView="visible" 
-            viewport={{ once: true }} 
-            variants={fadeUp}
+            {...scrollAnimation(fadeUp)}
             className="prose prose-slate prose-lg max-w-none"
           >
             <div className="rounded-[40px] overflow-hidden mb-16 shadow-2xl">
@@ -166,7 +178,7 @@ export default function Artigo() {
       {/* Strategic Footer CTA */}
       <section className="py-24 md:py-32 bg-slate-900 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          <motion.div {...scrollAnimation(fadeUp)}>
             <Heart className="w-12 h-12 text-purple-400 mx-auto mb-8" />
             <h2 className="text-5xl md:text-6xl font-serif mb-8 italic">Você não precisa lidar com tudo sozinho.</h2>
             <p className="text-xl text-slate-400 mb-14 font-light leading-relaxed">

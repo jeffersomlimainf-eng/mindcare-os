@@ -6,6 +6,7 @@ import { useModels } from '../contexts/ModelContext';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
 import { exportToPDF, exportToWord } from '../utils/exportUtils';
+import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 const secoes = [
     {
@@ -307,7 +308,7 @@ const FichaAnamnese = () => {
     const handleExportPDF = async () => {
         if (!documentoRef.current) return;
         try {
-            const filename = `anamnese_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${dados.documentoId || 'novo'}.pdf`;
+            const filename = `anamnese_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.pdf`;
             await exportToPDF(documentoRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
         } catch (error) {
@@ -320,7 +321,7 @@ const FichaAnamnese = () => {
         try {
             const dataForWord = {
                 titulo: 'Ficha de Anamnese Psicológica',
-                subtitulo: `Documento ID: #${dados.documentoId || 'Novo'}`,
+                subtitulo: `Documento: ${formatDisplayId(dados.documentoId, 'ANA')}`,
                 paciente: {
                     nome: dados.pacienteNome,
                     cpf: dados.pacienteCpf,
@@ -338,7 +339,7 @@ const FichaAnamnese = () => {
                 }
             };
             
-            const filename = `anamnese_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${dados.documentoId || 'novo'}.docx`;
+            const filename = `anamnese_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.docx`;
             await exportToWord(dataForWord, filename);
             showToast('Word gerado com sucesso!', 'success');
         } catch (error) {
@@ -346,7 +347,7 @@ const FichaAnamnese = () => {
         }
     };
     const handleWhatsApp = () => {
-        const texto = `Olá ${dados.pacienteNome}, sua ficha de anamnese (${dados.documentoId || 'novo'}) foi registrada. Para mais informações, entre em contato com a clínica.`;
+        const texto = `Olá ${dados.pacienteNome}, sua ficha de anamnese (${formatDisplayId(dados.documentoId, 'ANA')}) foi registrada. Para mais informações, entre em contato com a clínica.`;
         window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
     };
 
@@ -385,7 +386,7 @@ const FichaAnamnese = () => {
                     <p className="text-sm text-slate-500">
                         {isNovo && !fichaId
                             ? 'Preencha a ficha de anamnese do paciente de forma completa e detalhada.'
-                            : `Documento ${dados.documentoId || ''} · ${dados.pacienteNome}`}
+                            : `Documento ${formatDisplayId(dados.documentoId, 'ANA')} · ${dados.pacienteNome}`}
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -428,7 +429,7 @@ const FichaAnamnese = () => {
                             </div>
                             <div className="text-right">
                                 <div className="inline-block px-3 py-1 bg-slate-100 rounded-md mb-2">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase">Doc #{dados.documentoId || 'Novo'}</p>
+                                    <p className="text-[10px] font-black text-slate-500 uppercase">Doc {formatDisplayId(dados.documentoId, 'ANA')}</p>
                                 </div>
                                 <p className="text-xs font-bold text-slate-400">{new Date().toLocaleDateString('pt-BR')}</p>
                             </div>
@@ -544,7 +545,7 @@ const FichaAnamnese = () => {
                                                     <div className={`size-8 rounded-full flex items-center justify-center text-[10px] font-black ${p.cor || 'bg-primary/10 text-primary'}`}>{p.iniciais}</div>
                                                     <div>
                                                         <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{p.nome}</span>
-                                                        <p className="text-[10px] text-slate-400">{p.id}</p>
+                                                        <p className="text-[10px] text-slate-400">{formatDisplayId(p.id, 'PAC')}</p>
                                                     </div>
                                                 </button>
                                             ))
@@ -559,7 +560,7 @@ const FichaAnamnese = () => {
                                     <div className={`size-8 rounded-full flex items-center justify-center text-[10px] font-black ${dados.pacienteCor || 'bg-primary/10 text-primary'}`}>{dados.pacienteIniciais}</div>
                                     <div className="flex-1">
                                         <p className="text-xs font-bold text-slate-900 dark:text-white">{dados.pacienteNome}</p>
-                                        <p className="text-[10px] text-slate-400">{dados.pacienteId}</p>
+                                        <p className="text-[10px] text-slate-400">{formatDisplayId(dados.pacienteId, 'PAC')}</p>
                                     </div>
                                     <span className="material-symbols-outlined text-amber-500 text-sm">check_circle</span>
                                 </div>

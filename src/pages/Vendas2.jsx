@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Check, Shield, Heart, Calendar,
   PieChart, ArrowRight, Sparkles, CreditCard, Clock, Lock, Star,
@@ -62,15 +62,31 @@ export default function Vendas2() {
     };
   }, []);
 
+  const shouldReduceMotion = useReducedMotion();
+
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
 
   const scaleUp = {
-    hidden: { opacity: 0, scale: 0.95 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, scale: shouldReduceMotion ? 1 : 0.95 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } }
   };
+
+  // Helper para props de animação segura
+  const safeAnimation = (variants) => ({
+    initial: "hidden",
+    animate: "visible",
+    variants: variants
+  });
+
+  const scrollAnimation = (variants) => ({
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: { once: true, margin: "-50px" },
+    variants: variants
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-purple-500 selection:text-white overflow-hidden">
@@ -83,6 +99,9 @@ export default function Vendas2() {
             </span>
           </div>
           <div className="flex items-center gap-6">
+            <Link to="/precos" className="text-sm font-semibold text-slate-600 hover:text-purple-600 transition-colors">
+              Preços
+            </Link>
             <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-purple-600 transition-colors">
               Entrar
             </Link>
@@ -101,24 +120,24 @@ export default function Vendas2() {
           <div className="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center">
             
             {/* Etiqueta de Autoridade / Trust Badge */}
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-50 border border-purple-100 rounded-full text-purple-700 text-xs font-bold shadow-sm mb-8">
+            <motion.div {...safeAnimation(fadeUp)} className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-50 border border-purple-100 rounded-full text-purple-700 text-xs font-bold shadow-sm mb-8">
               <Shield className="w-4 h-4 text-purple-600" />
               100% Adequado à LGPD e Resoluções do CFP
             </motion.div>
 
             {/* Headline com Foco no Benefício Real (Intenção de Busca) */}
-            <motion.h1 id="hero-heading" initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.1 }} className="text-5xl md:text-7xl font-serif text-slate-900 leading-[1.1] mb-6">
+            <motion.h1 id="hero-heading" {...safeAnimation(fadeUp)} transition={{ delay: 0.1 }} className="text-5xl md:text-7xl font-serif text-slate-900 leading-[1.1] mb-6">
               Mais tempo para a clínica.<br className="hidden md:block"/>
               Menos tempo com a <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">burocracia.</span>
             </motion.h1>
 
             {/* Subheadline Explicativa e Segura */}
-            <motion.h2 initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.2 }} className="text-xl text-slate-600 max-w-2xl font-light mb-10 leading-relaxed">
+            <motion.h2 {...safeAnimation(fadeUp)} transition={{ delay: 0.2 }} className="text-xl text-slate-600 max-w-2xl font-light mb-10 leading-relaxed">
               Software de gestão feito <strong>por psicólogos, para psicólogos.</strong> Consolide sua agenda, garanta o sigilo absoluto dos seus prontuários e acompanhe a evolução dos pacientes com nosso exclusivo <em>Bio-Painel</em> de observação clínica.
             </motion.h2>
 
             {/* CTA Forte */}
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.3 }} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <motion.div {...safeAnimation(fadeUp)} transition={{ delay: 0.3 }} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <Link to="/cadastrar" className="px-10 py-5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg rounded-full shadow-[0_10px_40px_-10px_rgba(147,51,234,0.4)] hover:shadow-[0_10px_40px_-10px_rgba(147,51,234,0.7)] hover:scale-[1.02] transform transition-all duration-300 flex items-center gap-2">
                 Testar Grátis por 30 Dias <ArrowRight className="w-5 h-5" />
               </Link>
@@ -155,10 +174,7 @@ export default function Vendas2() {
               ].map((item, i) => (
                 <motion.div 
                   key={i} 
-                  initial="hidden" 
-                  whileInView="visible" 
-                  viewport={{ once: true }} 
-                  variants={fadeUp}
+                  {...scrollAnimation(fadeUp)}
                   className="p-8 rounded-[32px] bg-slate-50 border border-slate-100 hover:border-purple-200 transition-all group"
                 >
                   <div className="mb-6 p-4 bg-white rounded-2xl w-fit shadow-sm group-hover:scale-110 transition-transform">
@@ -177,7 +193,7 @@ export default function Vendas2() {
           <div className="absolute top-0 right-0 w-1/3 h-full bg-purple-50/50 -z-0 blur-3xl rounded-full translate-x-1/2" />
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="grid md:grid-cols-2 gap-16 items-center">
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-2 md:order-1">
+              <motion.div {...scrollAnimation(fadeUp)} className="order-2 md:order-1">
                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-sm font-bold mb-6">
                     <Calendar className="w-4 h-4" /> Gestão de Tempo Inteligente
                  </div>
@@ -193,7 +209,7 @@ export default function Vendas2() {
                    ))}
                  </ul>
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleUp} className="order-1 md:order-2 bg-white p-6 md:p-10 rounded-[40px] shadow-2xl shadow-purple-100 border border-slate-100 relative">
+              <motion.div {...scrollAnimation(scaleUp)} className="order-1 md:order-2 bg-white p-6 md:p-10 rounded-[40px] shadow-2xl shadow-purple-100 border border-slate-100 relative">
                  <img src={agendaImg} alt="Melhor Agenda para Psicólogos do Mercado" className="w-full h-auto rounded-xl shadow-lg border border-slate-200/50" />
               </motion.div>
             </div>
@@ -204,10 +220,10 @@ export default function Vendas2() {
         <section className="py-24 bg-slate-50 relative">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid md:grid-cols-2 gap-16 items-center">
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleUp} className="bg-white p-6 md:p-10 rounded-[40px] shadow-2xl shadow-emerald-100 border border-slate-100 relative">
+              <motion.div {...scrollAnimation(scaleUp)} className="bg-white p-6 md:p-10 rounded-[40px] shadow-2xl shadow-emerald-100 border border-slate-100 relative">
                  <img src={financeiroImg} alt="Gestão Financeira para Clínicas de Psicologia" className="w-full h-auto rounded-xl shadow-lg border border-slate-200/50" />
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+              <motion.div {...scrollAnimation(fadeUp)}>
                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-bold mb-6">
                     <PieChart className="w-4 h-4" /> Controle Absoluto
                  </div>
@@ -232,7 +248,7 @@ export default function Vendas2() {
           <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-t from-purple-900/40 to-transparent pointer-events-none" />
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="grid md:grid-cols-2 gap-16 items-center">
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-2 md:order-1">
+              <motion.div {...scrollAnimation(fadeUp)} className="order-2 md:order-1">
                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md text-purple-300 rounded-lg text-sm font-bold mb-6 border border-white/10 uppercase tracking-widest">
                     <Activity className="w-4 h-4" /> Inovação Meu Sistema PSI
                  </div>
@@ -257,7 +273,7 @@ export default function Vendas2() {
                    Quero o Bio-Painel Agora <ArrowRight className="w-5 h-5" />
                  </Link>
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleUp} className="order-1 md:order-2 bg-white/5 backdrop-blur-xl p-6 md:p-10 rounded-[40px] shadow-2xl shadow-purple-900/50 border border-white/10 relative group">
+              <motion.div {...scrollAnimation(scaleUp)} className="order-1 md:order-2 bg-white/5 backdrop-blur-xl p-6 md:p-10 rounded-[40px] shadow-2xl shadow-purple-900/50 border border-white/10 relative group">
                  <div className="absolute inset-0 bg-purple-500/10 rounded-[40px] group-hover:bg-purple-500/20 transition-all -z-1" />
                  <img src={pacientesImg} alt="Painel Clínico Inteligente para Psicólogos" className="w-full h-auto rounded-xl shadow-lg border border-white/20" />
                  {/* Decorative Floating Element */}
@@ -312,22 +328,22 @@ export default function Vendas2() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="md:row-span-2">
+              <motion.div {...scrollAnimation(fadeUp)} className="md:row-span-2">
                 <img src={laptopShowcase} alt="Sistema para psicólogos no notebook" className="w-full h-full object-cover rounded-3xl shadow-lg" />
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+              <motion.div {...scrollAnimation(fadeUp)}>
                 <img src={agendaImg} alt="Agenda Digital para Psicólogos" className="w-full h-48 object-cover rounded-3xl shadow-lg border border-slate-100" />
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+              <motion.div {...scrollAnimation(fadeUp)}>
                 <img src={tabletShowcase} alt="Acesse no seu tablet" className="w-full h-48 object-cover rounded-3xl shadow-lg" />
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="md:row-span-2">
+              <motion.div {...scrollAnimation(fadeUp)} className="md:row-span-2">
                 <img src={userPatient} alt="Profissional atendendo paciente" className="w-full h-full object-cover rounded-3xl shadow-lg" />
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+              <motion.div {...scrollAnimation(fadeUp)}>
                 <img src={financeiroImg} alt="Controle financeiro clínica" className="w-full h-48 object-cover rounded-3xl shadow-lg border border-slate-100" />
               </motion.div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+              <motion.div {...scrollAnimation(fadeUp)}>
                 <img src={userTablet} alt="Praticidade na palma da mão" className="w-full h-48 object-cover rounded-3xl shadow-lg" />
               </motion.div>
             </div>
@@ -443,7 +459,7 @@ export default function Vendas2() {
         {/* CTA Section Final */}
         <section className="py-32 bg-white">
           <div className="max-w-4xl mx-auto px-4">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleUp} className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[40px] p-12 text-center shadow-2xl relative overflow-hidden">
+            <motion.div {...scrollAnimation(scaleUp)} className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[40px] p-12 text-center shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-40 -mt-40 blur-3xl" />
               <h2 className="text-4xl md:text-5xl font-serif text-white mb-6 relative z-10">Resgate seu tempo e sua paz mental.</h2>
               <p className="text-lg text-purple-50/80 mb-10 relative z-10 font-light">Junte-se a centenas de psicólogos que decidiram profissionalizar sua gestão clínica hoje mesmo.</p>

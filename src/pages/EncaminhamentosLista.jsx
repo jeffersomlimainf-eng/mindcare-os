@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEncaminhamentos } from '../contexts/EncaminhamentoContext';
+import { formatDisplayId } from '../utils/formatId';
 
 const EncaminhamentosLista = () => {
     const navigate = useNavigate();
@@ -142,14 +143,18 @@ const EncaminhamentosLista = () => {
                                             </div>
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{e.pacienteNome || 'Pendente'}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">ID: {e.pacienteId || 'Externo'}</p>
+                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">{formatDisplayId(e.pacienteId, 'PAC') || 'Externo'}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
                                             <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{e.especialidadeDestino || 'Geral'}</p>
-                                            <span className={`inline-flex w-fit px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest mt-1 ${urgenciaConfig[e.urgencia] || 'bg-slate-100 text-slate-500'}`}>{e.urgencia || 'Normal'}</span>
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <span className={`inline-flex px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest ${urgenciaConfig[e.urgencia] || 'bg-slate-100 text-slate-500'}`}>{e.urgencia || 'Normal'}</span>
+                                                <span className="text-[10px] text-slate-300">·</span>
+                                                <span className="text-[9px] text-primary font-bold uppercase tracking-wide">{formatDisplayId(e.documentoId, 'ENC')}</span>
+                                            </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-center">

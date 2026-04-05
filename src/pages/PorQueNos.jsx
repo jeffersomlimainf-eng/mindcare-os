@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { 
   CheckCircle2, AlertCircle, Clock, ShieldCheck, 
   TrendingUp, Zap, MessageCircle, Heart, 
@@ -38,10 +38,30 @@ export default function PorQueNos() {
     window.scrollTo(0, 0);
   }, []);
 
+  const shouldReduceMotion = useReducedMotion();
+
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
+
+  const scaleUp = {
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, scale: shouldReduceMotion ? 1 : 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
+  const safeAnimation = (variants) => ({
+    initial: "hidden",
+    animate: "visible",
+    variants: variants
+  });
+
+  const scrollAnimation = (variants) => ({
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: { once: true, margin: "-50px" },
+    variants: variants
+  });
 
   const reasons = [
     {
@@ -71,7 +91,7 @@ export default function PorQueNos() {
       <section className="relative pt-32 pb-24 md:pt-48 md:pb-40 bg-white overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-purple-50 to-transparent -z-0" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} className="max-w-4xl">
+          <motion.div {...safeAnimation(fadeUp)} className="max-w-4xl">
             <span className="inline-block px-4 py-1.5 rounded-full bg-purple-50 text-purple-600 font-bold text-xs uppercase tracking-[0.2em] mb-8 border border-purple-100">
                Estratégia & Gestão Clínica
             </span>
@@ -105,13 +125,10 @@ export default function PorQueNos() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {reasons.map((reason, i) => (
-              <motion.div 
-                key={i}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeUp}
-                transition={{ delay: i * 0.2 }}
+                <motion.div 
+                  key={i}
+                  {...scrollAnimation(fadeUp)}
+                  transition={{ delay: i * 0.2 }}
                 className="bg-white p-10 rounded-[40px] shadow-sm border border-slate-100 hover:shadow-xl hover:translate-y-[-8px] transition-all group"
               >
                 <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-8 group-hover:bg-purple-600 group-hover:text-white transition-all">
@@ -134,7 +151,7 @@ export default function PorQueNos() {
       <section className="py-24 md:py-40 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-20 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+            <motion.div {...scrollAnimation(fadeUp)}>
               <span className="text-purple-600 font-bold text-sm uppercase tracking-[0.3em] mb-6 block">Nosso Diferencial</span>
               <h2 className="text-4xl md:text-6xl font-serif text-slate-900 mb-10 leading-tight">
                 Criado para Psicólogos, <span className="italic">por quem entende</span> de Psicologia.
@@ -159,10 +176,7 @@ export default function PorQueNos() {
             </motion.div>
             
             <motion.div 
-              initial="hidden" 
-              whileInView="visible" 
-              viewport={{ once: true }} 
-              variants={fadeUp}
+              {...scrollAnimation(fadeUp)}
               className="relative"
             >
               <div className="aspect-square bg-slate-50 rounded-[60px] p-8 shadow-inner border border-slate-100 flex items-center justify-center overflow-hidden">
@@ -228,7 +242,7 @@ export default function PorQueNos() {
       {/* 5. CTA Final Re-Focus */}
       <section className="py-24 md:py-40 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          <motion.div {...scrollAnimation(fadeUp)}>
             <Heart className="w-12 h-12 text-purple-600 mx-auto mb-10" />
             <h2 className="text-5xl md:text-6xl font-serif text-slate-900 mb-10 leading-tight">
               Sua clínica merece a <span className="text-purple-600">Sintropia</span> que oferecemos.

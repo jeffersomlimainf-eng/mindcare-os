@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLaudos } from '../contexts/LaudoContext';
+import { formatDisplayId } from '../utils/formatId';
 
 const LaudosLista = () => {
     const navigate = useNavigate();
@@ -141,13 +142,13 @@ const LaudosLista = () => {
                                             </div>
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{l.pacienteNome || 'Pendente'}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">ID: {l.pacienteId || 'Externo'}</p>
+                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">{formatDisplayId(l.pacienteId, 'PAC') || 'Externo'}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[150px]">{l.documentoId}</p>
+                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[150px]">{formatDisplayId(l.documentoId, 'LAU')}</p>
                                             <p className="text-[9px] text-primary font-bold opacity-60 uppercase">Laudo Clínico</p>
                                         </div>
                                     </td>

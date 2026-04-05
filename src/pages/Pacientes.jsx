@@ -7,6 +7,7 @@ import { useUser } from '../contexts/UserContext';
 import { useAppointments } from '../contexts/AppointmentContext';
 import { formatDateLocal, calcularIdade } from '../utils/date';
 import { formatPatientIdForUrl } from '../utils/navigation';
+import { formatDisplayId } from '../utils/formatId';
 import { safeRender } from '../utils/render';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import Modal from '../components/Modal';
@@ -139,7 +140,8 @@ const Pacientes = () => {
         const buscaLimpa = busca.replace(/\D/g, '');
         const cpfOk = p.cpf && p.cpf.replace(/\D/g, '').includes(buscaLimpa);
         const buscaOk = (p.nome || '').toLowerCase().includes(busca.toLowerCase()) ||
-            p.id.includes(busca) ||
+            p.id.toLowerCase().includes(busca.toLowerCase()) ||
+            formatDisplayId(p.id, 'PAC').toLowerCase().includes(busca.toLowerCase()) ||
             (p.email && p.email.toLowerCase().includes(busca.toLowerCase())) ||
             (buscaLimpa !== '' && cpfOk);
 
@@ -431,7 +433,7 @@ const Pacientes = () => {
                                                 <div className={`size-10 rounded-full flex items-center justify-center font-bold text-xs ${p.cor || 'bg-slate-100 text-slate-500'}`}>{p.iniciais}</div>
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase leading-tight">{safeRender(p.nome)}</span>
-                                                    <span className="text-[10px] text-slate-400 uppercase tracking-widest">ID: {p.id}</span>
+                                                    <span className="text-[10px] text-slate-400 uppercase tracking-widest">ID: {formatDisplayId(p.id, 'PAC')}</span>
                                                 </div>
                                             </div>
                                         </td>

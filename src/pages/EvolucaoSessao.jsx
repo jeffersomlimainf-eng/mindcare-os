@@ -6,6 +6,7 @@ import { useUser } from '../contexts/UserContext';
 import { useFinance } from '../contexts/FinanceContext';
 import { showToast } from '../components/Toast';
 import { exportToPDF, exportToWord } from '../utils/exportUtils';
+import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 const tecnicasDefault = [
     { id: 1, nome: 'Reestruturação Cognitiva', checked: false },
@@ -195,7 +196,8 @@ const EvolucaoSessao = () => {
         try {
             const nomePaciente = pacienteSelecionado?.nome || 'paciente';
             const dataStr = new Date(dataHora).toLocaleDateString('pt-BR').replace(/\//g, '-');
-            const filename = `evolucao_${nomePaciente.replace(/\s+/g, '_').toLowerCase()}_${dataStr}.pdf`;
+            const sanitizedId = formatFileId(id || 'novo');
+            const filename = `evolucao_${formatFileId(nomePaciente)}_${sanitizedId}_${dataStr}.pdf`;
             
             await exportToPDF(evolutionRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
@@ -457,8 +459,9 @@ const EvolucaoSessao = () => {
                 }
             };
 
-            const cleanNome = nomePaciente.replace(/[\\\/\:\*\?\"\<\>\|]/g, '').replace(/\s+/g, '_').toLowerCase();
-            const filename = `evolucao_${cleanNome}_sessao${numeroSessao || 'X'}_${dataStr.replace(/\//g, '-')}.docx`;
+            const cleanNome = formatFileId(nomePaciente);
+            const sanitizedId = formatFileId(id || 'novo');
+            const filename = `evolucao_${cleanNome}_${sanitizedId}_sessao${numeroSessao || 'X'}_${dataStr.replace(/\//g, '-')}.docx`;
             await exportToWord(dataForWord, filename);
             showToast('Word gerado com sucesso!', 'success');
         } catch (error) {
@@ -484,7 +487,7 @@ const EvolucaoSessao = () => {
                             <>
                                 Paciente: <span className="text-primary font-bold">{pacienteSelecionado.nome}</span>
                                 <span className="opacity-30">·</span>
-                                <span className="text-xs">{pacienteSelecionado.id}</span>
+                                <span className="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">{formatDisplayId(pacienteSelecionado.id, 'PAC')}</span>
                                 {!modoEdicao && (
                                     <>
                                         <span className="opacity-30">·</span>
@@ -548,7 +551,7 @@ const EvolucaoSessao = () => {
                                                     <div className={`size-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${p.cor || 'bg-primary/10 text-primary'}`}>{p.iniciais}</div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{p.nome}</p>
-                                                        <p className="text-[10px] text-slate-400">{p.id}</p>
+                                                        <p className="text-[10px] text-slate-400">ID: {formatDisplayId(p.id, 'PAC')}</p>
                                                     </div>
                                                     <span className="material-symbols-outlined text-slate-300 text-lg flex-shrink-0">chevron_right</span>
                                                 </button>
@@ -568,7 +571,7 @@ const EvolucaoSessao = () => {
                                     <div className={`size-12 rounded-full flex items-center justify-center text-sm font-bold ${pacienteSelecionado.cor || 'bg-primary/10 text-primary'}`}>{pacienteSelecionado.iniciais}</div>
                                     <div>
                                         <p className="font-black text-slate-900 dark:text-white">{pacienteSelecionado.nome}</p>
-                                        <p className="text-xs text-slate-500">{pacienteSelecionado.id} · {tipoAtendimento}</p>
+                                        <p className="text-xs text-slate-500">{formatDisplayId(pacienteSelecionado.id, 'PAC')} · {tipoAtendimento}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">

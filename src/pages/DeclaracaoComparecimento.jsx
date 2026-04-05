@@ -6,6 +6,7 @@ import { useModels } from '../contexts/ModelContext';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
 import { exportToPDF, exportToWord } from '../utils/exportUtils';
+import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 const DeclaracaoComparecimento = () => {
     const { id } = useParams();
@@ -220,7 +221,7 @@ const DeclaracaoComparecimento = () => {
     const handleExportPDF = async () => {
         if (!documentoRef.current) return;
         try {
-            const filename = `declaracao_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${dados.documentoId || 'novo'}.pdf`;
+            const filename = `declaracao_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.pdf`;
             await exportToPDF(documentoRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
         } catch (error) {
@@ -233,7 +234,7 @@ const DeclaracaoComparecimento = () => {
         try {
             const dataForWord = {
                 titulo: 'Declaração de Comparecimento',
-                subtitulo: `Documento ID: #${dados.documentoId || 'Novo'}`,
+                subtitulo: `Documento ID: #${formatFileId(dados.documentoId)}`,
                 paciente: {
                     nome: dados.pacienteNome,
                     cpf: dados.pacienteCpf,
@@ -255,7 +256,7 @@ const DeclaracaoComparecimento = () => {
             if (dados.observacoes) {
                 dataForWord.secoes.push({ titulo: 'Observações', conteudo: dados.observacoes });
             }
-            const filename = `declaracao_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${dados.documentoId || 'novo'}.docx`;
+            const filename = `declaracao_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.docx`;
             await exportToWord(dataForWord, filename);
             showToast('Word gerado com sucesso!', 'success');
         } catch (error) {
@@ -306,7 +307,7 @@ const DeclaracaoComparecimento = () => {
                     <p className="text-sm text-slate-500">
                         {isNovo && !declId
                             ? 'Emita uma declaração de comparecimento para o paciente.'
-                            : `Documento ${dados.documentoId || ''} · ${dados.pacienteNome}`}
+                            : `Documento ${formatDisplayId(dados.documentoId, 'DEC')} · ${dados.pacienteNome}`}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -347,7 +348,7 @@ const DeclaracaoComparecimento = () => {
                             </div>
                             <div className="text-right">
                                 <h3 className="text-lg font-black uppercase tracking-wider text-slate-800">Declaração de<br />Comparecimento</h3>
-                                <p className="text-[10px] font-bold text-slate-400 mt-1">Documento ID: #{dados.documentoId || 'Novo'}</p>
+                                <p className="text-[10px] font-bold text-slate-400 mt-1">Documento: {formatDisplayId(dados.documentoId, 'DEC')}</p>
                             </div>
                         </div>
 
@@ -469,11 +470,11 @@ const DeclaracaoComparecimento = () => {
                                     <div ref={dropdownRef} className="absolute z-50 left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto">
                                         {pacientesFiltrados.length > 0 ? (
                                             pacientesFiltrados.map(p => (
-                                                <button key={p.id} onClick={() => handleSelecionarPaciente(p)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 text-left border-b border-slate-50 dark:border-slate-800 last:border-0 transition-colors">
+                                                <button key={formatDisplayId(p.id, 'PAC')} onClick={() => handleSelecionarPaciente(p)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 text-left border-b border-slate-50 dark:border-slate-800 last:border-0 transition-colors">
                                                     <div className={`size-8 rounded-full flex items-center justify-center text-[10px] font-black ${p.cor || 'bg-primary/10 text-primary'}`}>{p.iniciais}</div>
                                                     <div>
                                                         <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{p.nome}</span>
-                                                        <p className="text-[10px] text-slate-400">{p.id} · {p.email || p.telefone}</p>
+                                                        <p className="text-[10px] text-slate-400">{formatDisplayId(p.id, 'PAC')} · {p.email || p.telefone}</p>
                                                     </div>
                                                 </button>
                                             ))
@@ -488,7 +489,7 @@ const DeclaracaoComparecimento = () => {
                                     <div className={`size-8 rounded-full flex items-center justify-center text-[10px] font-black ${dados.pacienteCor || 'bg-primary/10 text-primary'}`}>{dados.pacienteIniciais}</div>
                                     <div className="flex-1">
                                         <p className="text-xs font-bold text-slate-900 dark:text-white">{dados.pacienteNome}</p>
-                                        <p className="text-[10px] text-slate-400">{dados.pacienteId}</p>
+                                        <p className="text-[10px] text-slate-400">{formatDisplayId(dados.pacienteId, 'PAC')}</p>
                                     </div>
                                     <span className="material-symbols-outlined text-emerald-500 text-sm">check_circle</span>
                                 </div>

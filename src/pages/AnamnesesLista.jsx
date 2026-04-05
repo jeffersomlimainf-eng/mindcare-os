@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAnamneses } from '../contexts/AnamneseContext';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
+import { formatDisplayId } from '../utils/formatId';
 
 const AnamnesesLista = () => {
     const navigate = useNavigate();
@@ -133,12 +134,12 @@ const AnamnesesLista = () => {
                                                 <div className={`size-9 rounded-full flex items-center justify-center text-xs font-bold ${a.pacienteCor || 'bg-primary/10 text-primary'}`}>{a.pacienteIniciais || '?'}</div>
                                                 <div className="flex flex-col">
                                                     <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{a.pacienteNome || 'Sem paciente'}</p>
-                                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">ID: {a.pacienteId}</p>
+                                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">{formatDisplayId(a.pacienteId, 'PAC')}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{a.documentoId}</p>
+                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{formatDisplayId(a.documentoId, 'ANA')}</p>
                                         </td>
                                         <td className="px-6 py-4 text-center text-xs font-bold text-slate-500">{formatDate(a.criadoEm)}</td>
                                         <td className="px-6 py-4 text-center">

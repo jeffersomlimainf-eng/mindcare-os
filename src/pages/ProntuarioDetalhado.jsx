@@ -11,6 +11,7 @@ import { useUser } from '../contexts/UserContext';
 import CadastroPacienteModal from '../components/CadastroPacienteModal';
 import NovoDocumentoModal from '../components/NovoDocumentoModal';
 import { handleNavegacaoDocumento } from '../utils/navigation';
+import { formatDisplayId, formatFileId, getDocumentPrefix } from '../utils/formatId';
 import { calcularIdade } from '../utils/date';
 import { safeRender } from '../utils/render';
 /* Tarefa: Auditoria Profunda "100% Sem Enfeite"
@@ -130,7 +131,7 @@ const ProntuarioDetalhado = () => {
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500 font-medium">
-                            <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">fingerprint</span> {safeRender(paciente.cpf)}</span>
+                            <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">fingerprint</span> {formatDisplayId(paciente.id, 'PAC')}</span>
                             <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">cake</span> {safeRender(paciente.dataNascimento || paciente.nascimento || '—')} ({calcularIdade(paciente.dataNascimento || paciente.nascimento)})</span>
                             <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">smartphone</span> {safeRender(paciente.telefone)}</span>
                         </div>
@@ -222,6 +223,7 @@ const ProntuarioDetalhado = () => {
                                                                 </div>
                                                                 <div>
                                                                     <h4 className="font-bold text-slate-900 dark:text-white">{doc?.tipo}</h4>
+                                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">ID: {formatDisplayId(doc?.id, getDocumentPrefix(doc?.tipo))}</p>
                                                                     <p className="text-xs text-slate-400 capitalize">
                                                                         {(() => {
                                                                             const d = new Date(doc?.criadoEm || doc?.data);
@@ -346,6 +348,7 @@ const ProntuarioDetalhado = () => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-bold text-slate-900 dark:text-white truncate">Anamnese Psicológica</h4>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ID: {formatDisplayId(doc.id, 'ANA')}</p>
                                                 <p className="text-xs text-slate-400">{new Date(doc.criadoEm || doc.data).toLocaleDateString('pt-BR')}</p>
                                             </div>
                                             <button 
@@ -391,6 +394,7 @@ const ProntuarioDetalhado = () => {
                                                 </div>
                                                 <div>
                                                     <h4 className="font-bold text-slate-900 dark:text-white">Evolução de Sessão</h4>
+                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ID: {formatDisplayId(doc.id, 'EVO')}</p>
                                                     <p className="text-xs text-slate-400">{new Date(doc.criadoEm || doc.data).toLocaleDateString('pt-BR')} • {new Date(doc.criadoEm || doc.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
                                                 </div>
                                             </div>
@@ -433,6 +437,7 @@ const ProntuarioDetalhado = () => {
                                                         <span className={`material-symbols-outlined text-xl ${doc.cor.split(' ')[0]}`}>{doc.icon}</span>
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{doc.tipo} do dia {new Date(doc.criadoEm || doc.data).toLocaleDateString('pt-BR')}</p>
+                                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ID: {formatDisplayId(doc.id, getDocumentPrefix(doc.tipo))}</p>
                                                             <p className="text-[10px] text-slate-400 font-medium">Assinado por {user.nome || 'Profissional'}</p>
                                                         </div>
                                                         <span className="material-symbols-outlined text-slate-300 text-sm group-hover:text-primary">open_in_new</span>

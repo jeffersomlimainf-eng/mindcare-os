@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEvolutions } from '../contexts/EvolutionContext';
+import { formatDisplayId } from '../utils/formatId';
 
 const EvolucoesLista = () => {
     const navigate = useNavigate();
@@ -12,7 +13,8 @@ const EvolucoesLista = () => {
 
     const filtrados = evolutions.filter(e => {
         const matchBusca = (e.pacienteNome || '').toLowerCase().includes(busca.toLowerCase()) ||
-            (e.id || '').toLowerCase().includes(busca.toLowerCase());
+            (e.id || '').toLowerCase().includes(busca.toLowerCase()) ||
+            formatDisplayId(e.id, 'EVO').toLowerCase().includes(busca.toLowerCase());
         
         const matchStatus = filtroStatus === 'Todos' || e.status === filtroStatus;
         return matchBusca && matchStatus;
@@ -129,13 +131,13 @@ const EvolucoesLista = () => {
                                             </div>
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-bold text-slate-900 dark:text-white uppercase leading-tight">{e.pacienteNome || 'Pendente'}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">ID: {e.pacienteId}</p>
+                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">ID: {formatDisplayId(e.pacienteId, 'PAC')}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[150px]">{e.id}</p>
+                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[150px]">{formatDisplayId(e.id, 'EVO')}</p>
                                             <p className="text-[9px] text-primary font-bold opacity-60 uppercase">{e.tipoAtendimento || 'Sessão Individual'}</p>
                                         </div>
                                     </td>

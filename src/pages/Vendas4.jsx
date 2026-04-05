@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { 
   Check, Shield, Heart, Sparkles, ArrowRight, 
   Clock, Lock, Zap, BarChart3, Users, 
@@ -45,20 +45,40 @@ export default function Vendas4() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const shouldReduceMotion = useReducedMotion();
+
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
   };
 
   const staggerContainer = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15
+        staggerChildren: shouldReduceMotion ? 0 : 0.15
       }
     }
   };
+
+  const scaleUp = {
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, scale: shouldReduceMotion ? 1 : 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
+  const safeAnimation = (variants) => ({
+    initial: "hidden",
+    animate: "visible",
+    variants: variants
+  });
+
+  const scrollAnimation = (variants) => ({
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: { once: true, margin: "-50px" },
+    variants: variants
+  });
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans selection:bg-purple-100 selection:text-purple-900">
@@ -100,7 +120,7 @@ export default function Vendas4() {
 
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-12 gap-16 items-center">
-            <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="lg:col-span-7">
+            <motion.div {...safeAnimation(staggerContainer)} className="lg:col-span-7">
               <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-100 rounded-full text-purple-700 text-[9px] font-black uppercase tracking-[0.25em] mb-10">
                 <Gem className="w-3.5 h-3.5" /> Padrão Ouro em Gestão Clínica
               </motion.div>
@@ -129,7 +149,7 @@ export default function Vendas4() {
             </motion.div>
 
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              initial={shouldReduceMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-5 relative"
@@ -160,7 +180,7 @@ export default function Vendas4() {
       <section id="diferenciais" className="py-24 lg:py-40 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-24 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
+            <motion.div {...scrollAnimation(staggerContainer)}>
               <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-serif font-black text-slate-900 mb-10 leading-tight">
                 Seu tempo é seu ativo <br/> <span className="text-purple-600 italic">mais valioso.</span>
               </motion.h2>
@@ -189,7 +209,9 @@ export default function Vendas4() {
             </motion.div>
 
             <motion.div 
-              initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+              initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }} 
+              whileInView={{ opacity: 1, x: 0 }} 
+              viewport={{ once: true, margin: "-50px" }}
               className="relative p-2 bg-white rounded-[4rem] shadow-2xl border border-purple-50"
             >
               <img src={dashboardImg} alt="Interface Meu Sistema PSI" className="rounded-[3.5rem] w-full h-auto" />
@@ -206,7 +228,9 @@ export default function Vendas4() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-12 gap-20 items-center">
             <motion.div 
-              initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+              initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }} 
+              whileInView={{ opacity: 1, x: 0 }} 
+              viewport={{ once: true, margin: "-50px" }}
               className="lg:col-span-5"
             >
               <div className="relative rounded-[4rem] overflow-hidden shadow-2xl border-[8px] border-slate-50">
@@ -217,7 +241,7 @@ export default function Vendas4() {
               </div>
             </motion.div>
 
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="lg:col-span-7">
+            <motion.div {...scrollAnimation(staggerContainer)} className="lg:col-span-7">
               <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-serif font-black text-slate-900 mb-10 leading-tight">
                 Seja percebido como <br/> uma <span className="italic text-purple-600">Autoridade de Elite.</span>
               </motion.h2>
@@ -254,7 +278,7 @@ export default function Vendas4() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]" />
         
         <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
+          <motion.div {...scrollAnimation(staggerContainer)}>
             <motion.h2 variants={fadeUp} className="text-5xl lg:text-8xl font-serif font-black mb-10 tracking-tighter">
               Eleve o nível do seu <br/> <span className="italic text-purple-400 text-6xl lg:text-7xl block mt-4">atendimento hoje.</span>
             </motion.h2>
