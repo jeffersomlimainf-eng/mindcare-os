@@ -136,7 +136,6 @@ ${fullDatabaseContext}
                 content: m.text
             }));
 
-            const { data: { session } } = await supabase.auth.getSession();
             const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
 
@@ -144,7 +143,7 @@ ${fullDatabaseContext}
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                     'apikey': SUPABASE_ANON_KEY
                 },
                 body: JSON.stringify({
