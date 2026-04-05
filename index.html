@@ -12,7 +12,20 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><p style="text-align:center;padding:4rem;font-family:sans-serif;color:#94a3b8">Carregando Meu Sistema Psi...</p></div>
+    <script>
+      // Captura erros fatais de módulo antes do React montar
+      window.addEventListener('error', function(e) {
+        var root = document.getElementById('root');
+        if (root && !root.querySelector('[data-reactroot]') && !root.children.length) {
+          root.innerHTML = '<div style="max-width:500px;margin:4rem auto;padding:2rem;text-align:center;font-family:monospace;color:#f87171;background:#0f172a;border-radius:1rem">' +
+            '<h1 style="color:#fbbf24;margin-bottom:1rem">⚠️ Erro ao carregar</h1>' +
+            '<p style="color:#94a3b8;margin-bottom:1rem">' + (e.message || 'Erro desconhecido') + '</p>' +
+            '<p style="font-size:0.7rem;color:#64748b">' + (e.filename || '') + ':' + (e.lineno || '') + '</p>' +
+            '</div>';
+        }
+      });
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
