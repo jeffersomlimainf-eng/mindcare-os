@@ -101,13 +101,32 @@ ${fullDatabaseContext}
         }
     }, [mensagens, isLoading]);
 
+    const typewriter = async (text, msgIndex, setMsgs) => {
+        const STEP = 4;
+        const DELAY = 12;
+        for (let i = 0; i <= text.length; i += STEP) {
+            const partial = text.slice(0, i);
+            setMsgs(prev => {
+                const msgs = [...prev];
+                if (msgs[msgIndex]) msgs[msgIndex] = { ...msgs[msgIndex], text: partial };
+                return msgs;
+            });
+            await new Promise(r => setTimeout(r, DELAY));
+        }
+        setMsgs(prev => {
+            const msgs = [...prev];
+            if (msgs[msgIndex]) msgs[msgIndex] = { ...msgs[msgIndex], text };
+            return msgs;
+        });
+    };
+
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!input.trim() || isLoading) return;
 
-        const userMsg = { role: 'user', text: input };
         const currentInput = input;
-        setMensagens(prev => [...prev, userMsg, { role: 'assistant', text: '' }]); // placeholder para stream
+        const placeholderIndex = mensagens.length + 1;
+        setMensagens(prev => [...prev, { role: 'user', text: currentInput }, { role: 'assistant', text: '' }]);
         setInput('');
         setIsLoading(true);
 
@@ -117,70 +136,31 @@ ${fullDatabaseContext}
                 content: m.text
             }));
 
-            // Streaming via fetch direto na edge function
-            const { data: { session } } = await supabase.auth.getSession();
-            const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
-
-            const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-assist`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
-                    'apikey': SUPABASE_ANON_KEY
-                },
-                body: JSON.stringify({
+            const { data, error } = await supabase.functions.invoke('ai-assist', {
+                body: {
                     messages: [...history, { role: 'user', content: currentInput }],
                     systemPrompt,
-                    temperature: 0.7,
-                    stream: true
-                })
+                    temperature: 0.7
+                }
             });
 
-            if (!response.ok || !response.body) throw new Error('Falha ao conectar com a IA.');
+            if (error) throw new Error(`Erro na conexão: ${error.message}`);
+            if (data?.error) throw new Error(`Erro da IA: ${data.error}`);
+            if (!data?.choices?.[0]) throw new Error('Resposta inesperada da IA.');
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let accumulated = '';
-            let totalChars = 0;
+            const aiText = data.choices[0].message.content;
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+            // Efeito typewriter para parecer streaming
+            await typewriter(aiText, placeholderIndex, setMensagens);
 
-                const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.split('\n');
-
-                for (const line of lines) {
-                    if (!line.startsWith('data: ')) continue;
-                    const data = line.slice(6).trim();
-                    if (data === '[DONE]') break;
-                    try {
-                        const parsed = JSON.parse(data);
-                        const delta = parsed.choices?.[0]?.delta?.content || '';
-                        if (delta) {
-                            accumulated += delta;
-                            totalChars += delta.length;
-                            // Atualiza o placeholder da última mensagem em tempo real
-                            setMensagens(prev => {
-                                const msgs = [...prev];
-                                msgs[msgs.length - 1] = { role: 'assistant', text: accumulated };
-                                return msgs;
-                            });
-                        }
-                    } catch (_) { /* ignore parse errors nos chunks parciais */ }
-                }
-            }
-
-            // Tracking de consumo de tokens (estimativa)
-            const promptChars = history.reduce((acc, m) => acc + (m.content?.length || 0), 0) + currentInput.length;
-            trackAIConsumption((promptChars + totalChars) / 4, user, updateUser);
+            // Tracking de consumo de tokens
+            trackAIConsumption((currentInput.length + aiText.length) / 4, user, updateUser);
 
         } catch (error) {
             console.error(error);
             setMensagens(prev => {
                 const msgs = [...prev];
-                msgs[msgs.length - 1] = { role: 'assistant', text: `Desculpe, erro: ${error.message || JSON.stringify(error)}` };
+                msgs[msgs.length - 1] = { role: 'assistant', text: `Desculpe, houve um erro: ${error.message}` };
                 return msgs;
             });
         } finally {

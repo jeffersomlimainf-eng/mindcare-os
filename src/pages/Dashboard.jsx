@@ -191,11 +191,11 @@ const Dashboard = () => {
         }
 
         setLoadingInsight(true);
-        // Adiciona placeholder para o streaming aparecer
-        setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: original + `\n\n🧠 **[Análise Clínico-IA]** ` } : n));
+        setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: original + `
+
+🧠 **[Análise Clínico-IA]** Gerando insights...` } : n));
 
         try {
-            // 2. Prompt personalizado com nome do psicólogo
             const nomePsicologo = user?.nome || 'Psicólogo(a)';
             const systemPrompt = `Você é o "Meu Sistema PSI AI Assist", parceiro clínico do(a) Dr(a). ${nomePsicologo}.
 Seu trabalho é ler as notas rápidas (rascunhos) anotados sobre uma sessão ou paciente e estruturar insights clínicos úteis.
@@ -214,66 +214,49 @@ Retorne SEMPRE no seguinte formato (Markdown):
 • [O que investigar na próxima sessão]
 ---`;
 
-            // 3. Streaming via fetch direto na edge function
-            const { data: { session } } = await supabase.auth.getSession();
-            const SUPABASE_URL = 'https://rwqiptuxjnnuoolxslio.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3cWlwdHV4am5udW9vbHhzbGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDczOTIsImV4cCI6MjA4ODk4MzM5Mn0.H__h91Iti-fapVmbfOL090en40K-S5qqQH4EhLl0TD8';
+            const { data, error } = await supabase.functions.invoke('ai-assist', {
+                body: {
+                    messages: [{ role: 'user', content: `Aqui está o meu rascunho de nota:
 
-            const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-assist`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
-                    'apikey': SUPABASE_ANON_KEY
-                },
-                body: JSON.stringify({
-                    messages: [{ role: 'user', content: `Aqui está o meu rascunho de nota:\n\n"${original}"\n\nPor favor, gere os insights clínicos.` }],
+"${original}"
+
+Por favor, gere os insights clínicos.` }],
                     systemPrompt,
-                    temperature: 0.5,
-                    stream: true
-                })
+                    temperature: 0.5
+                }
             });
 
-            if (!response.ok || !response.body) throw new Error('Falha ao conectar com a IA.');
+            if (error) throw new Error(`Erro na conexão: ${error.message}`);
+            if (data?.error) throw new Error(`Erro da IA: ${data.error}`);
+            if (!data?.choices?.[0]) throw new Error('Resposta inesperada da IA.');
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let accumulated = '';
-            let totalChars = 0;
+            const aiText = data.choices[0].message.content;
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+            for (let i = 0; i <= aiText.length; i += 4) {
+                setNotas(prev => prev.map(n => n.id === ativaNotaId
+                    ? { ...n, texto: original + `
 
-                const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.split('\n');
-
-                for (const line of lines) {
-                    if (!line.startsWith('data: ')) continue;
-                    const data = line.slice(6).trim();
-                    if (data === '[DONE]') break;
-                    try {
-                        const parsed = JSON.parse(data);
-                        const delta = parsed.choices?.[0]?.delta?.content || '';
-                        if (delta) {
-                            accumulated += delta;
-                            totalChars += delta.length;
-                            setNotas(prev => prev.map(n => n.id === ativaNotaId
-                                ? { ...n, texto: original + `\n\n` + accumulated }
-                                : n
-                            ));
-                        }
-                    } catch (_) { /* ignore parse errors nos chunks parciais */ }
-                }
+` + aiText.slice(0, i) }
+                    : n
+                ));
+                await new Promise(r => setTimeout(r, 10));
             }
+            setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: original + `
 
-            // 4. Tracking de consumo de tokens (estimativa)
-            trackAIConsumption((original.length + totalChars) / 4, user, updateUser);
+` + aiText } : n));
+
+            trackAIConsumption((original.length + aiText.length) / 4, user, updateUser);
 
         } catch (error) {
             console.error('Erro ao gerar insights:', error);
-            const estrutura = `\n🧠 [Sugestão de Estrutura]:\n• Queixa Principal/Sintomas: \n• Dinâmica/Mecanismos Ativados: \n• Intervenção/Conduta Adotada: \n• Plano para Próxima Sessão: \n--- (Erro ao conectar com IA)`;
-            setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: (ativoNota?.texto || '') + estrutura } : n));
+            const estrutura = `
+🧠 [Sugestão de Estrutura]:
+• Queixa Principal/Sintomas: 
+• Dinâmica/Mecanismos Ativados: 
+• Intervenção/Conduta Adotada: 
+• Plano para Próxima Sessão: 
+--- (Erro: ${error.message})`;
+            setNotas(prev => prev.map(n => n.id === ativaNotaId ? { ...n, texto: original + estrutura } : n));
         } finally {
             setLoadingInsight(false);
         }
