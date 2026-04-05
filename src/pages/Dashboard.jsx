@@ -103,6 +103,10 @@ const Dashboard = () => {
     const [dadosClima, setDadosClima] = useState({ temp: 26, condicao: 'Ensolarado', icone: 'wb_sunny', umidade: 60, vento: 12 });
     const [loadingClima, setLoadingClima] = useState(false);
     const [editandoCidade, setEditandoCidade] = useState(false);
+
+    useEffect(() => {
+        if (cidade) localStorage.setItem('dashboard_clima_cidade', cidade);
+    }, [cidade]);
     
     // PERF-04 FIX: hora movida para ClockWidget isolado — Dashboard não re-renderiza mais a cada 1 segundo
 
