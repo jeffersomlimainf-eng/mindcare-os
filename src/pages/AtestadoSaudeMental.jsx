@@ -5,7 +5,6 @@ import { usePatients } from '../contexts/PatientContext';
 import { useModels } from '../contexts/ModelContext';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
-import { exportToPDF, exportToWord } from '../utils/exportUtils';
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 const AtestadoSaudeMental = () => {
@@ -200,6 +199,7 @@ const AtestadoSaudeMental = () => {
     const handleExportPDF = async () => {
         if (!documentoRef.current) return;
         try {
+            const { exportToPDF } = await import('../utils/exportUtils');
             const filename = `atestado_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.pdf`;
             await exportToPDF(documentoRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
@@ -211,6 +211,7 @@ const AtestadoSaudeMental = () => {
 
     const handleExportWord = async () => {
         try {
+            const { exportToWord } = await import('../utils/exportUtils');
             const dataForWord = {
                 titulo: 'Atestado de Saúde Mental',
                 subtitulo: `Documento ID: #${formatFileId(dados.documentoId)}`,

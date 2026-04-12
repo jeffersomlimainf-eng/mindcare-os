@@ -69,6 +69,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
     const [sucesso, setSucesso] = useState(false);
     const [enviandoEmail, setEnviandoEmail] = useState(false);
     const [lembreteAtivo, setLembreteAtivo] = useState(true);
+    const [erroPaciente, setErroPaciente] = useState(false);
     const inputRef = useRef(null);
 
     // Sugestões filtradas (usando pacientes reais do contexto)
@@ -138,6 +139,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
             }
 
             setLembreteAtivo(consultaEditando.reminderEnabled !== false);
+            setErroPaciente(false);
         } else if (pacientePreSelecionado) {
             setPacienteBusca(pacientePreSelecionado.nome);
             setPacienteSelecionado(pacientePreSelecionado);
@@ -157,6 +159,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
             // Reset total para novo agendamento limpo
             setPacienteBusca('');
             setPacienteSelecionado(null);
+            setErroPaciente(false);
             setTipo('presencial');
             setHora('09:00');
             setDuracao('50');
@@ -192,7 +195,9 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
 
     const handleSalvar = () => {
         if (!pacienteBusca) {
+            setErroPaciente(true);
             showToast('Informe o paciente', 'warning');
+            inputRef.current?.focus();
             return;
         }
         const dataSelecionada = new Date(calAno, calMes, diaSel);
@@ -359,14 +364,29 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">search</span>
                         <input
                             ref={inputRef}
-                            className="w-full h-12 pl-12 pr-4 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm transition-all"
+                            className={`w-full h-12 pl-12 pr-4 rounded-xl transition-all outline-none text-sm border ${
+                                erroPaciente 
+                                    ? 'bg-red-50 border-red-500 ring-4 ring-red-500/10' 
+                                    : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-primary/30 focus:border-primary'
+                            }`}
                             placeholder="Buscar por nome ou código..."
                             value={pacienteBusca}
-                            onChange={e => { setPacienteBusca(e.target.value); setPacienteSelecionado(null); setShowSugestoes(true); }}
+                            onChange={e => { 
+                                setPacienteBusca(e.target.value); 
+                                setPacienteSelecionado(null); 
+                                setShowSugestoes(true);
+                                setErroPaciente(false);
+                            }}
                             onFocus={() => setShowSugestoes(true)}
                             onBlur={() => setTimeout(() => setShowSugestoes(false), 150)}
                         />
-                        {pacienteSelecionado && (
+                        {erroPaciente && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-red-500 animate-in fade-in slide-in-from-right-2">
+                                <span className="material-symbols-outlined text-sm">error</span>
+                                <span className="text-[10px] font-black uppercase tracking-tight">Obrigatório</span>
+                            </div>
+                        )}
+                        {pacienteSelecionado && !erroPaciente && (
                             <button
                                 onClick={() => { setPacienteSelecionado(null); setPacienteBusca(''); inputRef.current?.focus(); }}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors"
@@ -684,18 +704,26 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
             </div>
 
             <div className="flex items-center justify-between px-7 py-5 border-t border-slate-100 bg-slate-50 shrink-0">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                        <Toggle value={lembreteAtivo} onChange={setLembreteAtivo} />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lembrete Automático</span>
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <Toggle value={lembreteAtivo} onChange={setLembreteAtivo} />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lembrete Automático</span>
+                        </div>
+                        {lembreteAtivo && (
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 animate-in fade-in zoom-in duration-300">
+                                <span className="material-symbols-outlined text-[10px] font-bold">mail</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest">E-mail Ativado</span>
+                            </div>
+                        )}
                     </div>
                     {lembreteAtivo && (
-                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 animate-in fade-in zoom-in duration-300">
-                            <span className="material-symbols-outlined text-[10px] font-bold">mail</span>
-                            <span className="text-[9px] font-black uppercase tracking-widest">Ativado</span>
-                        </div>
+                        <p className="text-[9px] text-slate-400 font-medium ml-12">
+                            A Psiquê enviará um e-mail de lembrete profissional 24h antes desta sessão.
+                        </p>
                     )}
                 </div>
+
                 <div className="flex gap-3">
                     {consultaEditando && (
                         <button 

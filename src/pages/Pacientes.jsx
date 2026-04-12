@@ -13,6 +13,7 @@ import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import Modal from '../components/Modal';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
+import FeatureTour from '../components/FeatureTour';
 
 const maskPhone = (value) => {
     let r = value.replace(/\D/g, '');
@@ -122,16 +123,17 @@ const Pacientes = () => {
     const [erroExclusao, setErroExclusao] = useState(null);
     const [vista, setVista] = useState('tabela'); 
     const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
-    const [helpOpen, setHelpOpen] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
+    const [showTour, setShowTour] = useState(false);
 
     // Fechar modais locais com Esc primeiro
     useGlobalShortcuts({
-        isModalOpen: modalAberto || modalAgendaAberto || !!pacienteParaExcluir || helpOpen,
+        isModalOpen: modalAberto || modalAgendaAberto || !!pacienteParaExcluir || showHelp,
         closeModal: () => {
             if (modalAberto) setModalAberto(false);
             if (modalAgendaAberto) setModalAgendaAberto(false);
             if (pacienteParaExcluir) setPacienteParaExcluir(null);
-            if (helpOpen) setHelpOpen(false);
+            if (showHelp) setShowHelp(false);
         },
         priority: 1
     });
@@ -192,10 +194,8 @@ const Pacientes = () => {
     const handleSalvarPaciente = async (dados) => {
         try {
             if (pacienteSelecionado) {
-                console.log(`[Pacientes] Atualizando paciente: ${pacienteSelecionado.id}`, dados);
                 await updatePatient(pacienteSelecionado.id, dados);
             } else {
-                console.log('[Pacientes] Adicionando novo paciente:', dados);
                 await addPatient(dados);
             }
         } catch (error) {
@@ -208,7 +208,6 @@ const Pacientes = () => {
         if (pacienteParaExcluir) {
             try {
                 setErroExclusao(null);
-                console.log(`[Pacientes] Tentando excluir paciente: ${pacienteParaExcluir.id}`);
                 await deletePatient(pacienteParaExcluir.id);
                 setPacienteParaExcluir(null);
             } catch (error) {
@@ -226,9 +225,10 @@ const Pacientes = () => {
     return (
         <div className="space-y-6">
             <HelpModal 
-                isOpen={helpOpen} 
-                onClose={() => setHelpOpen(false)} 
-                content={HELP_CONTENT.pacientes} 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                content={HELP_CONTENT.pacientes}
+                onStartTour={() => setShowTour(true)}
             />
 
             <CadastroPacienteModal
@@ -299,7 +299,7 @@ const Pacientes = () => {
                             <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Diretório</span>
                         </div>
                         <button 
-                            onClick={() => setHelpOpen(true)}
+                            onClick={() => setShowHelp(true)}
                             className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
                         >
                             <span className="material-symbols-outlined text-[14px]">help_outline</span>
@@ -319,6 +319,7 @@ const Pacientes = () => {
                         <span>Gerar Link</span>
                     </button>
                     <button
+                        id="tour-paciente-add"
                         onClick={handleNovoPaciente}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl h-12 px-6 bg-primary text-white text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
                     >
@@ -328,9 +329,8 @@ const Pacientes = () => {
                 </div>
             </div>
 
-            {/* Filtros e Busca */}
             <div className="flex flex-col lg:flex-row gap-4 items-center px-1">
-                <div className="flex-1 w-full glass dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div id="tour-paciente-search" className="flex-1 w-full glass dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <label className="relative flex items-center w-full">
                         <span className="material-symbols-outlined absolute left-4 text-slate-400">search</span>
                         <input
@@ -410,7 +410,7 @@ const Pacientes = () => {
                     </button>
                 </div>
             ) : (
-                <div className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 px-1 animate-settle">
+                <div id="tour-paciente-list" className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 px-1 animate-settle">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
@@ -468,6 +468,16 @@ const Pacientes = () => {
             <div className="px-1 text-xs text-slate-400 font-medium pt-2">
                 Exibindo {pacientesFiltrados.length} de {patients.length} pacientes cadastrados
             </div>
+
+            <FeatureTour 
+                isOpen={showTour} 
+                steps={HELP_CONTENT.pacientes.tourSteps} 
+                onClose={() => setShowTour(false)}
+                onComplete={() => {
+                    setShowTour(false);
+                    alert("Gestão de pacientes pronta! É hora de transformar vidas. 💙");
+                }}
+            />
         </div>
     );
 };

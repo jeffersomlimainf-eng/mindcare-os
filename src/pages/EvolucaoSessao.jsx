@@ -5,7 +5,7 @@ import { useEvolutions } from '../contexts/EvolutionContext';
 import { useUser } from '../contexts/UserContext';
 import { useFinance } from '../contexts/FinanceContext';
 import { showToast } from '../components/Toast';
-import { exportToPDF, exportToWord } from '../utils/exportUtils';
+
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 const tecnicasDefault = [
@@ -91,7 +91,7 @@ const EvolucaoSessao = () => {
     const evolucaoExistente = useMemo(() => {
         if (id && id !== 'novo') return getEvolutionById(id);
         return null;
-    }, [id]);
+    }, [id, getEvolutionById]);
 
     const isVisualizando = useMemo(() => {
         const status = evolucaoExistente?.status || location.state?.documentoReferencia?.status;
@@ -194,6 +194,7 @@ const EvolucaoSessao = () => {
     const handleExportPDF = async () => {
         if (!evolutionRef.current) return;
         try {
+            const { exportToPDF } = await import('../utils/exportUtils');
             const nomePaciente = pacienteSelecionado?.nome || 'paciente';
             const dataStr = new Date(dataHora).toLocaleDateString('pt-BR').replace(/\//g, '-');
             const sanitizedId = formatFileId(id || 'novo');
@@ -416,6 +417,7 @@ const EvolucaoSessao = () => {
 
     const handleExportWord = async () => {
         try {
+            const { exportToWord } = await import('../utils/exportUtils');
             const nomePaciente = pacienteSelecionado?.nome || 'Paciente';
             const dataStr = dataHora ? new Date(dataHora).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
             const horaStr = dataHora ? new Date(dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';

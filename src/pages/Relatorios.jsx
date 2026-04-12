@@ -5,6 +5,8 @@ import { showToast } from '../components/Toast';
 import { useMemo, useRef } from 'react';
 import { exportRelatorioToWord } from '../utils/exportUtils';
 
+
+
 const Relatorios = () => {
     const reportRef = useRef(null);
     const { appointments } = useAppointments();
@@ -12,8 +14,9 @@ const Relatorios = () => {
     const { transactions } = useFinance();
 
     const stats = useMemo(() => {
-        // Forçando Março de 2026 para contornar relógio do navegador
-        const agora = new Date('2026-03-19T12:00:00');
+        // Data dinâmica baseada no relógio do sistema
+        const agora = new Date();
+
         const mesAtual = agora.getMonth();
         const anoAtual = agora.getFullYear();
 
@@ -36,10 +39,11 @@ const Relatorios = () => {
 
         // 4. Receita Média por Sessão
         const receitasSessao = transactions.filter(t => 
-            t.tipo === 'Receita' && 
+            t.tipo?.toLowerCase() === 'receita' && 
             t.subcategoria === 'sessao' &&
-            t.date && t.date.startsWith(dStrAtual)
+            t.dataVencimento && t.dataVencimento.startsWith(dStrAtual)
         );
+
         const totalReceitaSessao = receitasSessao.reduce((acc, t) => acc + (t.valor || 0), 0);
         const receitaMedia = finalizadasMes.length > 0 
             ? Math.round(totalReceitaSessao / finalizadasMes.length) 

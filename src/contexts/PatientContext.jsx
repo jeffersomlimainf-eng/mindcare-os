@@ -22,41 +22,71 @@ export const PatientProvider = ({ children }) => {
 
     // Carregar pacientes isolados pelo tenant atual
     useEffect(() => {
+        let isMounted = true;
+
         const loadPatients = async () => {
             if (user && user.id !== 'guest') {
-                setLoading(true);
+                if (isMounted) setLoading(true);
                 try {
                     const tenantPatients = await db.list('patients');
-                    setPatients(tenantPatients);
+                    if (isMounted) setPatients(tenantPatients);
                 } catch (error) {
                     console.error('[PatientContext] Erro ao carregar:', error);
                 } finally {
-                    setLoading(false);
+                    if (isMounted) setLoading(false);
                 }
             }
         };
 
         loadPatients();
 
+        let channel;
         if (user && user.id !== 'guest') {
-            const channel = supabase
+            channel = supabase
                 .channel('patients_changes')
-                .on('postgres_changes', { 
-                    event: '*', 
-                    schema: 'public', 
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
                     table: 'patients',
-                    // BUG-06 FIX: filtrar por user_id para evitar N+1 queries (um disparo por qualquer usuário)
                     filter: `user_id=eq.${user.id}`
                 }, (payload) => {
-                    console.log('[PatientContext] Mudança em tempo real:', payload);
-                    loadPatients(); 
+                    if (isMounted && payload.new?.id) {
+                        setPatients(prev => {
+                            // Evita duplicata caso o registro já exista (ex: otimismo local)
+                            if (prev.some(p => p.id === payload.new.id)) return prev;
+                            return [...prev, payload.new];
+                        });
+                    }
+                })
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'patients',
+                    filter: `user_id=eq.${user.id}`
+                }, (payload) => {
+                    if (isMounted && payload.new?.id) {
+                        setPatients(prev =>
+                            prev.map(p => p.id === payload.new.id ? { ...p, ...payload.new } : p)
+                        );
+                    }
+                })
+                .on('postgres_changes', {
+                    event: 'DELETE',
+                    schema: 'public',
+                    table: 'patients',
+                    filter: `user_id=eq.${user.id}`
+                }, (payload) => {
+                    if (isMounted && payload.old?.id) {
+                        setPatients(prev => prev.filter(p => p.id !== payload.old.id));
+                    }
                 })
                 .subscribe();
-
-            return () => {
-                supabase.removeChannel(channel);
-            };
         }
+
+        return () => {
+            isMounted = false;
+            if (channel) supabase.removeChannel(channel);
+        };
     }, [user]);
 
     const addPatient = async (dados) => {

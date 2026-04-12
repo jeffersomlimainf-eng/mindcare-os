@@ -7,21 +7,27 @@
   <!-- Páginas Core -->
   <url>
     <loc>https://meusistemapsi.com.br/</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://meusistemapsi.com.br/vendas4</loc>
-    <lastmod>2026-03-30</lastmod>
+    <loc>https://meusistemapsi.com.br/vendas5</loc>
+    <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://meusistemapsi.com.br/vendas3</loc>
-    <lastmod>2026-03-30</lastmod>
+    <loc>https://meusistemapsi.com.br/crp</loc>
+    <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://meusistemapsi.com.br/precos</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
   </url>
   <url>
     <loc>https://meusistemapsi.com.br/blog</loc>

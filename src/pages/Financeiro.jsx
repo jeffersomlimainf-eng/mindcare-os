@@ -8,6 +8,7 @@ import ReciboModal from '../components/ReciboModal';
 import { usePatients } from '../contexts/PatientContext';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
+import FeatureTour from '../components/FeatureTour';
 
 const FINANCE_COLORS_CFG = {
     categorias: {
@@ -43,7 +44,8 @@ const Financeiro = () => {
     const [reciboAberto, setReciboAberto] = useState(false);
     const [transacaoRecibo, setTransacaoRecibo] = useState(null);
     const [tipoPadrao, setTipoPadrao] = useState('receita');
-    const [helpOpen, setHelpOpen] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
+    const [showTour, setShowTour] = useState(false);
 
     const safe = Array.isArray(transactions) ? transactions.filter(Boolean) : [];
     
@@ -138,14 +140,13 @@ const Financeiro = () => {
         return list.find(s => s.value === subcat)?.label || subcat || '—';
     };
 
-    // BUG-05 FIX: variável removida — usar pendentesTotalFiltered (linha ~69) que tem o mesmo filtro
-
     return (
         <div className="space-y-6">
             <HelpModal 
-                isOpen={helpOpen} 
-                onClose={() => setHelpOpen(false)} 
-                content={HELP_CONTENT.financeiro} 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                content={HELP_CONTENT.financeiro}
+                onStartTour={() => setShowTour(true)}
             />
 
             <NovoLancamentoModal
@@ -165,7 +166,7 @@ const Financeiro = () => {
                             <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Financeiro</span>
                         </div>
                         <button 
-                            onClick={() => setHelpOpen(true)}
+                            onClick={() => setShowHelp(true)}
                             className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
                         >
                             <span className="material-symbols-outlined text-[14px]">help_outline</span>
@@ -177,6 +178,7 @@ const Financeiro = () => {
                 </div>
                 <div className="flex flex-wrap gap-3">
                     <button
+                        id="tour-financeiro-pix"
                         onClick={handleNovaReceita}
                         className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition-all active:scale-95"
                     >
@@ -209,7 +211,7 @@ const Financeiro = () => {
 
 
             {/* Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 px-1">
+            <div id="tour-financeiro-lucro" className="grid grid-cols-1 md:grid-cols-4 gap-4 px-1">
                 {[
                     { 
                         id: 'geral', 
@@ -324,7 +326,7 @@ const Financeiro = () => {
                     </div>
                 </div>
 
-                <div className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 animate-settle">
+                <div id="tour-financeiro-fluxo" className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 animate-settle">
                     <div className="overflow-x-auto w-full scrollbar-thin">
                         <table className="w-full text-left whitespace-nowrap md:whitespace-normal min-w-[800px] md:min-w-full">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
@@ -340,7 +342,6 @@ const Financeiro = () => {
                         </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {dadosTabela.map((l) => {
-                                    // BUG-04 FIX: normalizar para lowercase (DB armazena 'receita'/'despesa')
                                     const isReceita = l.tipo?.toLowerCase() === 'receita';
                                     const rowClass = isReceita 
                                         ? 'bg-emerald-50/10 hover:bg-emerald-50/30' 
@@ -462,10 +463,18 @@ const Financeiro = () => {
                     <button onClick={() => setSelecionados([])} className="text-xs font-bold text-slate-400 hover:text-white">Cancelar</button>
                 </div>
             )}
+
+            <FeatureTour 
+                isOpen={showTour} 
+                steps={HELP_CONTENT.financeiro.tourSteps} 
+                onClose={() => setShowTour(false)}
+                onComplete={() => {
+                    setShowTour(false);
+                    alert("Gestão financeira concluída! Agora é só faturar. 💰🚀");
+                }}
+            />
         </div>
     );
 };
 
 export default Financeiro;
-
-

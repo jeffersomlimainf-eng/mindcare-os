@@ -24,4 +24,15 @@ dist-ssr
 # Backups and Temporary files
 backups/
 tmp/
+Dashboard_old*
+*.cjs
+*.bat
+*.ps1
+diagnostico.bat
+setup-webhook.bat
+deploy-webhook.bat
+git_setup.bat
+iniciar_servidor.bat
 
+.vercel
+.claude/

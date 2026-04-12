@@ -169,6 +169,21 @@ const DashboardLayout = () => {
                     </div>
                 </main>
             </div>
+            <div className="fixed bottom-6 right-6 z-[100] group print:hidden">
+                <div className="absolute -top-12 right-0 bg-white dark:bg-slate-800 px-4 py-2 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none translate-y-2 group-hover:translate-y-0">
+                    <p className="text-[10px] font-black text-primary uppercase tracking-widest whitespace-nowrap">Como posso ajudar?</p>
+                </div>
+                <button 
+                    onClick={() => navigate('/ai-clinica')}
+                    className="relative size-14 md:size-16 bg-gradient-to-tr from-primary to-teal-400 rounded-3xl shadow-2xl flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all duration-500 group-hover:rotate-[360deg]"
+                >
+                    <div className="absolute inset-0 bg-primary rounded-3xl animate-ping opacity-20 group-hover:animate-none"></div>
+                    <span className="material-symbols-outlined text-3xl">psychology</span>
+                    
+                    {/* Status dot */}
+                    <span className="absolute bottom-1 right-1 size-4 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-sm"></span>
+                </button>
+            </div>
         </>
     );
 };

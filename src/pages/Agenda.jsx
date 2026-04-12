@@ -13,6 +13,7 @@ import { safeRender } from '../utils/render';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
+import FeatureTour from '../components/FeatureTour';
 
 // ─── Constantes ──────────────────────────────────────────────
 const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
@@ -77,7 +78,7 @@ const Agenda = () => {
             if (t.status === 'Pendente' && t.tipo === 'Receita') {
                 // Se a descrição contiver o nome do paciente ou se tivermos pacienteId na transação (futuro)
                 // Por enquanto, vamos usar o nome do paciente na descrição para cruzar
-                const nomePaciente = t.desc.split(' — ')[1];
+                const nomePaciente = t.desc?.split(' — ')[1];
                 if (nomePaciente) mapa[nomePaciente] = true;
             }
         });
@@ -103,17 +104,19 @@ const Agenda = () => {
     const [nomePreCadastro, setNomePreCadastro] = useState('');
     const [consultaEditando, setConsultaEditando] = useState(null); 
     const [pacienteParaAgenda, setPacienteParaAgenda] = useState(null);
-    const [helpOpen, setHelpOpen] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
+    const [showTour, setShowTour] = useState(false);
+    const [filtroStatus, setFiltroStatus] = useState('todos');
 
     // Fechar modais locais da Agenda com Esc
     useGlobalShortcuts({
-        isModalOpen: modalAberto || settingsModalAberto || filaModalAberto || cadastroModalAberto || helpOpen,
+        isModalOpen: modalAberto || settingsModalAberto || filaModalAberto || cadastroModalAberto || showHelp,
         closeModal: () => {
             if (modalAberto) { setModalAberto(false); setConsultaEditando(null); setNomePreCadastro(''); setPacienteParaAgenda(null); }
             if (settingsModalAberto) setSettingsModalAberto(false);
             if (filaModalAberto) setFilaModalAberto(false);
             if (cadastroModalAberto) { setCadastroModalAberto(false); setNomePreCadastro(''); }
-            if (helpOpen) setHelpOpen(false);
+            if (showHelp) setShowHelp(false);
         },
         priority: 1
     });
@@ -163,10 +166,16 @@ const Agenda = () => {
 
     function format(d) { return formatDateLocal(d); }
 
+    // Filtragem de agendamentos por status
+    const filteredAppointments = useMemo(() => {
+        if (filtroStatus === 'todos') return appointments;
+        return appointments.filter(c => c.status === filtroStatus);
+    }, [appointments, filtroStatus]);
+
     const getConsultasDoDia = (diaDate) => {
         if (!diaDate) return [];
         const diaISO = formatDateLocal(diaDate);
-        return appointments.filter(c => c.data === diaISO);
+        return filteredAppointments.filter(c => c.data === diaISO);
     };
     const gerarFinanceiroConcluido = async (c, patientId) => {
         const p = patients.find(item => item.id === patientId);
@@ -305,7 +314,7 @@ const Agenda = () => {
         updateAppointment(id, { status: novoStatus });
         
         if (novoStatus === 'em_sessao') {
-            const c = appointments.find(ap => ap.id === id);
+            const c = filteredAppointments.find(ap => ap.id === id);
             if (c) {
                 if (confirm(`Deseja abrir a ficha de Evolução para ${c.paciente}? Dados do agendamento serão pré-preenchidos.`)) {
                     navigate('/prontuarios/evolucao/novo', { 
@@ -321,7 +330,7 @@ const Agenda = () => {
         }
 
         if (novoStatus === 'concluido') {
-            const c = appointments.find(ap => ap.id === id);
+            const c = filteredAppointments.find(ap => ap.id === id);
             if (c) {
                 // Garantir que temos o ID do paciente, mesmo que o objeto venha com chaves diferentes
                 const pId = c.pacienteId || c.patient_id || c.patientId;
@@ -346,7 +355,7 @@ const Agenda = () => {
         const id = e.dataTransfer.getData('appointmentId');
         if (!id) return;
 
-        const appt = appointments.find(a => a.id === Number(id));
+        const appt = filteredAppointments.find(a => a.id === Number(id));
         if (!appt) return;
 
         const horaNum = horaDrop 
@@ -363,7 +372,7 @@ const Agenda = () => {
     };
 
     const dataHojeISO = formatDateLocal(hoje);
-    const consultasHoje = appointments.filter(c => c.data === dataHojeISO);
+    const consultasHoje = filteredAppointments.filter(c => c.data === dataHojeISO);
     const totalHoje = consultasHoje.length;
     const emSessao = consultasHoje.filter(c => c.status === 'em_sessao');
     const aguardando = consultasHoje.filter(c => c.status === 'aguardando');
@@ -374,9 +383,10 @@ const Agenda = () => {
     return (
         <>
             <HelpModal 
-                isOpen={helpOpen} 
-                onClose={() => setHelpOpen(false)} 
-                content={HELP_CONTENT.agenda} 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                content={HELP_CONTENT.agenda}
+                onStartTour={() => setShowTour(true)}
             />
             <NovoAgendamentoModal
                 isOpen={modalAberto}
@@ -500,14 +510,14 @@ const Agenda = () => {
                             </div>
 
                             <button 
-                                onClick={() => setHelpOpen(true)}
+                                onClick={() => setShowHelp(true)}
                                 className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
                             >
                                 <span className="material-symbols-outlined text-lg">help_outline</span>
                                 <span className="text-[10px] font-black uppercase tracking-wider hidden sm:inline">Como funciona?</span>
                             </button>
 
-                            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+                            <div id="tour-agenda-filter" className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
                                 {['mes', 'semana', 'dia'].map(v => (
                                     <button key={v} onClick={() => setVisao(v)} className={`px-4 py-1 rounded-md text-[10px] font-bold uppercase transition-all ${visao === v ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>{v === 'mes' ? 'Mês' : v === 'semana' ? 'Semana' : 'Dia'}</button>
                                 ))}
@@ -530,7 +540,13 @@ const Agenda = () => {
                                 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Online</span>
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2">
+                            <button 
+                                onClick={() => setFiltroStatus('todos')}
+                                className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all ${filtroStatus === 'todos' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:border-primary/50'}`}
+                            >
+                                <span className="text-[9px] font-black uppercase tracking-widest">Todos</span>
+                            </button>
                             {[
                                 { status: 'confirmado', label: 'Confirmado' },
                                 { status: 'aguardando', label: 'Aguardando' },
@@ -538,17 +554,22 @@ const Agenda = () => {
                                 { status: 'concluido', label: 'Concluído' }
                             ].map((l, i) => {
                                 const s = STATUS_CFG[l.status];
+                                const isSelected = filtroStatus === l.status;
                                 return (
-                                    <div key={i} className="flex items-center gap-1.5">
-                                        <div className={`size-2 rounded-full ${s.bg.split(' ')[0]} border ${s.border}`} />
-                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{l.label}</span>
-                                    </div>
+                                    <button 
+                                        key={i} 
+                                        onClick={() => setFiltroStatus(isSelected ? 'todos' : l.status)}
+                                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all ${isSelected ? 'bg-white dark:bg-slate-800 shadow-sm border-slate-300 dark:border-slate-600' : 'bg-transparent border-transparent text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                                    >
+                                        <div className={`size-2 rounded-full ${s.bg.split(' ')[0]} border ${s.border} ${isSelected ? 'animate-pulse' : ''}`} />
+                                        <span className={`text-[9px] font-bold uppercase tracking-widest ${isSelected ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400'}`}>{l.label}</span>
+                                    </button>
                                 );
                             })}
                         </div>
                     </div>
 
-                    <div ref={gridRef} className="flex-1 overflow-auto no-scrollbar">
+                    <div id="tour-calendar" ref={gridRef} className="flex-1 overflow-auto no-scrollbar">
                         {visao === 'mes' ? (
                             <div className="grid grid-cols-7 h-full min-w-[700px] xl:min-w-0">
                                 {DIAS_CAL.map((d, i) => <div key={i} className="py-2 text-center text-[10px] font-bold text-slate-400 bg-slate-50/50 dark:bg-slate-800/30 uppercase border-b border-slate-100 dark:border-slate-800">{d}</div>)}
@@ -574,7 +595,7 @@ const Agenda = () => {
                                                 {diaConsultas.length > 0 && <span className="text-[10px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">{diaConsultas.length}</span>}
                                             </div>
                                             <div className="space-y-1">
-                                                {diaConsultas.slice(0, 4).map(c => {
+                                                {filteredAppointments.filter(c => c.data === dateISO).slice(0, 4).map(c => {
                                                     const s = STATUS_CFG[c.status] || STATUS_CFG.confirmado;
                                                     const t = TYPE_CFG[c.tipo?.toLowerCase()] || TYPE_CFG.presencial;
                                                     return (
@@ -731,7 +752,7 @@ const Agenda = () => {
                         </div>
                     </div>
 
-                    <div className="glass dark:bg-slate-800/50 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div id="tour-agenda-stats" className="glass dark:bg-slate-800/50 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-700">
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Eficiência</p>
                         <div className="grid grid-cols-3 gap-2 text-center mb-4">
                             {[
@@ -746,11 +767,21 @@ const Agenda = () => {
                             ))}
                         </div>
                         <div className="h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary transition-all" style={{ width: totalHoje > 0 ? `${(appointments.filter(c => c.status === 'concluido').length / totalHoje) * 100}%` : '0%' }} />
+                            <div className="h-full bg-primary transition-all" style={{ width: totalHoje > 0 ? `${(filteredAppointments.filter(c => c.data === dataHojeISO && c.status === 'concluido').length / totalHoje) * 100}%` : '0%' }} />
                         </div>
                     </div>
                 </aside>
             </div>
+
+            <FeatureTour 
+                isOpen={showTour} 
+                steps={HELP_CONTENT.agenda.tourSteps} 
+                onClose={() => setShowTour(false)}
+                onComplete={() => {
+                    setShowTour(false);
+                    alert("Agenda dominada! Seus horários agradecem. 📅");
+                }}
+            />
         </>
     );
 };

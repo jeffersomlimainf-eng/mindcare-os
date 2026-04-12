@@ -26,8 +26,8 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
     const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
 
     const pacientesFiltrados = patients.filter(p =>
-        p.nome.toLowerCase().includes(buscaPaciente.toLowerCase()) ||
-        p.id.toLowerCase().includes(buscaPaciente.toLowerCase())
+        (p.nome || '').toLowerCase().includes(buscaPaciente.toLowerCase()) ||
+        (p.id || '').toString().toLowerCase().includes(buscaPaciente.toLowerCase())
     );
 
     useEffect(() => {
@@ -95,7 +95,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
         }
 
         const isEdit = !!lancamentoEditando;
-        const numParcelas = (!isEdit && repetir) ? parseInt(parcelas) || 1 : 1;
+        const numParcelas = (!isEdit && repetir) ? Math.max(1, parseInt(parcelas, 10) || 1) : 1;
         
         try {
             for (let i = 0; i < numParcelas; i++) {
@@ -275,6 +275,17 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                             </button>
                         ))}
                     </div>
+                </div>
+            </div>
+
+            {/* Dica de Automação ✨ */}
+            <div className="bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800 rounded-2xl p-4 flex items-start gap-3">
+                <span className="material-symbols-outlined text-sky-500 mt-0.5">auto_awesome</span>
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-sky-700 dark:text-sky-400 uppercase tracking-widest leading-none">Agilidade nas Cobranças</p>
+                    <p className="text-[11px] text-sky-600 dark:text-sky-300 leading-tight">
+                        Ao salvar como <b>Pendente</b>, você poderá gerar um link de <b>Pix Automático</b> na tela financeira. O sistema identifica o pagamento e baixa a conta sozinho!
+                    </p>
                 </div>
             </div>
         </div>
@@ -483,5 +494,3 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
 };
 
 export default NovoLancamentoModal;
-
-

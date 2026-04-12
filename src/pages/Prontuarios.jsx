@@ -12,6 +12,7 @@ import { handleNavegacaoDocumento } from '../utils/navigation';
 import { formatDisplayId, getDocumentPrefix } from '../utils/formatId';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
+import FeatureTour from '../components/FeatureTour';
 
 const TIPO_COLORS_CFG = {
     'Evolução de Sessão': { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-100 dark:border-blue-800', icon: 'clinical_notes' },
@@ -33,7 +34,8 @@ const Prontuarios = () => {
 
     const [busca, setBusca] = useState('');
     const [modalAberto, setModalAberto] = useState(false);
-    const [helpOpen, setHelpOpen] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
+    const [showTour, setShowTour] = useState(false);
     
     const totalDocumentos = (evolutions?.length || 0) + (laudos?.length || 0) + (atestados?.length || 0) + (declaracoes?.length || 0) + (anamneses?.length || 0) + (encaminhamentos?.length || 0);
     
@@ -190,9 +192,10 @@ const Prontuarios = () => {
     return (
         <>
             <HelpModal 
-                isOpen={helpOpen} 
-                onClose={() => setHelpOpen(false)} 
-                content={HELP_CONTENT.prontuarios} 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                content={HELP_CONTENT.prontuarios}
+                onStartTour={() => setShowTour(true)}
             />
 
             <NovoDocumentoModal
@@ -211,7 +214,7 @@ const Prontuarios = () => {
                                 <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Acervo Digital</span>
                             </div>
                             <button 
-                                onClick={() => setHelpOpen(true)}
+                                onClick={() => setShowHelp(true)}
                                 className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
                             >
                                 <span className="material-symbols-outlined text-[14px]">help_outline</span>
@@ -223,7 +226,7 @@ const Prontuarios = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-1">
+                <div id="tour-prontuario-ia" className="grid grid-cols-2 md:grid-cols-4 gap-4 px-1">
                     {[
                         { label: 'Total', value: totalDocumentos, icon: 'folder_open', cor: 'text-primary bg-primary/10' },
                         { label: 'Assinados', value: todosDocumentos.filter(d => d.status === 'Finalizado').length, icon: 'verified', cor: 'text-emerald-500 bg-emerald-500/10' },
@@ -261,7 +264,7 @@ const Prontuarios = () => {
                         </label>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 px-1">
+                    <div id="tour-prontuario-docs" className="flex flex-wrap gap-2 px-1">
                         {['Todos', 'Evolução', 'Laudo', 'Atestado', 'Declaração', 'Anamnese', 'Encaminhamento'].map((tipo) => {
                             const isActive = filtroTipo === tipo;
                             const colors = {
@@ -289,7 +292,7 @@ const Prontuarios = () => {
                         })}
                     </div>
 
-                    <div className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 animate-settle">
+                    <div id="tour-prontuario-history" className="glass dark:bg-slate-900/50 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 animate-settle">
                         <div className="overflow-x-auto w-full">
                             <table className="w-full text-left">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
@@ -363,6 +366,16 @@ const Prontuarios = () => {
                     </div>
                 </div>
             </div>
+
+            <FeatureTour 
+                isOpen={showTour} 
+                steps={HELP_CONTENT.prontuarios.tourSteps} 
+                onClose={() => setShowTour(false)}
+                onComplete={() => {
+                    setShowTour(false);
+                    alert("Seu acervo clínico está organizado e protegido. 🛡️");
+                }}
+            />
         </>
     );
 };

@@ -30,7 +30,7 @@ const AIClinica = () => {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [mensagens, setMensagens] = useState([
-        { role: 'assistant', text: 'Olá! Sou seu parceiro clínico Meu Sistema PSI AI. Estou aqui para conversar sobre casos, analisar prontuários ou simplesmente trocar uma ideia sobre sua prática. Selecione um paciente ao lado para focarmos em um caso específico ou comece a falar aqui mesmo!' }
+        { role: 'assistant', text: 'Olá! Sou a Psiquê, sua parceira clínica. Estou aqui para conversar sobre casos, analisar prontuários ou simplesmente trocar uma ideia sobre sua prática. Selecione um paciente ao lado para focarmos em um caso específico ou comece a falar aqui mesmo!' }
     ]);
     const scrollRef = useRef(null);
 
@@ -72,7 +72,7 @@ const AIClinica = () => {
 
     const systemPrompt = useMemo(() => {
         const nomePsicologo = user?.nome || 'Psicólogo(a)';
-        return `Você é o "Meu Sistema PSI AI Assist", parceiro clínico do(a) Dr(a). ${nomePsicologo}.
+        return `Você é a "Psiquê", a inteligência artificial parceira clínica do(a) Dr(a). ${nomePsicologo}.
 Sua persona é a de um colega de trabalho sênior, experiente, ético e colaborativo. Você não apenas analisa dados, mas conversa livremente com o psicólogo como um igual.
 
 CONTEXTO DO SISTEMA:
@@ -240,15 +240,15 @@ ${fullDatabaseContext}
                 {/* Header do Chat */}
                 <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-800/50 backdrop-blur-md sticky top-0 z-10">
                     <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                            <span className="material-symbols-outlined">smart_toy</span>
+                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
+                            <img src="/avatar_psique.png" alt="Psiquê" className="w-full h-full object-cover" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">Meu Sistema PSI AI Assist</h2>
+                            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">Psiquê AI</h2>
                             <div className="flex items-center gap-1.5">
                                 <span className={`size-2 rounded-full ${isLoading ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`}></span>
                                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                                    {isLoading ? 'Pensando...' : 'Análise em tempo real'}
+                                    {isLoading ? 'Pensando...' : 'Parceira Clínica Online'}
                                 </span>
                             </div>
                         </div>
@@ -263,8 +263,8 @@ ${fullDatabaseContext}
                     {mensagens.map((msg, i) => (
                         <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {msg.role !== 'user' && (
-                                <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center mr-2 mt-1 shrink-0">
-                                    <span className="material-symbols-outlined text-sm text-primary">psychology</span>
+                                <div className="size-8 rounded-lg bg-primary/5 flex items-center justify-center mr-2 mt-1 shrink-0 overflow-hidden border border-primary/10">
+                                    <img src="/avatar_psique.png" alt="Psiquê" className="w-full h-full object-cover" />
                                 </div>
                             )}
                             <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
@@ -306,7 +306,7 @@ ${fullDatabaseContext}
                         </button>
                     </form>
                     <p className="text-[9px] text-slate-400 text-center mt-3 font-bold uppercase tracking-[0.2em] opacity-60">
-                        Inteligência Artificial Meu Sistema PSI v3.0 • Ambiente Seguro • Dados Não Treinam a IA
+                        Inteligência Artificial Psiquê v3.0 • Ambiente Seguro • Dados Não Treinam a IA
                     </p>
                 </div>
             </div>

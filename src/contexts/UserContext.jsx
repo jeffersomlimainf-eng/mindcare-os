@@ -39,9 +39,35 @@ const defaultUser = {
     }
 };
 
+const PROFILE_CACHE_KEY = 'psi_cached_profile';
+
+const getCachedProfile = () => {
+    try {
+        const raw = localStorage.getItem(PROFILE_CACHE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+};
+
+const setCachedProfile = (profile) => {
+    try {
+        if (profile?.id) {
+            localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profile));
+        }
+    } catch {
+        // localStorage cheio ou indisponível — ignora silenciosamente
+    }
+};
+
+const clearCachedProfile = () => {
+    localStorage.removeItem(PROFILE_CACHE_KEY);
+};
+
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(defaultUser);
-    const [loading, setLoading] = useState(true);
+    // Inicia com cache para renderizar imediatamente no F5
+    const [user, setUser] = useState(() => getCachedProfile() || defaultUser);
+    const [loading, setLoading] = useState(() => !getCachedProfile());
 
     // 1. Carregar perfil estendido do banco
     const fetchProfile = async (sessionUserOrId) => {
@@ -61,7 +87,6 @@ export const UserProvider = ({ children }) => {
 
             // Se o perfil não existe, cria um automaticamente (Google Auth / Race condition do email signup)
             if (!profileData && typeof sessionUserOrId === 'object' && sessionUserOrId !== null) {
-                console.log('[UserContext] Perfil não encontrado. Criando dinamicamente...');
                 const sessionUser = sessionUserOrId;
                 const newProfile = {
                     id: userId,
@@ -152,11 +177,13 @@ export const UserProvider = ({ children }) => {
             };
 
             setUser(profileObj);
+            setCachedProfile(profileObj);
             return profileObj;
-            
+
         } catch (error) {
             console.error("Erro Supabase Profile:", error);
             await supabase.auth.signOut().catch(() => {});
+            clearCachedProfile();
             setUser(defaultUser);
             return null;
         } finally {
@@ -171,10 +198,9 @@ export const UserProvider = ({ children }) => {
 
         const handleAuth = async (event, session) => {
             if (!mounted) return;
-            console.log('[UserContext] Auth Event:', event, session?.user?.id);
             
             if (!session?.user) {
-                console.log('[UserContext] Sem sessão, voltando para default');
+                clearCachedProfile();
                 setUser(defaultUser);
                 setLoading(false);
                 processedUserId.current = null;
@@ -371,8 +397,6 @@ export const UserProvider = ({ children }) => {
 
 
     const logout = async () => {
-
-        console.log('[UserContext] Iniciando logout...');
         setLoading(true);
         try {
             await supabase.auth.signOut();

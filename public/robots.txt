@@ -1,10 +1,9 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
-Allow: /vendas2
-Allow: /vendas3
+Allow: /vendas5
+Allow: /crp
 Allow: /blog
-Allow: /blog/
 Allow: /melhor-sistema-para-psicologos
 
 # Evitar indexação de áreas administrativas e privadas

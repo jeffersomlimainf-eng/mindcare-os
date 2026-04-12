@@ -47,6 +47,8 @@ const Vendas = lazy(() => import('./pages/Vendas'));
 const Vendas2 = lazy(() => import('./pages/Vendas2'));
 const Vendas3 = lazy(() => import('./pages/Vendas3'));
 const Vendas4 = lazy(() => import('./pages/Vendas4'));
+const Vendas5 = lazy(() => import('./pages/Vendas5'));
+const CrpInfo = lazy(() => import('./pages/CrpInfo'));
 const Blog = lazy(() => import('./pages/Blog'));
 const Artigo = lazy(() => import('./pages/Artigo'));
 const PorQueNos = lazy(() => import('./pages/PorQueNos'));
@@ -65,8 +67,10 @@ const LoadingFallback = () => (
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useUser();
-    
-    if (loading) {
+
+    // Se ainda está carregando MAS já temos dados em cache (user.id existe),
+    // renderiza o conteúdo imediatamente — a validação continua em background
+    if (loading && !user?.id) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
                 <span className="material-symbols-outlined animate-spin text-primary text-4xl">autorenew</span>
@@ -78,12 +82,10 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // Se a clínica estiver bloqueada e não for uma rota de "escape" (como configurações para o admin pagar)
     const isConfigRoute = window.location.pathname.startsWith('/configuracoes');
     const isSuspendedRoute = window.location.pathname === '/suspenso';
 
     if (user.isClinicBlocked && !isSuspendedRoute) {
-        // Bloqueia tudo exceto se for o Admin tentando ir para configurações regularizar
         if (user.role === 'admin' && isConfigRoute) {
             return children;
         }
@@ -96,6 +98,7 @@ const ProtectedRoute = ({ children }) => {
 const PublicRoute = ({ children }) => {
     const { user, loading } = useUser();
 
+    // Só bloqueia rota pública se tiver certeza que há usuário autenticado (não só cache)
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -136,21 +139,24 @@ function App() {
             <Toast />
             <Suspense fallback={<LoadingFallback />}>
                 <Routes>
-                    <Route path="/" element={<PublicRoute><Vendas2 /></PublicRoute>} />
-                    <Route path="/vendas" element={<PublicRoute><Vendas /></PublicRoute>} />
+                    <Route path="/" element={<Vendas2 />} />
+                    <Route path="/vendas" element={<Vendas />} />
                     <Route path="/vendas2" element={<Navigate to="/" replace />} />
-                    <Route path="/vendas3" element={<PublicRoute><Vendas3 /></PublicRoute>} />
-                    <Route path="/vendas4" element={<PublicRoute><Vendas4 /></PublicRoute>} />
-                    <Route path="/blog" element={<PublicRoute><Blog /></PublicRoute>} />
-                    <Route path="/blog/:slug" element={<PublicRoute><Artigo /></PublicRoute>} />
-                    <Route path="/melhor-sistema-para-psicologos" element={<PublicRoute><PorQueNos /></PublicRoute>} />
-                    <Route path="/precos" element={<PublicRoute><Precos /></PublicRoute>} />
+                    <Route path="/vendas3" element={<Vendas3 />} />
+                    <Route path="/vendas4" element={<Vendas4 />} />
+                    <Route path="/vendas5" element={<Vendas5 />} />
+                    <Route path="/crp" element={<CrpInfo />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:slug" element={<Artigo />} />
+                    <Route path="/melhor-sistema-para-psicologos" element={<PorQueNos />} />
+                    <Route path="/precos" element={<Precos />} />
                     <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                     <Route path="/cadastrar" element={<PublicRoute><Register /></PublicRoute>} />
                     <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                     <Route path="/self-register" element={<SelfRegister />} />
                     <Route path="/reset-password" element={<PublicRoute><PasswordReset /></PublicRoute>} />
                     <Route path="/cobranca/:id" element={<VisualizarCobranca />} />
+                    <Route path="/pagamento/:id" element={<VisualizarCobranca />} />
                     <Route path="/suspenso" element={<ProtectedRoute><SuspendedClinic /></ProtectedRoute>} />
                     <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                         <Route path="/dashboard" element={<Dashboard />} />

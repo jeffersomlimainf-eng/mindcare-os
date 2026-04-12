@@ -4,7 +4,7 @@ import { useFinance } from '../contexts/FinanceContext';
 import { useUser } from '../contexts/UserContext';
 import { usePatients } from '../contexts/PatientContext';
 import { valorPorExtenso } from '../utils/formatters';
-import { exportToPDF, exportToWord } from '../utils/exportUtils';
+
 import { showToast } from '../components/Toast';
 
 const Recibo = () => {
@@ -115,6 +115,7 @@ const Recibo = () => {
     const handleExportPDF = async () => {
         if (!receiptRef.current) return;
         try {
+            const { exportToPDF } = await import('../utils/exportUtils');
             const filename = `recibo_${dados.paciente.replace(/\s+/g, '_').toLowerCase()}_${dados.numero}.pdf`;
             await exportToPDF(receiptRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
@@ -126,6 +127,7 @@ const Recibo = () => {
 
     const handleExportWord = async () => {
         try {
+            const { exportToWord } = await import('../utils/exportUtils');
             const dataForWord = {
                 titulo: 'Recibo de Pagamento',
                 subtitulo: `Recibo nº ${new Date().getFullYear()}-${dados.numero}`,

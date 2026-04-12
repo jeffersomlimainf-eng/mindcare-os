@@ -32,7 +32,8 @@ export default function Vendas4() {
       meta.setAttribute('content', content);
     };
     updateMeta('description', 'Aumente sua autoridade clínica e ganhe tempo precioso. O software de elite para psicólogos que buscam uma gestão de alto padrão e segurança absoluta.');
-    
+    updateMeta('keywords', 'software para psicólogos premium, sistema psicologia alto padrão, prontuário eletrônico seguro, gestão clínica psicologia, software psicologia LGPD, agenda psicólogo');
+
     // Canonical
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
@@ -40,8 +41,22 @@ export default function Vendas4() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas4');
-    
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas5');
+
+    const updateOg = (property, content) => {
+      let meta = document.querySelector(`meta[property="${property}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+    updateOg('og:title', 'Sistema para Clínica de Alto Padrão | Meu Sistema PSI');
+    updateOg('og:description', 'Aumente sua autoridade clínica e ganhe tempo precioso. O software de elite para psicólogos que buscam uma gestão de alto padrão e segurança absoluta.');
+    updateOg('og:url', 'https://meusistemapsi.com.br/vendas4');
+    updateOg('og:image', 'https://meusistemapsi.com.br/og-image.png');
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

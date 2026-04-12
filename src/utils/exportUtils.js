@@ -18,9 +18,7 @@ const COLORS = {
 
 export const exportToPDF = async (originalElement, filename = 'documento.pdf') => {
   if (!originalElement) return;
-
-  console.log('Iniciando exportação PDF via Sandbox...');
-
+  // Iniciando exportação PDF via Sandbox
   // 1. Criar Sandbox (Container visível mas fora da tela)
   const sandbox = document.createElement('div');
   
@@ -176,7 +174,7 @@ export const exportToPDF = async (originalElement, filename = 'documento.pdf') =
 
     pdf.save(filename);
     
-    console.log('PDF gerado com sucesso.');
+    // PDF gerado com sucesso.
 
   } catch (error) {
     console.error('Erro crítico na exportação PDF:', error);

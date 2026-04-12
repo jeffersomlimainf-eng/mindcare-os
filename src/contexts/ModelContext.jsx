@@ -27,7 +27,6 @@ export const ModelProvider = ({ children }) => {
                     
                     // Se estiver vazio, popula com os modelos padrões
                     if (remoteModels.length === 0) {
-                        console.log('[ModelContext] Banco vazio. Populando modelos padrões em paralelo...');
                         // PERF-07 FIX: Promise.all em vez de loop sequencial (6x mais rápido)
                         await Promise.all(
                             defaultModels.map(model => db.insert('models', {

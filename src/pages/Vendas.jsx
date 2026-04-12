@@ -38,24 +38,47 @@ export default function Vendas() {
     }
   ];
 
-  // Auto-scroll logic for feature carrousel
+  // SEO Metadata
   useEffect(() => {
-    // Dynamic SEO Metadata
-    document.title = "Sistema para Psicólogos — Prontuário, Agenda e Financeiro | Meu Sistema Psi";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Sistema completo para psicólogos: prontuário eletrônico seguro (LGPD), agenda com lembretes por WhatsApp, gestão financeira e IA para evoluções clínicas. Criado por psicólogo. Teste grátis 30 dias.');
-    }
+    const updateMeta = (name, content) => {
+      let meta = document.querySelector(`meta[name="${name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+    const updateOg = (property, content) => {
+      let meta = document.querySelector(`meta[property="${property}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
 
-    // Add canonical tag
+    document.title = "Sistema para Psicólogos — Prontuário, Agenda e Financeiro | Meu Sistema Psi";
+    updateMeta('description', 'Sistema completo para psicólogos: prontuário eletrônico seguro (LGPD), agenda com lembretes por WhatsApp, gestão financeira e IA para evoluções clínicas. Criado por psicólogo. Teste grátis 30 dias.');
+    updateMeta('keywords', 'sistema para psicólogos, prontuário eletrônico psicólogo, agenda para psicólogos, software gestão psicologia, prontuário LGPD, software para clínica de psicologia');
+
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas');
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas5');
 
+    updateOg('og:title', 'Sistema para Psicólogos — Prontuário, Agenda e Financeiro | Meu Sistema Psi');
+    updateOg('og:description', 'Sistema completo para psicólogos: prontuário eletrônico seguro (LGPD), agenda com lembretes por WhatsApp, gestão financeira e IA. Teste grátis 30 dias.');
+    updateOg('og:url', 'https://meusistemapsi.com.br/vendas5');
+    updateOg('og:image', 'https://meusistemapsi.com.br/og-image.png');
+  }, []);
+
+  // Auto-scroll logic for feature carrousel
+  useEffect(() => {
     const interval = setInterval(() => {
       if (sliderRef.current) {
         const nextIndex = (currentSlide + 1) % 3; // 3 slides

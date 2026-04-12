@@ -47,16 +47,16 @@ export const invoiceReminderTemplate = ({
     professionalName
 }: any) => {
     let title = "Lembrete de Pagamento";
-    let message = `Olá, <strong>${patientName}</strong>!<br><br>Gostaríamos de lembrar que sua fatura vence hoje.`;
+    let message = `Olá, <strong>${patientName}</strong>!<br><br>Aqui é a <strong>Psiquê</strong>, a assistente virtual do consultório de <strong>${professionalName}</strong>. Passando para lembrar que o pagamento da sua sessão vence hoje.`;
     let btnText = "Pagar Agora com Pix";
 
     if (stage === 'overdue') {
-        title = "⚠️ Pagamento em Atraso";
-        message = `Olá, <strong>${patientName}</strong>.<br><br>Identificamos que o pagamento da sua sessão (<strong>${description}</strong>) ainda não foi processado.`;
+        title = "⚠️ Pagamento em Atraso 🧠";
+        message = `Olá, <strong>${patientName}</strong>.<br><br>Aqui é a <strong>Psiquê</strong>, assistente do consultório de <strong>${professionalName}</strong>. Identificamos que o pagamento referente a <strong>${description}</strong> ainda não foi processado no nosso sistema. Caso já tenha feito, por favor desconsidere!`;
         btnText = "Regularizar Agora";
     } else if (stage === 'recurring') {
-        title = "Pendência Financeira";
-        message = `Olá, <strong>${patientName}</strong>.<br><br>Este é um lembrete automático sobre a pendência referente a: <strong>${description}</strong>.`;
+        title = "Pendência Financeira 🧠";
+        message = `Olá, <strong>${patientName}</strong>.<br><br>Aqui é a <strong>Psiquê</strong> acompanhando as pendências do consultório de <strong>${professionalName}</strong>. Este é um lembrete automático sobre: <strong>${description}</strong>.`;
         btnText = "Pagar com Pix";
     }
 
@@ -79,7 +79,8 @@ export const invoiceReminderTemplate = ({
         
         <p style="font-size: 14px; color: #64748b; margin-top: 30px;">
             Atenciosamente,<br>
-            <strong>${professionalName || 'Sua Clínica'}</strong>
+            <strong>Psiquê</strong><br>
+            <span style="font-size: 12px;">Assistente Virtual de ${professionalName || 'Sua Clínica'}</span>
         </p>
     `;
 
@@ -94,7 +95,7 @@ export const dailySummaryTemplate = ({
 }: any) => {
     const content = `
         <h2 style="color: #1e293b; font-size: 22px; margin-bottom: 5px;">Bom dia, ${professionalName}! ☀️</h2>
-        <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Aqui está o resumo da sua clínica para hoje.</p>
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Aqui é a <strong>Psiquê</strong>. Enquanto você descansava, eu organizei sua clínica para hoje. Veja o resumo:</p>
         
         <div style="display: flex; gap: 10px; margin-bottom: 25px;">
             <div style="flex: 1; background: #f0f9ff; border: 1px solid #bae6fd; padding: 15px; border-radius: 12px; text-align: center;">
@@ -114,7 +115,8 @@ export const dailySummaryTemplate = ({
 
         <p style="font-size: 14px; color: #64748b; margin-top: 30px;">
             Tenha um excelente dia de trabalho!<br>
-            <strong>Equipe Meu Sistema PSI</strong>
+            Pode deixar a burocracia comigo. 🧠<br>
+            <strong>Sua Assistente, Psiquê</strong>
         </p>
     `;
 

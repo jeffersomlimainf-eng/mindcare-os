@@ -2,7 +2,7 @@ import { useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePatients } from '../contexts/PatientContext';
 import { useEvolutions } from '../contexts/EvolutionContext';
-import { exportToPDF } from '../utils/exportUtils';
+
 
 const HistoricoEvolucoes = () => {
     const navigate = useNavigate();

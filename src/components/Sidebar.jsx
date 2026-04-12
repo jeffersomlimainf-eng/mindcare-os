@@ -102,7 +102,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </div>
                     <button 
                         onClick={() => {
-                            console.log('[Sidebar] Iniciando logout...');
                             logout();
                         }}
                         className="flex items-center justify-center size-9 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all ml-auto group"

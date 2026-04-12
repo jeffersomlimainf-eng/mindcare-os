@@ -25,7 +25,6 @@ import { safeRender } from '../utils/render';
 - [x] Validação final de 100% do fluxo [Step Id: 347]
 */
 import { showToast } from '../components/Toast';
-import { exportToPDF } from '../utils/exportUtils';
 
 const ProntuarioDetalhado = () => {
     const { id } = useParams();
@@ -64,9 +63,14 @@ const ProntuarioDetalhado = () => {
         
         const foundById = patients.find(p => normalize(p.id) === targetId);
         if (foundById) return foundById;
-        
-        const decodedName = decodeURIComponent(id).toLowerCase();
-        return patients.find(p => p.nome.toLowerCase() === decodedName);
+
+        let decodedName;
+        try {
+            decodedName = decodeURIComponent(id).toLowerCase();
+        } catch {
+            decodedName = id?.toLowerCase() || '';
+        }
+        return patients.find(p => (p.nome || '').toLowerCase() === decodedName);
     }, [patients, id]);
 
     // Sincronizar texto do histórico com o paciente

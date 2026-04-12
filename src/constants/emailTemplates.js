@@ -29,7 +29,7 @@ const baseWrapper = (content) => `
         <!-- Rodapé -->
         <div style="background-color: ${EMAIL_COLORS.slate100}; padding: 20px; text-align: center; font-size: 11px; color: ${EMAIL_COLORS.textLight};">
             Este é um e-mail automático enviado pelo seu profissional de saúde através da plataforma Meu Sistema PSI. <br>
-            &copy; 2026 MindCare OS - Tecnologia para Psicologia.
+            &copy; 2026 Meu Sistema PSI - Tecnologia para Psicologia.
         </div>
     </div>
 </div>

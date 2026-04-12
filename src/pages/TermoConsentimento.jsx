@@ -4,7 +4,7 @@ import { useTcles } from '../contexts/TcleContext';
 import { usePatients } from '../contexts/PatientContext';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
-import { exportToPDF, exportToWord } from '../utils/exportUtils';
+
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 const TermoConsentimento = () => {
@@ -183,6 +183,7 @@ const TermoConsentimento = () => {
     const handleExportPDF = async () => {
         if (!documentoRef.current) return;
         try {
+            const { exportToPDF } = await import('../utils/exportUtils');
             const filename = `tcle_${dados.pacienteNome.replace(/\s+/g, '_').toLowerCase()}_${formatFileId(dados.documentoId)}.pdf`;
             await exportToPDF(documentoRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
@@ -194,6 +195,7 @@ const TermoConsentimento = () => {
 
     const handleExportWord = async () => {
         try {
+            const { exportToWord } = await import('../utils/exportUtils');
             const dataForWord = {
                 titulo: 'Termo de Consentimento Livre e Esclarecido',
                 subtitulo: `Documento: ${formatDisplayId(dados.documentoId, 'TCLE')}`,

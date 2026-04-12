@@ -45,19 +45,28 @@ export default function Vendas3() {
   ];
 
   useEffect(() => {
-    document.title = "Sistema para Psicólogos — Prontuário, Agenda e Financeiro | Meu Sistema Psi";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Sistema completo para psicólogos similar ao Sintropia: prontuário eletrônico seguro (LGPD), agenda com lembretes por WhatsApp e gestão financeira. O software de psicologia líder em sintropia clínica.');
-    }
-    
-    let metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (!metaKeywords) {
-      metaKeywords = document.createElement('meta');
-      metaKeywords.setAttribute('name', 'keywords');
-      document.head.appendChild(metaKeywords);
-    }
-    metaKeywords.setAttribute('content', 'agenda para psicólogos, sistema para psicólogos, programa para psicólogos, sintropia, sintropia app, gerenciamento clínico psicologia');
+    const updateMeta = (name, content) => {
+      let meta = document.querySelector(`meta[name="${name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+    const updateOg = (property, content) => {
+      let meta = document.querySelector(`meta[property="${property}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+
+    document.title = "Sistema para Psicólogos — Prontuário, Agenda e IA Clínica | Meu Sistema Psi";
+    updateMeta('description', 'Sistema completo para psicólogos: prontuário eletrônico seguro (LGPD), agenda com lembretes automáticos por WhatsApp, gestão financeira e assistente de IA para evoluções clínicas. Teste grátis 30 dias.');
+    updateMeta('keywords', 'agenda para psicólogos, sistema para psicólogos, programa para psicólogos, prontuário eletrônico psicologia, software gestão consultório psicologia, gerenciamento clínico psicologia');
 
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
@@ -65,7 +74,12 @@ export default function Vendas3() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas3');
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas5');
+
+    updateOg('og:title', 'Sistema para Psicólogos — Prontuário, Agenda e IA Clínica | Meu Sistema Psi');
+    updateOg('og:description', 'Prontuário eletrônico seguro (LGPD), agenda com lembretes por WhatsApp e IA para evoluções clínicas. Teste grátis 30 dias.');
+    updateOg('og:url', 'https://meusistemapsi.com.br/vendas3');
+    updateOg('og:image', 'https://meusistemapsi.com.br/og-image.png');
 
     const interval = setInterval(() => {
       if (sliderRef.current) {

@@ -1,13 +1,38 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import NovoDocumentoModal from '../components/NovoDocumentoModal';
+import AgendaSettingsModal from '../components/AgendaSettingsModal';
+import { usePatients } from '../contexts/PatientContext';
+import { useAppointments } from '../contexts/AppointmentContext';
+import { useEvolutions } from '../contexts/EvolutionContext';
+import { useLaudos } from '../contexts/LaudoContext';
+import { useAtestados } from '../contexts/AtestadoContext';
+import { useDeclaracoes } from '../contexts/DeclaracaoContext';
+import { useAnamneses } from '../contexts/AnamneseContext';
+import { useEncaminhamentos } from '../contexts/EncaminhamentoContext';
+import { useFinance } from '../contexts/FinanceContext';
+import { useTcles } from '../contexts/TcleContext';
+import { useUser } from '../contexts/UserContext';
+import { handleNavegacaoDocumento } from '../utils/navigation';
+import { checkAIAccess, trackAIConsumption } from '../utils/authMiddleware';
+import { formatDateLocal } from '../utils/date';
+import { safeRender } from '../utils/render';
+import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
+import { INSIGHTS_PSICOLOGICOS } from '../data/insights';
+import HelpModal from '../components/HelpModal';
+import { HELP_CONTENT } from '../constants/helpContent';
+
 // PERF-04: ClockWidget isolado para evitar que o Dashboard inteiro re-renderize a cada segundo
-const ClockWidget = React.memo(({ dadosClima, cidade, loadingClima, editandoCidade, setEditandoCidade, onCidadeChange }) => {
+const ClockWidget = React.memo(({ dadosClima, cidade, loadingClima, editandoCidade, setEditandoCidade, onCidadeChange, onAutoLocalizar }) => {
     const [hora, setHora] = React.useState(new Date());
     useEffect(() => {
         const timer = setInterval(() => setHora(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
+
     return (
-        <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 w-full md:w-auto md:self-center justify-center shadow-lg shadow-slate-100/50 dark:shadow-none hover:shadow-xl transition-all relative z-10">
+        <div className="flex items-center gap-4 bg-white dark:bg-slate-800/10 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 w-full md:w-auto md:self-center justify-center shadow-lg shadow-slate-100/50 dark:shadow-none hover:shadow-xl transition-all relative z-10 backdrop-blur-md">
             <div className="flex flex-col items-center gap-1">
                 <span className="material-symbols-outlined text-4xl text-amber-500 animate-pulse">{dadosClima.icone}</span>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{dadosClima.condicao}</span>
@@ -28,19 +53,31 @@ const ClockWidget = React.memo(({ dadosClima, cidade, loadingClima, editandoCida
                         </span>
                     </div>
                 </div>
-                {editandoCidade ? (
-                    <input type="text" defaultValue={cidade} autoFocus
-                        onBlur={(e) => { const nova = e.target.value.trim(); if (nova) onCidadeChange(nova); setEditandoCidade(false); }}
-                        onKeyDown={(e) => { if (e.key === 'Enter') { const nova = e.target.value.trim(); if (nova) onCidadeChange(nova); setEditandoCidade(false); } }}
-                        className="text-[10px] font-black text-slate-900 dark:text-white uppercase bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1 max-w-[110px] outline-none focus:border-primary"
-                    />
-                ) : (
-                    <span onClick={() => setEditandoCidade(true)} className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-primary transition-colors group" title="Clique para mudar a cidade">
-                        <span className="material-symbols-outlined text-[12px] text-primary">location_on</span>
-                        {cidade}
-                        <span className="material-symbols-outlined text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
-                    </span>
-                )}
+                <div className="flex items-center gap-2">
+                    {editandoCidade ? (
+                        <input type="text" defaultValue={cidade} autoFocus
+                            onBlur={(e) => { const nova = e.target.value.trim(); if (nova) onCidadeChange(nova); setEditandoCidade(false); }}
+                            onKeyDown={(e) => { if (e.key === 'Enter') { const nova = e.target.value.trim(); if (nova) onCidadeChange(nova); setEditandoCidade(false); } }}
+                            className="text-[10px] font-black text-slate-900 dark:text-white uppercase bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1 max-w-[110px] outline-none focus:border-primary"
+                        />
+                    ) : (
+                        <span onClick={() => setEditandoCidade(true)} className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-primary transition-colors group" title="Clique para mudar a cidade">
+                            <span className="material-symbols-outlined text-[12px] text-primary">location_on</span>
+                            {cidade}
+                            <span className="material-symbols-outlined text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+                        </span>
+                    )}
+                    
+                    {!editandoCidade && (
+                        <button 
+                            onClick={onAutoLocalizar}
+                            className="p-1 hover:bg-primary/10 rounded-full text-slate-400 hover:text-primary transition-all flex items-center justify-center group/loc"
+                            title="Detectar minha localização"
+                        >
+                            <span className="material-symbols-outlined text-[12px] group-hover/loc:scale-110">my_location</span>
+                        </button>
+                    )}
+                </div>
                 <div className="flex gap-3 mt-1 text-[9px] text-slate-400 font-bold uppercase tracking-widest">
                     <span>💧 {dadosClima.umidade}%</span>
                     <span>💨 {dadosClima.vento} km/h</span>
@@ -49,29 +86,6 @@ const ClockWidget = React.memo(({ dadosClima, cidade, loadingClima, editandoCida
         </div>
     );
 });
-import { useNavigate } from 'react-router-dom';
-import NovoDocumentoModal from '../components/NovoDocumentoModal';
-import AgendaSettingsModal from '../components/AgendaSettingsModal';
-import { usePatients } from '../contexts/PatientContext';
-import { useAppointments } from '../contexts/AppointmentContext';
-import { useEvolutions } from '../contexts/EvolutionContext';
-import { useLaudos } from '../contexts/LaudoContext';
-import { useAtestados } from '../contexts/AtestadoContext';
-import { useDeclaracoes } from '../contexts/DeclaracaoContext';
-import { useAnamneses } from '../contexts/AnamneseContext';
-import { useEncaminhamentos } from '../contexts/EncaminhamentoContext';
-import { useFinance } from '../contexts/FinanceContext';
-import { useTcles } from '../contexts/TcleContext';
-import { useUser } from '../contexts/UserContext';
-import { handleNavegacaoDocumento } from '../utils/navigation';
-import { checkAIAccess, trackAIConsumption } from '../utils/authMiddleware';
-import { formatDateLocal } from '../utils/date';
-import { safeRender } from '../utils/render';
-import { supabase } from '../lib/supabase';
-import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
-import { INSIGHTS_PSICOLOGICOS } from '../data/insights';
-import HelpModal from '../components/HelpModal';
-import { HELP_CONTENT } from '../constants/helpContent';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -110,54 +124,114 @@ const Dashboard = () => {
     
     // PERF-04 FIX: hora movida para ClockWidget isolado — Dashboard não re-renderiza mais a cada 1 segundo
 
-    useEffect(() => {
-        const fetchClima = async () => {
-            if (!cidade.trim()) return;
-            setLoadingClima(true);
-            try {
-                const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cidade)}&format=json`, {
+    const fetchClima = useCallback(async (cidadeBusca = cidade, coords = null) => {
+        if (!cidadeBusca && !coords) return;
+        setLoadingClima(true);
+        try {
+            let lat, lon, nomeCidade;
+
+            if (coords) {
+                lat = coords.lat;
+                lon = coords.lon;
+                
+                // Reverse Geocoding para pegar o nome da cidade
+                try {
+                    const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`, {
+                        headers: { 'User-Agent': 'Meu Sistema PSIOS/1.0' }
+                    });
+                    const revData = await revRes.json();
+                    nomeCidade = revData.address.city || revData.address.town || revData.address.village || revData.address.suburb || "Localidade Atual";
+                    setCidade(nomeCidade);
+                    localStorage.setItem('dashboard_clima_cidade', nomeCidade);
+                } catch (err) {
+                    console.error("Erro no reverse geocoding:", err);
+                }
+            } else {
+                const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cidadeBusca)}&format=json`, {
                     headers: { 'User-Agent': 'Meu Sistema PSIOS/1.0' }
                 });
                 const geoData = await geoRes.json();
                 if (geoData && geoData.length > 0) {
-                    const { lat, lon } = geoData[0];
-                    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`);
-                    const weatherData = await weatherRes.json();
-                    
-                    if (weatherData.current_weather) {
-                        const current = weatherData.current_weather;
-                        const horaAtual = new Date().toISOString().substring(0, 13) + ":00";
-                        const indexHora = weatherData.hourly?.time.indexOf(horaAtual) ?? -1;
-                        const umidade = indexHora >= 0 ? weatherData.hourly.relative_humidity_2m[indexHora] : 60;
-
-                        const code = current.weathercode;
-                        let condicao = 'Ensolarado';
-                        let icone = 'wb_sunny';
-                        
-                        if (code === 0) { condicao = 'Ensolarado'; icone = 'wb_sunny'; }
-                        else if ([1, 2, 3].includes(code)) { condicao = 'Parcialmente Nublado'; icone = 'partly_cloudy_day'; }
-                        else if ([45, 48].includes(code)) { condicao = 'Névoa'; icone = 'foggy'; }
-                        else if ([51, 53, 55, 61, 63, 65].includes(code)) { condicao = 'Chuva'; icone = 'rainy'; }
-                        else if ([95].includes(code)) { condicao = 'Tempestade'; icone = 'thunderstorm'; }
-
-                        setDadosClima({
-                            temp: Math.round(current.temperature),
-                            condicao,
-                            icone,
-                            umidade,
-                            vento: Math.round(current.windspeed)
-                        });
-                    }
+                    lat = geoData[0].lat;
+                    lon = geoData[0].lon;
                 }
-            } catch (e) {
-                console.error("Erro ao buscar clima:", e);
-            } finally {
-                setLoadingClima(false);
             }
-        };
 
-        fetchClima();
+            if (lat && lon) {
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`);
+                const weatherData = await weatherRes.json();
+                
+                if (weatherData.current_weather) {
+                    const current = weatherData.current_weather;
+                    const horaAtual = new Date().toISOString().substring(0, 13) + ":00";
+                    const indexHora = weatherData.hourly?.time.indexOf(horaAtual) ?? -1;
+                    const umidade = indexHora >= 0 ? weatherData.hourly.relative_humidity_2m[indexHora] : 60;
+
+                    const code = current.weathercode;
+                    let condicao = 'Ensolarado';
+                    let icone = 'wb_sunny';
+                    
+                    if (code === 0) { condicao = 'Ensolarado'; icone = 'wb_sunny'; }
+                    else if ([1, 2, 3].includes(code)) { condicao = 'Parcialmente Nublado'; icone = 'partly_cloudy_day'; }
+                    else if ([45, 48].includes(code)) { condicao = 'Névoa'; icone = 'foggy'; }
+                    else if ([51, 53, 55, 61, 63, 65].includes(code)) { condicao = 'Chuva'; icone = 'rainy'; }
+                    else if ([95].includes(code)) { condicao = 'Tempestade'; icone = 'thunderstorm'; }
+
+                    setDadosClima({
+                        temp: Math.round(current.temperature),
+                        condicao,
+                        icone,
+                        umidade,
+                        vento: Math.round(current.windspeed)
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("Erro ao buscar clima:", e);
+        } finally {
+            setLoadingClima(false);
+        }
     }, [cidade]);
+
+    const handleAutoLocalizar = useCallback(() => {
+        if (!navigator.geolocation) {
+            return;
+        }
+
+        setLoadingClima(true);
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                fetchClima(null, { lat: latitude, lon: longitude });
+            },
+            (err) => {
+                console.error("Erro ao obter localização:", err);
+                setLoadingClima(false);
+                // Fallback silencioso para São Paulo se for o primeiro acesso e der erro
+                if (!localStorage.getItem('dashboard_clima_cidade')) {
+                    fetchClima('São Paulo, SP');
+                }
+            },
+            { timeout: 10000 }
+        );
+    }, [fetchClima]);
+
+    useEffect(() => {
+        const salva = localStorage.getItem('dashboard_clima_cidade');
+        if (!salva) {
+            handleAutoLocalizar();
+        } else {
+            fetchClima(salva);
+        }
+    }, []); // Executa apenas no mount inicial
+
+    // Sincroniza clima quando a cidade muda manualmente via input
+    useEffect(() => {
+        const salva = localStorage.getItem('dashboard_clima_cidade');
+        if (salva && cidade !== salva) {
+            fetchClima(cidade);
+        }
+    }, [cidade, fetchClima]);
     
     const textareaRef = useRef(null);
 
@@ -283,7 +357,6 @@ Retorne SEMPRE no seguinte formato (Markdown):
     const { getContasVencidas } = useFinance();
     const { tcles } = useTcles();
     const [modalDoc, setModalDoc] = useState(false);
-    const [tipoDocInicial, setTipoDocInicial] = useState(null);
     const [tarefasManuais, setTarefasManuais] = useState(() => {
         try {
             const salvas = localStorage.getItem('tarefasManuais');
@@ -299,6 +372,8 @@ Retorne SEMPRE no seguinte formato (Markdown):
     const [novaTarefa, setNovaTarefa] = useState('');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [helpOpen, setHelpOpen] = useState(false);
+    const [tipoModalDoc, setTipoModalDoc] = useState(null);
+
 
     useEffect(() => {
         localStorage.setItem('tarefasManuais', JSON.stringify(tarefasManuais));
@@ -358,10 +433,6 @@ Retorne SEMPRE no seguinte formato (Markdown):
         return dateB - dateA;
     }).slice(0, 5), [evolutions, laudos, atestados]);
 
-    const abrirModal = (tipo) => {
-        setTipoDocInicial(tipo);
-        setModalDoc(true);
-    };
 
     // PERF-06 FIX: memoizar stats e quickActions (evitar recriar arrays a cada render)
     const stats = useMemo(() => [
@@ -484,7 +555,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
         // 3. Aniversariantes de Hoje
         (patients || []).forEach(p => {
             if (p.dataNascimento) {
-                const [ano, mes, dia] = p.dataNascimento.split('-');
+                const [, mes, dia] = p.dataNascimento.split('-');
                 const hoje = new Date();
                 if (parseInt(mes) === hoje.getMonth() + 1 && parseInt(dia) === hoje.getDate()) {
                     automáticas.push({
@@ -518,7 +589,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
         if (atendimentosHoje.length >= 6) {
             automáticas.unshift({
                 id: 'burnout-alert',
-                text: `⚠ï¸ Alerta: Agenda Cheia hoje (${atendimentosHoje.length} sessões). Lembre-se de respirar!`,
+                text: `⚠️ Alerta: Agenda Cheia hoje (${atendimentosHoje.length} sessões). Lembre-se de respirar!`,
                 type: 'alerta'
             });
         }
@@ -637,7 +708,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
             <NovoDocumentoModal
                 isOpen={modalDoc}
                 onClose={() => setModalDoc(false)}
-                tipoInicial={tipoDocInicial}
+                tipoInicial={null}
             />
 
             {/* Header */}
@@ -660,13 +731,79 @@ Retorne SEMPRE no seguinte formato (Markdown):
             </div>
 
             {/* Welcome Area Re-designed */}
-            <div className="flex flex-col gap-8 px-1">
-                <div>
-                    <h1 className="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">Olá, {safeRender(user.nome, 'Doutor(a)')}</h1>
-                    <p className="text-slate-500 font-medium mt-1">
-                        Você tem <span className="text-primary font-bold">{atendimentosHoje.length} sessões</span> agendadas para hoje. Sua manhã está tranquila.
-                    </p>
-                </div>
+            {/* Psiquê Smart Banner */}
+            <div className="px-1 relative">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative bg-gradient-to-r from-teal-500/10 via-primary/10 to-indigo-500/10 dark:from-teal-500/5 dark:via-primary/5 dark:to-indigo-500/5 rounded-[2.5rem] border border-white dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none p-10 md:p-14 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-14 group"
+                >
+                    {/* Background Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/3 animate-pulse"></div>
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-400/10 blur-[60px] rounded-full translate-y-1/3 -translate-x-1/4"></div>
+
+                    {/* Avatar Area */}
+                    <div className="relative shrink-0 group/avatar flex items-center justify-center">
+                        <div className="size-32 md:size-40 rounded-3xl overflow-hidden border-4 border-white dark:border-slate-800 shadow-2xl relative z-10 bg-white transition-transform duration-500 group-hover/avatar:scale-105">
+                            <img 
+                                src="/avatar_psique.png" 
+                                alt="Psiquê AI" 
+                                className="w-full h-full object-cover" 
+                            />
+                        </div>
+                        {/* Status badge - Re-positioned and styled */}
+                        <div className="absolute -top-4 -right-2 z-20 bg-emerald-500 text-white text-[10px] font-black px-4 py-2 rounded-full border-2 border-white dark:border-slate-800 shadow-lg flex items-center gap-1.5 whitespace-nowrap">
+                            <span className="size-2 bg-white rounded-full animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
+                            PSIQUÊ ONLINE
+                        </div>
+                        
+                        {/* Decorative glow */}
+                        <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="flex-1 text-center md:text-left relative z-10 flex flex-col justify-center">
+                        <h2 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
+                            {(() => {
+                                const hora = new Date().getHours();
+                                let saudacao = 'Olá';
+                                if (hora < 12) saudacao = 'Bom dia';
+                                else if (hora < 18) saudacao = 'Boa tarde';
+                                else saudacao = 'Boa noite';
+                                
+                                // Pega o primeiro nome, mas evita o termo genérico 'Psicologo' que costuma vir do default
+                                const nomeUsuario = user?.nome || '';
+                                const isDefaultName = nomeUsuario.toLowerCase().includes('psicologo');
+                                const displayNome = (nomeUsuario && !isDefaultName) 
+                                    ? nomeUsuario.split(' ')[0] 
+                                    : 'Doutor(a)';
+                                    
+                                return `${saudacao}, ${displayNome} ! 🦋`;
+                            })()}
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-300 font-medium text-lg leading-relaxed max-w-2xl">
+                            {atendimentosHoje.length > 0 
+                                ? `Preparei tudo para suas ${atendimentosHoje.length} sessões de hoje. Já organizei os prontuários e rastreei as pendências financeiras. Foco no atendimento, a burocracia é comigo!`
+                                : "Enquanto você estava off, eu organizei o sistema. Hoje sua agenda está livre, aproveite para revisar prontuários ou planejar sua semana. Pode relaxar, eu cuido do backup!"
+                            }
+                        </p>
+                        
+                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-8">
+                            <button 
+                                onClick={() => navigate('/ai-clinica')}
+                                className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2 group/btn"
+                            >
+                                <span className="material-symbols-outlined text-lg group-hover/btn:rotate-12 transition-transform">speech_to_text</span>
+                                Falar com Psiquê
+                            </button>
+                            <div className="px-4 py-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl border border-white dark:border-slate-700 text-xs font-bold text-slate-500 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+                                {atendimentosHoje.length > 0 ? `${atendimentosHoje.length} sessões preparadas` : "Sistema 100% atualizado"}
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Próxima Sessão Card */}
@@ -725,10 +862,8 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             loadingClima={loadingClima}
                             editandoCidade={editandoCidade}
                             setEditandoCidade={setEditandoCidade}
-                            onCidadeChange={(nova) => {
-                                setCidade(nova);
-                                localStorage.setItem('dashboard_clima_cidade', nova);
-                            }}
+                            onCidadeChange={(nova) => setCidade(nova)}
+                            onAutoLocalizar={handleAutoLocalizar}
                         />
                     </div>
 
@@ -778,7 +913,6 @@ Retorne SEMPRE no seguinte formato (Markdown):
                         </div>
                     </div>
                 </div>
-            </div>
 
             {/* Jarvis Mode: Alertas Críticos */}
             {pacientesEmRisco.length > 0 && (
@@ -847,9 +981,17 @@ Retorne SEMPRE no seguinte formato (Markdown):
                     {quickActions.map((action, index) => (
                         <button
                             key={index}
-                            onClick={() => navigate(action.path, { state: { categoria: action.categoria } })}
+                            onClick={() => {
+                                if (action.categoria) {
+                                    setTipoModalDoc(action.categoria);
+                                    setModalDoc(true);
+                                } else {
+                                    navigate(action.path, { state: { categoria: action.categoria } });
+                                }
+                            }}
                             className="bg-white dark:bg-slate-800 flex items-center gap-4 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all text-left group"
                         >
+
                             <div className={`size-12 rounded-lg ${action.bgColor} flex items-center justify-center ${action.color} shrink-0 relative`}>
                                 <span className="material-symbols-outlined text-xl">{action.icon}</span>
                                 {action.count >= 0 && (
@@ -1119,9 +1261,12 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                         const pId = e.target.value;
                                         if (!pId) return;
                                         
-                                        // Navegar para prontuário com o texto como rascunho
-                                        navigate(`/prontuarios/paciente/${pId.replace('#', '')}`, { 
-                                            state: { evolucaoInicial: ativoNota?.texto } 
+                                        // Navegar para nova evolução com o texto da nota pré-preenchido
+                                        navigate('/prontuarios/evolucao/novo', { 
+                                            state: { 
+                                                pacienteId: pId,
+                                                modelo: { conteudo: ativoNota?.texto || '' } 
+                                            } 
                                         });
                                         
                                         // Resetar select
@@ -1219,13 +1364,82 @@ Retorne SEMPRE no seguinte formato (Markdown):
 
 
             </div>
+            
+            {/* Footer Institucional - 3 Colunas */}
+            <footer className="mt-20 pt-16 border-t border-slate-200 dark:border-slate-800 px-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+                    {/* Coluna 1: Marca e Slogan */}
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-primary text-3xl">psychology</span>
+                            <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">Meu Sistema PSI</span>
+                        </div>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-xs">
+                            O sistema completo e inteligente projetado para simplificar a gestão da sua prática clínica. 100% focado em psicólogos.
+                        </p>
+                    </div>
+
+                    {/* Coluna 2: Atalhos Rápidos */}
+                    <div className="grid grid-cols-2 gap-8">
+                        <div>
+                            <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Funcionalidades</h4>
+                            <ul className="space-y-3">
+                                {['Agenda', 'Prontuários', 'Financeiro', 'Relatórios'].map(item => (
+                                    <li key={item}>
+                                        <button onClick={() => navigate(`/${item.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`)} className="text-xs text-slate-500 hover:text-primary transition-colors font-medium">{item}</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Suporte</h4>
+                            <ul className="space-y-3">
+                                <li><button onClick={() => setHelpOpen(true)} className="text-xs text-slate-500 hover:text-primary transition-colors font-medium">Ajuda</button></li>
+                                <li><a href="#" className="text-xs text-slate-500 hover:text-primary transition-colors font-medium">WhatsApp</a></li>
+                                <li><a href="#" className="text-xs text-slate-500 hover:text-primary transition-colors font-medium">Tutorial</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Coluna 3: Siga-nos / Comunidade */}
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Comunidade</h4>
+                        <div className="flex gap-4">
+                            {['instagram', 'youtube', 'facebook'].map(social => (
+                                <a key={social} href="#" className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-primary/10 hover:text-primary transition-all">
+                                    <span className="material-symbols-outlined text-lg">{social === 'instagram' ? 'photo_camera' : social === 'youtube' ? 'play_circle' : 'public'}</span>
+                                </a>
+                            ))}
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-medium">Acompanhe as novidades e dicas para sua carreira.</p>
+                    </div>
+                </div>
+
+                {/* Rodapé Final */}
+                <div className="flex flex-col md:flex-row items-center justify-between py-8 border-t border-slate-100 dark:border-slate-800 gap-4">
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                        © {new Date().getFullYear()} Meu Sistema Psi · Todos os direitos reservados.
+                    </p>
+                    <div className="flex items-center gap-6">
+                        <a href="#" className="text-[10px] text-slate-400 hover:text-primary font-bold uppercase tracking-widest">Privacidade</a>
+                        <a href="#" className="text-[10px] text-slate-400 hover:text-primary font-bold uppercase tracking-widest">Termos</a>
+                    </div>
+                </div>
+            </footer>
 
             {/* Modais */}
-            {modalDoc && <NovoDocumentoModal isOpen={modalDoc} onClose={() => setModalDoc(false)} tipo={tipoDocInicial} />}
+
             <AgendaSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+            <NovoDocumentoModal 
+                isOpen={modalDoc} 
+                onClose={() => setModalDoc(false)} 
+                tipoInicial={tipoModalDoc}
+            />
+            <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
         </div>
     );
 };
+
 
 export default Dashboard;
 
