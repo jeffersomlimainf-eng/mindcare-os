@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useFinance } from '../contexts/FinanceContext';
 import { useUser } from '../contexts/UserContext';
@@ -7,6 +7,7 @@ import { valorPorExtenso } from '../utils/formatters';
 
 import { showToast } from '../components/Toast';
 
+import { logger } from '../utils/logger';
 const Recibo = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -120,7 +121,7 @@ const Recibo = () => {
             await exportToPDF(receiptRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
         } catch (error) {
-            console.error('Erro na exportação PDF:', error);
+            logger.error('Erro na exportação PDF:', error);
             showToast(`Erro técnico: ${error.message}. Use a opção "Imprimir" → "Salvar como PDF".`, 'warning');
         }
     };
@@ -419,5 +420,6 @@ const Recibo = () => {
 };
 
 export default Recibo;
+
 
 

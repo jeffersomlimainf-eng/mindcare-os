@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+﻿import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 export const SUBCATEGORIAS = {
     receita: [
         { value: 'sessao', label: 'Sessão Individual' },
@@ -63,7 +64,7 @@ export const FinanceProvider = ({ children }) => {
             setTransactions(prev => [...prev, novo]);
             return novo;
         } catch (error) {
-            console.error('[FinanceContext] Erro ao adicionar:', error);
+            logger.error('[FinanceContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -74,7 +75,7 @@ export const FinanceProvider = ({ children }) => {
             // PERF-02: merge local do item atualizado
             setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...atualizado } : t));
         } catch (e) {
-            console.error('[FinanceContext] Erro ao atualizar:', e);
+            logger.error('[FinanceContext] Erro ao atualizar:', e);
         }
     };
 
@@ -84,7 +85,7 @@ export const FinanceProvider = ({ children }) => {
             // PERF-02: remover localmente sem refetch
             setTransactions(prev => prev.filter(t => t.id !== id));
         } catch (e) {
-            console.error('[FinanceContext] Erro ao excluir:', e);
+            logger.error('[FinanceContext] Erro ao excluir:', e);
         }
     };
 
@@ -181,5 +182,6 @@ export const FinanceProvider = ({ children }) => {
         </FinanceContext.Provider>
     );
 };
+
 
 

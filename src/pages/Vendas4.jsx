@@ -5,13 +5,17 @@ import {
   Check, Shield, Heart, Sparkles, ArrowRight, 
   Clock, Lock, Zap, BarChart3, Users, 
   ChevronRight, Brain, Star, Award,
-  Target, TrendingUp, Gem
+  Target, TrendingUp, Gem, CreditCard
 } from 'lucide-react';
 
 // Assets
 import highEndOffice from '../assets/high_end_office.png';
 import authorityStatus from '../assets/authority_status.png';
 import dashboardImg from '../assets/screens/dashboard.png';
+import psi1 from '../assets/avatars/psi1.png';
+import psi2 from '../assets/avatars/psi2.png';
+import psi3 from '../assets/avatars/psi3.png';
+import psi4 from '../assets/avatars/psi4.png';
 
 export default function Vendas4() {
   const [scrolled, setScrolled] = useState(false);
@@ -41,7 +45,7 @@ export default function Vendas4() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas5');
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/');
 
     const updateOg = (property, content) => {
       let meta = document.querySelector(`meta[property="${property}"]`);
@@ -54,7 +58,7 @@ export default function Vendas4() {
     };
     updateOg('og:title', 'Sistema para Clínica de Alto Padrão | Meu Sistema PSI');
     updateOg('og:description', 'Aumente sua autoridade clínica e ganhe tempo precioso. O software de elite para psicólogos que buscam uma gestão de alto padrão e segurança absoluta.');
-    updateOg('og:url', 'https://meusistemapsi.com.br/vendas4');
+    updateOg('og:url', 'https://meusistemapsi.com.br/');
     updateOg('og:image', 'https://meusistemapsi.com.br/og-image.png');
 
     return () => window.removeEventListener('scroll', handleScroll);
@@ -137,7 +141,7 @@ export default function Vendas4() {
           <div className="grid lg:grid-cols-12 gap-16 items-center">
             <motion.div {...safeAnimation(staggerContainer)} className="lg:col-span-7">
               <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-100 rounded-full text-purple-700 text-[9px] font-black uppercase tracking-[0.25em] mb-10">
-                <Gem className="w-3.5 h-3.5" /> Padrão Ouro em Gestão Clínica
+                <Gem className="w-3.5 h-3.5" /> Padrão Ouro — Vagas Limitadas para o Grupo Beta de Elite
               </motion.div>
               
               <motion.h1 variants={fadeUp} className="text-6xl lg:text-[5.5rem] font-serif font-black text-slate-900 leading-[0.9] mb-10 tracking-tighter">
@@ -147,7 +151,7 @@ export default function Vendas4() {
               </motion.h1>
               
               <motion.p variants={fadeUp} className="text-xl text-slate-500 max-w-xl mb-12 font-light leading-relaxed">
-                Recupere até 10 horas da sua semana. O **Meu Sistema PSI** combina inteligência artificial com simplicidade extrema para elevar sua autoridade profissional e blindar sua clínica.
+                Recupere até 10 horas da sua semana. Com a **Psiquê AI**, sua documentação clínica é gerada em segundos, permitindo que você foque no que realmente importa: a conexão humana.
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-6">
@@ -156,7 +160,9 @@ export default function Vendas4() {
                 </Link>
                 <div className="flex flex-col justify-center">
                   <div className="flex -space-x-2 mb-1">
-                    {[1,2,3,4].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100" />)}
+                    {[psi1, psi2, psi3, psi4].map((img, i) => (
+                      <img key={i} src={img} className="w-8 h-8 rounded-full border-2 border-white object-cover" alt="Psicólogo parceiro" />
+                    ))}
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">+2.5k Psicólogos de Sucesso</span>
                 </div>
@@ -200,24 +206,44 @@ export default function Vendas4() {
                 Seu tempo é seu ativo <br/> <span className="text-purple-600 italic">mais valioso.</span>
               </motion.h2>
               
-              <div className="space-y-12">
-                <motion.div variants={fadeUp} className="flex gap-8 items-start group">
-                  <div className="p-4 bg-white rounded-[2rem] shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
+              <div className="grid sm:grid-cols-2 gap-12">
+                <motion.div variants={fadeUp} className="flex gap-6 items-start group">
+                  <div className="p-4 bg-white rounded-[2rem] shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 shrink-0">
                     <Zap className="w-7 h-7" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Simplicidade de um Clique</h3>
-                    <p className="text-slate-500 font-light leading-relaxed">Deixe o papel para trás. Agende, fature e registre com um único toque. Interface minimalista desenhada para eliminar a carga cognitiva.</p>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Simplicidade Extrema</h3>
+                    <p className="text-slate-500 font-light leading-relaxed">Interface minimalista desenhada para eliminar a carga cognitiva. Agende e registre com um único toque.</p>
                   </div>
                 </motion.div>
 
-                <motion.div variants={fadeUp} className="flex gap-8 items-start group">
-                  <div className="p-4 bg-white rounded-[2rem] shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
+                <motion.div variants={fadeUp} className="flex gap-6 items-start group">
+                  <div className="p-4 bg-white rounded-[2rem] shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 shrink-0">
                     <Brain className="w-7 h-7" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Tecnologia Invisível (IA)</h3>
-                    <p className="text-slate-500 font-light leading-relaxed">Nossa IA traduz suas notas em evoluções clínicas estruturadas e resumidas. Você foca no paciente, nós cuidamos da documentação.</p>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Psiquê AI</h3>
+                    <p className="text-slate-500 font-light leading-relaxed">Nossa IA proprietária traduz suas notas em evoluções clínicas estruturadas. Foco no paciente, não no papel.</p>
+                  </div>
+                </motion.div>
+
+                <motion.div variants={fadeUp} className="flex gap-6 items-start group">
+                  <div className="p-4 bg-white rounded-[2rem] shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 shrink-0">
+                    <Clock className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Agenda com Notificações</h3>
+                    <p className="text-slate-500 font-light leading-relaxed">Reduza faltas em até 40% com lembretes automáticos e confirmações enviadas diretamente para o WhatsApp do paciente.</p>
+                  </div>
+                </motion.div>
+
+                <motion.div variants={fadeUp} className="flex gap-6 items-start group">
+                  <div className="p-4 bg-white rounded-[2rem] shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 shrink-0">
+                    <CreditCard className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 mb-2">Cobrança Automática</h3>
+                    <p className="text-slate-500 font-light leading-relaxed">Elimine o constrangimento de cobrar. O sistema gerencia faturas, pagamentos e envia recibos de forma elegante e autônoma.</p>
                   </div>
                 </motion.div>
               </div>
@@ -282,6 +308,16 @@ export default function Vendas4() {
                 <Link to="/cadastrar" className="inline-flex items-center gap-4 text-slate-900 font-black text-xs uppercase tracking-[0.3em] group">
                   Sua Carreira de Alto Padrão Começa Aqui <ArrowRight className="w-4 h-4 group-hover:translate-x-3 transition-transform" />
                 </Link>
+              </motion.div>
+              
+              <motion.div variants={fadeUp} className="mt-12 p-8 bg-purple-50 rounded-[2.5rem] border border-purple-100 flex items-center gap-6">
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                  <Heart className="w-8 h-8 text-purple-600" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black uppercase tracking-tight text-slate-900 mb-1">Exclusivo: App MeuPSI para Pacientes</h4>
+                  <p className="text-xs text-slate-500 font-light">Seus pacientes acessam agenda, biometria e pagamentos em um app único, elevando sua percepção de valor.</p>
+                </div>
               </motion.div>
             </motion.div>
           </div>

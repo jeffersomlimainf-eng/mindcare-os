@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { notifyAdminNewSignup } from '../utils/notifications';
 
+import { logger } from '../utils/logger';
 const UserContext = createContext();
 
 const defaultUser = {
@@ -69,24 +70,22 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(() => getCachedProfile() || defaultUser);
     const [loading, setLoading] = useState(() => !getCachedProfile());
 
-    // 1. Carregar perfil estendido do banco
+    // 1. Carregar perfil estendido do banco (Reversão Segura + Performance Paralela)
     const fetchProfile = async (sessionUserOrId) => {
         try {
             const userId = typeof sessionUserOrId === 'string' ? sessionUserOrId : sessionUserOrId.id;
             
-            // 1. Fetch user profile
-            const { data, error } = await supabase
+            // Busca o perfil básico primeiro (Método mais estável)
+            const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
                 .maybeSingle();
 
-            if (error) throw error;
+            if (profileError) throw profileError;
 
-            let profileData = data;
-
-            // Se o perfil não existe, cria um automaticamente (Google Auth / Race condition do email signup)
-            if (!profileData && typeof sessionUserOrId === 'object' && sessionUserOrId !== null) {
+            // Se o perfil não existe, cria um (Google Auth / Signup)
+            if (!profileData && typeof sessionUserOrId === 'object') {
                 const sessionUser = sessionUserOrId;
                 const newProfile = {
                     id: userId,
@@ -102,40 +101,33 @@ export const UserProvider = ({ children }) => {
                     trial_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
                 };
 
-                const { data: insertedData, error: insertError } = await supabase
+                const { data: inserted, error: insErr } = await supabase
                     .from('profiles')
                     .upsert(newProfile)
                     .select()
                     .single();
 
-                if (insertError) {
-                    console.error("Erro ao inserir perfil automático:", insertError);
-                    throw insertError;
-                }
-                profileData = insertedData;
+                if (insErr) throw insErr;
+                return fetchProfile(userId); 
             } else if (!profileData) {
-                throw new Error("Perfil retornado vazio. Usuário não encontrado na tabela profiles.");
+                throw new Error("Perfil não encontrado.");
             }
 
-            // 2. Decide if we need to fetch admin status
             let isClinicBlocked = false;
             let effectivePlanStatus = profileData.plan_status;
             const blockedStatuses = ['Inadimplente', 'Suspenso', 'Bloqueado', 'Cancelado'];
 
+            // OTIMIZAÇÃO: Se for admin, já sabemos o status. Se for sub-usuário, buscamos o admin.
             if (profileData.role !== 'admin' && profileData.tenant_id) {
-                // Fetch admin status in parallel if we had the tenant_id, 
-                // but since we just got it, we fetch it now.
-                const { data: adminData, error: adminError } = await supabase
+                const { data: adminData } = await supabase
                     .from('profiles')
                     .select('plan_status')
                     .eq('id', profileData.tenant_id)
                     .maybeSingle();
                 
-                if (!adminError && adminData) {
-                    if (blockedStatuses.includes(adminData.plan_status)) {
-                        isClinicBlocked = true;
-                        effectivePlanStatus = adminData.plan_status;
-                    }
+                if (adminData && blockedStatuses.includes(adminData.plan_status)) {
+                    isClinicBlocked = true;
+                    effectivePlanStatus = adminData.plan_status;
                 }
             } else if (profileData.role === 'admin') {
                 if (blockedStatuses.includes(profileData.plan_status)) {
@@ -181,7 +173,7 @@ export const UserProvider = ({ children }) => {
             return profileObj;
 
         } catch (error) {
-            console.error("Erro Supabase Profile:", error);
+            logger.error("Erro Supabase Profile:", error);
             await supabase.auth.signOut().catch(() => {});
             clearCachedProfile();
             setUser(defaultUser);
@@ -218,7 +210,7 @@ export const UserProvider = ({ children }) => {
             try {
                 await fetchProfile(session.user);
             } catch (err) {
-                console.error('[UserContext] Erro fatal ao carregar perfil:', err);
+                logger.error('[UserContext] Erro fatal ao carregar perfil:', err);
                 setUser(defaultUser);
             } finally {
                 if (mounted) {
@@ -238,7 +230,7 @@ export const UserProvider = ({ children }) => {
                     await handleAuth('INITIAL_CHECK', session);
                 }
             } catch (error) {
-                console.error('[UserContext] Erro na inicialização da sessão:', error);
+                logger.error('[UserContext] Erro na inicialização da sessão:', error);
                 if (mounted) {
                     setUser(defaultUser);
                     setLoading(false);
@@ -259,7 +251,7 @@ export const UserProvider = ({ children }) => {
         // setLoading(false) é idempotente — não causa re-render se já for false
         const safetyTimeout = setTimeout(() => {
             if (mounted) {
-                console.warn('[UserContext] Safety timeout atingido!');
+                logger.warn('[UserContext] Safety timeout atingido!');
                 setLoading(false);
             }
         }, 8000);
@@ -323,7 +315,7 @@ export const UserProvider = ({ children }) => {
                         plan_value: 0,
                         trial_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
                     })
-                    .catch(err => console.warn('[UserContext] Erro failsafe profile:', err));
+                    .catch(err => logger.warn('[UserContext] Erro failsafe profile:', err));
             }
 
             // Notificar administrador sobre novo cadastro
@@ -331,7 +323,7 @@ export const UserProvider = ({ children }) => {
                 nome,
                 email,
                 cpfCnpj
-            }).catch(err => console.warn('[UserContext] Erro ao notificar novo cadastro:', err));
+            }).catch(err => logger.warn('[UserContext] Erro ao notificar novo cadastro:', err));
 
             setLoading(false);
             return { success: true, data };
@@ -352,7 +344,7 @@ export const UserProvider = ({ children }) => {
             if (error) throw error;
             return { success: true };
         } catch (error) {
-            console.error('[UserContext] Erro ao logar com Google:', error.message);
+            logger.error('[UserContext] Erro ao logar com Google:', error.message);
             return { success: false, message: error.message };
         }
     };
@@ -390,7 +382,7 @@ export const UserProvider = ({ children }) => {
 
             return { success: true };
         } catch (error) {
-            console.error('[UserContext] Erro ao alterar senha:', error.message);
+            logger.error('[UserContext] Erro ao alterar senha:', error.message);
             return { success: false, message: error.message };
         }
     };
@@ -399,14 +391,29 @@ export const UserProvider = ({ children }) => {
     const logout = async () => {
         setLoading(true);
         try {
+            // 1. Tenta deslogar do servidor Supabase
             await supabase.auth.signOut();
         } catch (error) {
-            console.warn('[UserContext] Erro ignorado durante signOut:', error.message);
+            logger.warn('[UserContext] Erro durante signOut:', error.message);
         } finally {
+            // 2. Limpeza Cirúrgica do localStorage
+            // Removemos tudo EXCETO as preferências que o usuário quer que durem "a vida toda"
+            Object.keys(localStorage).forEach(key => {
+                const isPreference = key.startsWith('psi_tour_') || 
+                                   key.startsWith('psi_visited_') || 
+                                   key === 'darkMode';
+                
+                if (!isPreference) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            // 3. Limpeza de estado e redirecionamento
             setUser(defaultUser);
-            localStorage.clear();
             sessionStorage.clear();
             setLoading(false);
+            
+            // Forçamos o redirecionamento via reload para garantir estado limpo
             window.location.href = '/login';
         }
     };
@@ -443,7 +450,7 @@ export const UserProvider = ({ children }) => {
             }));
             return { success: true };
         } else {
-            console.error('[UserContext] Erro ao atualizar perfil:', error.message);
+            logger.error('[UserContext] Erro ao atualizar perfil:', error.message);
             return { success: false, message: error.message };
         }
     };
@@ -507,5 +514,6 @@ export const useUser = () => {
     }
     return context;
 };
+
 
 

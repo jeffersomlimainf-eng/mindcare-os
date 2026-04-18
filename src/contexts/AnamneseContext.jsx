@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const AnamneseContext = createContext();
 
 export const useAnamneses = () => {
@@ -39,7 +40,7 @@ export const AnamneseProvider = ({ children }) => {
             setAnamneses(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
-            console.error('[AnamneseContext] Erro ao adicionar:', error);
+            logger.error('[AnamneseContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -49,7 +50,7 @@ export const AnamneseProvider = ({ children }) => {
             const atualizado = await db.update('anamneses', id, data);
             setAnamneses(prev => prev.map(a => a.id === id ? { ...a, ...atualizado } : a)); // PERF-02
         } catch (error) {
-            console.error('[AnamneseContext] Erro ao atualizar:', error);
+            logger.error('[AnamneseContext] Erro ao atualizar:', error);
         }
     };
 
@@ -58,7 +59,7 @@ export const AnamneseProvider = ({ children }) => {
             await db.delete('anamneses', id);
             setAnamneses(prev => prev.filter(a => a.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[AnamneseContext] Erro ao deletar:', error);
+            logger.error('[AnamneseContext] Erro ao deletar:', error);
         }
     };
 
@@ -84,5 +85,6 @@ export const AnamneseProvider = ({ children }) => {
         </AnamneseContext.Provider>
     );
 };
+
 
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NovoAgendamentoModal from '../components/NovoAgendamentoModal';
 import AgendaSettingsModal from '../components/AgendaSettingsModal';
@@ -14,7 +14,10 @@ import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
 import FeatureTour from '../components/FeatureTour';
+import useFirstVisit from '../hooks/useFirstVisit';
+import useDismissible from '../hooks/useDismissible';
 
+import { logger } from '../utils/logger';
 // ─── Constantes ──────────────────────────────────────────────
 const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 const DIAS_CAL = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -106,6 +109,11 @@ const Agenda = () => {
     const [pacienteParaAgenda, setPacienteParaAgenda] = useState(null);
     const [showHelp, setShowHelp] = useState(false);
     const [showTour, setShowTour] = useState(false);
+    const { shouldTrigger: agendaFirstVisit, markAsCompleted: markAgendaTourCompleted } = useFirstVisit('agenda');
+    const [agendaBannerDismissed, dismissAgendaBanner] = useDismissible('agenda_sync');
+    useEffect(() => {
+        if (agendaFirstVisit) setShowTour(true);
+    }, [agendaFirstVisit]);
     const [filtroStatus, setFiltroStatus] = useState('todos');
 
     // Fechar modais locais da Agenda com Esc
@@ -214,7 +222,7 @@ const Agenda = () => {
                     });
                     showToast('Lançamento no financeiro criado!', 'success');
                 } catch (err) {
-                    console.error('[Agenda] Erro ao lançar financeiro:', err);
+                    logger.error('[Agenda] Erro ao lançar financeiro:', err);
                 }
             }
         }
@@ -270,7 +278,7 @@ const Agenda = () => {
                 addAppointment(lote)
                     .then(() => showToast(`${qtd} consultas agendadas com sucesso (Otimizado)!`, 'success'))
                     .catch(err => {
-                        console.error('[Agenda] Erro no agendamento em lote:', err);
+                        logger.error('[Agenda] Erro no agendamento em lote:', err);
                         showToast('Erro ao criar sessões recorrentes.', 'error');
                     });
             }
@@ -770,16 +778,59 @@ const Agenda = () => {
                             <div className="h-full bg-primary transition-all" style={{ width: totalHoje > 0 ? `${(filteredAppointments.filter(c => c.data === dataHojeISO && c.status === 'concluido').length / totalHoje) * 100}%` : '0%' }} />
                         </div>
                     </div>
+
+                    {!agendaBannerDismissed && (
+                    <div className="glass dark:bg-slate-800/50 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-primary/5 to-violet-500/5 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-primary/20 transition-all duration-700"></div>
+                        <button onClick={dismissAgendaBanner} className="absolute top-2 right-2 z-20 size-6 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all" title="Dispensar">
+                            <span className="material-symbols-outlined text-sm">close</span>
+                        </button>
+
+                        <div className="flex items-center gap-2 mb-3 relative z-10">
+                            <div className="size-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-primary text-sm animate-pulse">magic_button</span>
+                            </div>
+                            <p className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-[0.15em]">Sincronização Ativa</p>
+                        </div>
+
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium relative z-10">
+                            Seus pacientes recebem <span className="text-primary font-bold">lembretes automáticos</span> via WhatsApp e E-mail assim que são agendados, aumentando sua taxa de presença.
+                        </p>
+
+                        <div className="flex gap-2 mt-4 relative z-10">
+                            <div className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                <span className="material-symbols-outlined text-xs">chat</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest">WhatsApp</span>
+                            </div>
+                            <div className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 text-blue-600 dark:text-blue-400">
+                                <span className="material-symbols-outlined text-xs">mail</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest">E-mail</span>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => navigate('/configuracoes')}
+                            className="w-full mt-4 py-3 text-[10px] font-black uppercase tracking-widest text-white bg-slate-900 dark:bg-primary rounded-xl hover:bg-primary dark:hover:bg-primary/90 transition-all shadow-lg shadow-slate-900/10 dark:shadow-primary/20 flex items-center justify-center gap-2"
+                        >
+                            <span className="material-symbols-outlined text-sm">settings_suggest</span>
+                            Configurar Mensagens
+                        </button>
+                    </div>
+                    )}
                 </aside>
             </div>
 
             <FeatureTour 
                 isOpen={showTour} 
                 steps={HELP_CONTENT.agenda.tourSteps} 
-                onClose={() => setShowTour(false)}
+                onClose={() => {
+                    setShowTour(false);
+                    markAgendaTourCompleted();
+                }}
                 onComplete={() => {
                     setShowTour(false);
-                    alert("Agenda dominada! Seus horários agradecem. 📅");
+                    markAgendaTourCompleted();
+                    alert("Agenda configurada! Seu tempo agora está sob seu comando. ⏳");
                 }}
             />
         </>
@@ -787,5 +838,6 @@ const Agenda = () => {
 };
 
 export default Agenda;
+
 
 

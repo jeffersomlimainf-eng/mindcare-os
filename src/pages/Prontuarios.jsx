@@ -13,6 +13,8 @@ import { formatDisplayId, getDocumentPrefix } from '../utils/formatId';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
 import FeatureTour from '../components/FeatureTour';
+import useFirstVisit from '../hooks/useFirstVisit';
+import useDismissible from '../hooks/useDismissible';
 
 const TIPO_COLORS_CFG = {
     'Evolução de Sessão': { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-100 dark:border-blue-800', icon: 'clinical_notes' },
@@ -36,6 +38,11 @@ const Prontuarios = () => {
     const [modalAberto, setModalAberto] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
     const [showTour, setShowTour] = useState(false);
+    const { shouldTrigger: prontuariosFirstVisit, markAsCompleted: markProntuariosTourCompleted } = useFirstVisit('prontuarios');
+    const [prontuariosBannerDismissed, dismissProntuariosBanner] = useDismissible('prontuarios_ia');
+    useEffect(() => {
+        if (prontuariosFirstVisit) setShowTour(true);
+    }, [prontuariosFirstVisit]);
     
     const totalDocumentos = (evolutions?.length || 0) + (laudos?.length || 0) + (atestados?.length || 0) + (declaracoes?.length || 0) + (anamneses?.length || 0) + (encaminhamentos?.length || 0);
     
@@ -215,8 +222,12 @@ const Prontuarios = () => {
                             </div>
                             <button 
                                 onClick={() => setShowHelp(true)}
-                                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10 relative"
                             >
+                                <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                </span>
                                 <span className="material-symbols-outlined text-[14px]">help_outline</span>
                                 <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
                             </button>
@@ -247,6 +258,44 @@ const Prontuarios = () => {
                         </button>
                     ))}
                 </div>
+
+                {/* Banner Informativo UX - Escrita com IA */}
+                {!prontuariosBannerDismissed && (
+                <div className="px-1 relative mt-2">
+                    <div className="relative bg-gradient-to-r from-indigo-500/10 via-primary/5 to-purple-500/10 dark:from-indigo-500/10 dark:via-primary/5 dark:to-purple-500/10 rounded-[2rem] border border-indigo-100/50 dark:border-indigo-900/30 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+                        <button onClick={dismissProntuariosBanner} className="absolute top-2 right-2 z-20 size-10 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-90" title="Dispensar">
+                            <span className="material-symbols-outlined text-xl">close</span>
+                        </button>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-400/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/3"></div>
+                        
+                        <div className="flex items-center gap-6 relative z-10 w-full md:w-auto">
+                            <div className="size-16 shrink-0 rounded-[1.5rem] bg-white dark:bg-slate-800 shadow-xl shadow-indigo-500/10 flex items-center justify-center border border-indigo-50 dark:border-slate-700">
+                                <span className="material-symbols-outlined text-3xl text-indigo-500">auto_awesome</span>
+                            </div>
+                            <div>
+                                <h3 className="text-lg md:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2 mb-1">
+                                    Sua Escrita com IA
+                                    <span className="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[9px] uppercase tracking-widest">Dica de Ouro</span>
+                                </h3>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+                                    Não perca horas formatando textos. Escreva rascunhos rápidos durante a sessão e deixe a <span className="font-bold text-indigo-500">Psiquê Assist</span> transformá-los em evoluções clínicas estruturadas e profissionais.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onClick={() => {
+                                setModalAberto(true);
+                                setModeloNav({ id: 'evolucao' });
+                            }}
+                            className="w-full md:w-auto relative z-10 px-6 py-3.5 bg-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center justify-center gap-2 group"
+                        >
+                            Ver Como Funciona
+                            <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">east</span>
+                        </button>
+                    </div>
+                </div>
+                )}
 
                 <div className="space-y-4">
                     <div className="glass dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden px-1">
@@ -370,9 +419,13 @@ const Prontuarios = () => {
             <FeatureTour 
                 isOpen={showTour} 
                 steps={HELP_CONTENT.prontuarios.tourSteps} 
-                onClose={() => setShowTour(false)}
+                onClose={() => {
+                    setShowTour(false);
+                    markProntuariosTourCompleted();
+                }}
                 onComplete={() => {
                     setShowTour(false);
+                    markProntuariosTourCompleted();
                     alert("Seu acervo clínico está organizado e protegido. 🛡️");
                 }}
             />

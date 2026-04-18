@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 
+import { logger } from '../utils/logger';
 const ThemeContext = createContext();
 
 export const useTheme = () => {
@@ -40,5 +41,6 @@ export const ThemeProvider = ({ children }) => {
         </ThemeContext.Provider>
     );
 };
+
 
 

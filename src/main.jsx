@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
@@ -31,7 +31,7 @@ class GlobalErrorBoundary extends React.Component {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error('[Fatal Error Boundary]', error, errorInfo);
+        logger.error('[Fatal Error Boundary]', error, errorInfo);
     }
 
     handleReset = () => {
@@ -134,5 +134,6 @@ root.render(
         </GlobalErrorBoundary>
     </React.StrictMode>
 );
+
 
 

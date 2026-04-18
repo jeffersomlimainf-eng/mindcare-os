@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const EvolutionContext = createContext();
 
 export const useEvolutions = () => {
@@ -63,7 +64,7 @@ export const EvolutionProvider = ({ children }) => {
             setEvolutions(prev => [...prev, nova]); // PERF-02: optimistic update
             return nova;
         } catch (error) {
-            console.error('[EvolutionContext] Erro ao adicionar:', error);
+            logger.error('[EvolutionContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -102,7 +103,7 @@ export const EvolutionProvider = ({ children }) => {
             setEvolutions(prev => prev.map(e => e.id === id ? { ...e, ...result } : e)); // PERF-02
             return result;
         } catch (error) {
-            console.error('[EvolutionContext] Erro ao atualizar:', error);
+            logger.error('[EvolutionContext] Erro ao atualizar:', error);
             throw error; // BUG-14 FIX: propagar erro para o chamador saber da falha
         }
     };
@@ -112,7 +113,7 @@ export const EvolutionProvider = ({ children }) => {
             await db.delete('evolutions', id);
             setEvolutions(prev => prev.filter(e => e.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[EvolutionContext] Erro ao deletar:', error);
+            logger.error('[EvolutionContext] Erro ao deletar:', error);
         }
     };
 
@@ -130,5 +131,6 @@ export const EvolutionProvider = ({ children }) => {
         </EvolutionContext.Provider>
     );
 };
+
 
 

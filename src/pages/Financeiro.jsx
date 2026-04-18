@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NovoLancamentoModal from '../components/NovoLancamentoModal';
 import { useFinance, SUBCATEGORIAS } from '../contexts/FinanceContext';
@@ -9,7 +9,10 @@ import { usePatients } from '../contexts/PatientContext';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
 import FeatureTour from '../components/FeatureTour';
+import useFirstVisit from '../hooks/useFirstVisit';
+import useDismissible from '../hooks/useDismissible';
 
+import { logger } from '../utils/logger';
 const FINANCE_COLORS_CFG = {
     categorias: {
         clinica: { label: 'Clínica', icon: 'medical_services', bg: 'bg-sky-50', border: 'border-sky-200', text: 'text-sky-700', badge: 'bg-sky-100/80 text-sky-800' },
@@ -46,6 +49,11 @@ const Financeiro = () => {
     const [tipoPadrao, setTipoPadrao] = useState('receita');
     const [showHelp, setShowHelp] = useState(false);
     const [showTour, setShowTour] = useState(false);
+    const { shouldTrigger: financeiroFirstVisit, markAsCompleted: markFinanceiroTourCompleted } = useFirstVisit('financeiro');
+    const [financeiroBannerDismissed, dismissFinanceiroBanner] = useDismissible('financeiro_cobranca');
+    useEffect(() => {
+        if (financeiroFirstVisit) setShowTour(true);
+    }, [financeiroFirstVisit]);
 
     const safe = Array.isArray(transactions) ? transactions.filter(Boolean) : [];
     
@@ -110,7 +118,7 @@ const Financeiro = () => {
                 addTransaction(payload);
             }
         } catch (error) {
-            console.error('[Financeiro] Erro ao processar salvamento:', error);
+            logger.error('[Financeiro] Erro ao processar salvamento:', error);
             showToast('Erro ao salvar lançamento.', 'error');
         }
         setLancamentoEditando(null);
@@ -264,6 +272,48 @@ const Financeiro = () => {
                     );
                 })}
             </div>
+
+            {/* Informativo de Régua de Cobrança */}
+            {!financeiroBannerDismissed && (
+            <div className="glass dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-transparent relative overflow-hidden group px-1">
+                <button onClick={dismissFinanceiroBanner} className="absolute top-3 right-3 z-20 size-6 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all" title="Dispensar">
+                    <span className="material-symbols-outlined text-sm">close</span>
+                </button>
+                <div className="absolute top-0 right-0 w-64 h-full bg-emerald-500/5 -skew-x-12 translate-x-32 group-hover:translate-x-20 transition-all duration-1000"></div>
+                
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10 px-4">
+                    <div className="flex items-center gap-4">
+                        <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                            <span className="material-symbols-outlined text-emerald-600 text-2xl animate-bounce">payments</span>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Cobrança Inteligente</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl font-medium leading-relaxed">
+                                Configure lembretes automáticos de pagamento via <span className="text-emerald-600 font-bold">WhatsApp</span> e <span className="text-emerald-600 font-bold">E-mail</span> para pacientes com sessões pendentes.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                        <div className="hidden lg:flex -space-x-2">
+                            <div className="size-8 rounded-full border-2 border-white dark:border-slate-800 bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm">
+                                <span className="material-symbols-outlined text-xs">chat</span>
+                            </div>
+                            <div className="size-8 rounded-full border-2 border-white dark:border-slate-800 bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+                                <span className="material-symbols-outlined text-xs">mail</span>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => navigate('/configuracoes')}
+                            className="px-6 py-3 bg-slate-900 dark:bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 active:scale-95"
+                        >
+                            <span className="material-symbols-outlined text-sm">settings_suggest</span>
+                            Configurar Régua
+                        </button>
+                    </div>
+                </div>
+            </div>
+            )}
 
             {/* Gráficos */}
             <div className="glass dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
@@ -467,10 +517,14 @@ const Financeiro = () => {
             <FeatureTour 
                 isOpen={showTour} 
                 steps={HELP_CONTENT.financeiro.tourSteps} 
-                onClose={() => setShowTour(false)}
+                onClose={() => {
+                    setShowTour(false);
+                    markFinanceiroTourCompleted();
+                }}
                 onComplete={() => {
                     setShowTour(false);
-                    alert("Gestão financeira concluída! Agora é só faturar. 💰🚀");
+                    markFinanceiroTourCompleted();
+                    alert("Finanças sob controle! Agora você pode focar no que realmente importa. 💎");
                 }}
             />
         </div>
@@ -478,3 +532,4 @@ const Financeiro = () => {
 };
 
 export default Financeiro;
+

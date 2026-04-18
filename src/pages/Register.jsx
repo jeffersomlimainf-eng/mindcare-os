@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
 import { supabase } from '../lib/supabase';
 
+import { logger } from '../utils/logger';
 const Register = () => {
     const navigate = useNavigate();
     const { signUp, loginWithGoogle } = useUser();
@@ -60,9 +61,9 @@ const Register = () => {
                     .eq('referral_contact', email)
                     .eq('status', 'Pendente');
                 
-                if (refError) console.warn('[Register] Erro ao atualizar indicação:', refError);
+                if (refError) logger.warn('[Register] Erro ao atualizar indicação:', refError);
             } catch (e) {
-                console.error('[Register] Erro no vínculo de indicação:', e);
+                logger.error('[Register] Erro no vínculo de indicação:', e);
             }
 
             if (res.data?.session) {
@@ -73,8 +74,16 @@ const Register = () => {
                 setLoading(false);
             }
         } else {
-            setErro(res.message);
+            let userFriendlyMsg = res.message;
+            if (res.message.includes('User already registered') || res.message.includes('already_exists')) {
+                userFriendlyMsg = 'Este e-mail já possui uma conta. Tente fazer login!';
+            } else if (res.message.includes('Signup is disabled')) {
+                userFriendlyMsg = 'O cadastro está temporariamente desativado. Entre em contato com o suporte.';
+            }
+            
+            setErro(userFriendlyMsg);
             setLoading(false);
+            showToast(userFriendlyMsg, 'error');
         }
     };
 
@@ -137,9 +146,19 @@ const Register = () => {
                             </div>
 
                             {erro && (
-                                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
-                                    <span className="material-symbols-outlined text-red-500">error</span>
-                                    <span className="text-sm font-bold text-red-600 dark:text-red-400">{erro}</span>
+                                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className="material-symbols-outlined text-red-500">error</span>
+                                        <span className="text-sm font-bold text-red-600 dark:text-red-400">{erro}</span>
+                                    </div>
+                                    {erro.includes('já possui uma conta') && (
+                                        <Link 
+                                            to="/login" 
+                                            className="block w-full text-center py-2 bg-red-600 text-white text-xs font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all shadow-sm"
+                                        >
+                                            Ir para o Login Agora
+                                        </Link>
+                                    )}
                                 </div>
                             )}
 
@@ -254,5 +273,6 @@ const Register = () => {
 };
 
 export default Register;
+
 
 

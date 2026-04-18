@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { showToast } from './Toast';
 import { SUBCATEGORIAS } from '../contexts/FinanceContext';
 import { usePatients } from '../contexts/PatientContext';
 import { formatCurrencyBRL, parseCurrencyBRL } from '../utils/formatters';
 
+import { logger } from '../utils/logger';
 const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = null, initialType = 'receita' }) => {
     const [tipo, setTipo] = useState(initialType);
     const [desc, setDesc] = useState('');
@@ -145,7 +146,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
             onClose();
             setDesc(''); setValor(''); setRepetir(false);
         } catch (error) {
-            console.error('[NovoLancamentoModal] Erro ao salvar:', error);
+            logger.error('[NovoLancamentoModal] Erro ao salvar:', error);
             showToast('Erro ao salvar lançamentos', 'error');
         }
     };
@@ -494,3 +495,4 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
 };
 
 export default NovoLancamentoModal;
+

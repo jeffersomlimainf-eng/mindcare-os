@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const TcleContext = createContext();
 
 export const useTcles = () => {
@@ -42,8 +43,8 @@ export const TcleProvider = ({ children }) => {
             setTcles(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
-            console.error('[TcleContext] Erro ao adicionar:', error);
-            console.error('[TcleContext] Payload original:', JSON.stringify(data, null, 2));
+            logger.error('[TcleContext] Erro ao adicionar:', error);
+            logger.error('[TcleContext] Payload original:', JSON.stringify(data, null, 2));
             throw error;
         }
     };
@@ -53,7 +54,7 @@ export const TcleProvider = ({ children }) => {
             const atualizado = await db.update('tcles', id, data);
             setTcles(prev => prev.map(t => t.id === id ? { ...t, ...atualizado } : t)); // PERF-02
         } catch (error) {
-            console.error('[TcleContext] Erro ao atualizar:', error);
+            logger.error('[TcleContext] Erro ao atualizar:', error);
         }
     };
 
@@ -62,7 +63,7 @@ export const TcleProvider = ({ children }) => {
             await db.delete('tcles', id);
             setTcles(prev => prev.filter(t => t.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[TcleContext] Erro ao deletar:', error);
+            logger.error('[TcleContext] Erro ao deletar:', error);
         }
     };
 
@@ -88,5 +89,6 @@ export const TcleProvider = ({ children }) => {
         </TcleContext.Provider>
     );
 };
+
 
 

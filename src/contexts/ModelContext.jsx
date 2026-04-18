@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const ModelContext = createContext();
 
 const defaultModels = [
@@ -41,7 +42,7 @@ export const ModelProvider = ({ children }) => {
                     
                     setModels(remoteModels);
                 } catch (error) {
-                    console.error('[ModelContext] Erro ao carregar:', error);
+                    logger.error('[ModelContext] Erro ao carregar:', error);
                 } finally {
                     setLoading(false);
                 }
@@ -59,7 +60,7 @@ export const ModelProvider = ({ children }) => {
             setModels(prev => [...prev, newModel]); // PERF-02
             return newModel;
         } catch (error) {
-            console.error('[ModelContext] Erro ao adicionar:', error);
+            logger.error('[ModelContext] Erro ao adicionar:', error);
         }
     };
 
@@ -68,7 +69,7 @@ export const ModelProvider = ({ children }) => {
             const atualizado = await db.update('models', id, updatedData);
             setModels(prev => prev.map(m => m.id === id ? { ...m, ...atualizado } : m)); // PERF-02
         } catch (error) {
-            console.error('[ModelContext] Erro ao atualizar:', error);
+            logger.error('[ModelContext] Erro ao atualizar:', error);
         }
     };
 
@@ -77,7 +78,7 @@ export const ModelProvider = ({ children }) => {
             await db.delete('models', id);
             setModels(prev => prev.filter(m => m.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[ModelContext] Erro ao deletar:', error);
+            logger.error('[ModelContext] Erro ao deletar:', error);
         }
     };
 
@@ -105,5 +106,6 @@ export const useModels = () => {
     }
     return context;
 };
+
 
 

@@ -1,10 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 
+import { logger } from '../utils/logger';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.error(
+    logger.error(
         '[Supabase] ERRO FATAL: Variáveis de ambiente ausentes!\n' +
         `VITE_SUPABASE_URL: ${supabaseUrl ? '✅' : '❌ AUSENTE'}\n` +
         `VITE_SUPABASE_ANON_KEY: ${supabaseAnonKey ? '✅' : '❌ AUSENTE'}\n` +
@@ -34,5 +35,6 @@ export const supabase = createClient(
         }
     }
 );
+
 
 

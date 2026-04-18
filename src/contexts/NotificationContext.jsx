@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+﻿import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
+import { logger } from '../utils/logger';
 const NotificationContext = createContext();
 
 export const useNotifications = () => {
@@ -88,3 +89,4 @@ export const NotificationProvider = ({ children }) => {
         </NotificationContext.Provider>
     );
 };
+

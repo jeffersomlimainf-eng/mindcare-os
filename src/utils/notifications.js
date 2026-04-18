@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { teamWelcomeTemplate } from '../constants/emailTemplates';
+import { logger } from './logger';
 
 /**
  * Notifica o administrador sobre um novo cadastro no sistema.
@@ -36,13 +37,13 @@ export const notifyAdminNewSignup = async (userData) => {
         });
 
         if (error) {
-            console.warn('[Notification] Erro ao notificar admin:', error);
+            logger.warn('[Notification] Erro ao notificar admin:', error);
             return { success: false, error };
         }
 
         return { success: true, data };
     } catch (err) {
-        console.error('[Notification] Erro crítico na notificação:', err);
+        logger.error('[Notification] Erro crítico na notificação:', err);
         return { success: false, error: err };
     }
 };
@@ -76,7 +77,7 @@ export const sendTeamWelcomeEmail = async (userData, clinicName) => {
         if (error) throw error;
         return { success: true, data };
     } catch (err) {
-        console.error('[WelcomeEmail] Erro:', err);
+        logger.error('[WelcomeEmail] Erro:', err);
         return { success: false, error: err };
     }
 };

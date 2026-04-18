@@ -1,4 +1,5 @@
 import ReactGA from "react-ga4";
+import { logger } from './logger';
 
 const GA_MEASUREMENT_ID = "G-PRPGGDR7NJ";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -21,7 +22,7 @@ const callCapi = async (eventName, eventId, url, customData = {}) => {
       })
     });
   } catch (e) {
-    console.error("CAPI Error:", e);
+    logger.error("CAPI Error:", e);
   }
 };
 

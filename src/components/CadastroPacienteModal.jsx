@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { showToast } from './Toast';
 
+import { logger } from '../utils/logger';
 const TABS = ['Dados Pessoais', 'Endereço', 'Dados Clínicos'];
 
 const maskCPF = (value) => {
@@ -219,7 +220,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
             onClose();
             setTab(0);
         } catch (error) {
-            console.error('[CadastroPacienteModal] Erro ao salvar:', error);
+            logger.error('[CadastroPacienteModal] Erro ao salvar:', error);
             showToast('Erro ao salvar paciente. Tente novamente.', 'error');
         } finally {
             setIsSaving(false);
@@ -584,5 +585,6 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
 };
 
 export default CadastroPacienteModal;
+
 
 

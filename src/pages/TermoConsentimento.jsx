@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTcles } from '../contexts/TcleContext';
 import { usePatients } from '../contexts/PatientContext';
@@ -7,6 +7,7 @@ import { showToast } from '../components/Toast';
 
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
+import { logger } from '../utils/logger';
 const TermoConsentimento = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -188,7 +189,7 @@ const TermoConsentimento = () => {
             await exportToPDF(documentoRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
         } catch (error) {
-            console.error('Erro na exportação PDF:', error);
+            logger.error('Erro na exportação PDF:', error);
             showToast(`Erro técnico: ${error.message}. Use a opção "Imprimir" → "Salvar como PDF".`, 'warning');
         }
     };
@@ -799,5 +800,6 @@ const TermoConsentimento = () => {
 };
 
 export default TermoConsentimento;
+
 
 

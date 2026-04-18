@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { useNotifications } from './NotificationContext';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 import { supabase } from '../lib/supabase';
 
+import { logger } from '../utils/logger';
 const PatientContext = createContext();
 
 export const usePatients = () => {
@@ -31,7 +32,7 @@ export const PatientProvider = ({ children }) => {
                     const tenantPatients = await db.list('patients');
                     if (isMounted) setPatients(tenantPatients);
                 } catch (error) {
-                    console.error('[PatientContext] Erro ao carregar:', error);
+                    logger.error('[PatientContext] Erro ao carregar:', error);
                 } finally {
                     if (isMounted) setLoading(false);
                 }
@@ -117,7 +118,7 @@ export const PatientProvider = ({ children }) => {
             });
             return novo;
         } catch (error) {
-            console.error('[PatientContext] Erro ao adicionar paciente - Detalhes do DB:', JSON.stringify(error, null, 2));
+            logger.error('[PatientContext] Erro ao adicionar paciente - Detalhes do DB:', JSON.stringify(error, null, 2));
             throw error;
         }
     };
@@ -127,7 +128,7 @@ export const PatientProvider = ({ children }) => {
             const updated = await db.update('patients', id, dados);
             setPatients(prev => prev.map(p => p.id === id ? updated : p));
         } catch (error) {
-            console.error('[PatientContext] Erro ao atualizar paciente:', error);
+            logger.error('[PatientContext] Erro ao atualizar paciente:', error);
             throw error;
         }
     };
@@ -154,7 +155,7 @@ export const PatientProvider = ({ children }) => {
                     .limit(1);
 
                 if (error) {
-                    console.error(`[PatientContext] Erro ao verificar tabela ${table}:`, error);
+                    logger.error(`[PatientContext] Erro ao verificar tabela ${table}:`, error);
                     continue;
                 }
 
@@ -165,7 +166,7 @@ export const PatientProvider = ({ children }) => {
 
             return { hasData: false };
         } catch (error) {
-            console.error('[PatientContext] Erro na verificação clínica:', error);
+            logger.error('[PatientContext] Erro na verificação clínica:', error);
             return { hasData: false };
         }
     };
@@ -191,7 +192,7 @@ export const PatientProvider = ({ children }) => {
                 icon: 'delete_sweep'
             });
         } catch (error) {
-            console.error('[PatientContext] Erro ao deletar paciente:', error);
+            logger.error('[PatientContext] Erro ao deletar paciente:', error);
             throw error;
         }
     };
@@ -202,5 +203,6 @@ export const PatientProvider = ({ children }) => {
         </PatientContext.Provider>
     );
 };
+
 
 

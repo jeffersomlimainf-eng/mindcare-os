@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { supabase } from '../lib/supabase';
 import { createClient } from '@supabase/supabase-js';
@@ -6,6 +6,7 @@ import { showToast } from '../components/Toast';
 import { useNavigate } from 'react-router-dom';
 import { sendTeamWelcomeEmail } from '../utils/notifications';
 
+import { logger } from '../utils/logger';
 // Instância secundária para não afetar a sessão do Admin atual ao criar usuários
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -70,7 +71,7 @@ const GerenciamentoEquipe = () => {
             if (error) throw error;
             setMembers(data || []);
         } catch (error) {
-            console.error('Erro ao buscar equipe:', error);
+            logger.error('Erro ao buscar equipe:', error);
             showToast('Erro ao carregar equipe. Talvez seja necessário configurar as permissões do banco (RLS).', 'error');
         } finally {
             setLoading(false);
@@ -186,7 +187,7 @@ const GerenciamentoEquipe = () => {
                 sendTeamWelcomeEmail(
                     { nome: formData.nome, email: formData.email, senha: formData.senha },
                     user.clinic_name || 'Nossa Clínica'
-                ).catch(e => console.error('Falha ao enviar e-mail de boas-vindas:', e));
+                ).catch(e => logger.error('Falha ao enviar e-mail de boas-vindas:', e));
 
                 showToast('Membro adicionado! E-mail de boas-vindas enviado.', 'success');
             }
@@ -194,7 +195,7 @@ const GerenciamentoEquipe = () => {
             setIsModalOpen(false);
             fetchMembers();
         } catch (err) {
-            console.error('Erro na submissão de membro:', err);
+            logger.error('Erro na submissão de membro:', err);
             showToast(err.message || 'Erro ao processar membro', 'error');
         } finally {
             setIsSubmitting(false);
@@ -427,3 +428,4 @@ const GerenciamentoEquipe = () => {
 };
 
 export default GerenciamentoEquipe;
+

@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const EncaminhamentoContext = createContext();
 
 export const useEncaminhamentos = () => {
@@ -39,7 +40,7 @@ export const EncaminhamentoProvider = ({ children }) => {
             setEncaminhamentos(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
-            console.error('[EncaminhamentoContext] Erro ao adicionar:', error);
+            logger.error('[EncaminhamentoContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -49,7 +50,7 @@ export const EncaminhamentoProvider = ({ children }) => {
             const atualizado = await db.update('encaminhamentos', id, data);
             setEncaminhamentos(prev => prev.map(e => e.id === id ? { ...e, ...atualizado } : e)); // PERF-02
         } catch (error) {
-            console.error('[EncaminhamentoContext] Erro ao atualizar:', error);
+            logger.error('[EncaminhamentoContext] Erro ao atualizar:', error);
         }
     };
 
@@ -58,7 +59,7 @@ export const EncaminhamentoProvider = ({ children }) => {
             await db.delete('encaminhamentos', id);
             setEncaminhamentos(prev => prev.filter(e => e.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[EncaminhamentoContext] Erro ao deletar:', error);
+            logger.error('[EncaminhamentoContext] Erro ao deletar:', error);
         }
     };
 
@@ -84,5 +85,6 @@ export const EncaminhamentoProvider = ({ children }) => {
         </EncaminhamentoContext.Provider>
     );
 };
+
 
 

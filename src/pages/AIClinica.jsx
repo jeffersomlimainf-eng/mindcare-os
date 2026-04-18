@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+﻿import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { usePatients } from '../contexts/PatientContext';
 import { useEvolutions } from '../contexts/EvolutionContext';
 import { useAnamneses } from '../contexts/AnamneseContext';
@@ -10,6 +10,7 @@ import { useUser } from '../contexts/UserContext';
 import { checkAIAccess, trackAIConsumption } from '../utils/authMiddleware';
 import { supabase } from '../lib/supabase';
 
+import { logger } from '../utils/logger';
 // AI_API_KEY removida do frontend por segurança (migrada para Edge Function)
 
 const AIClinica = () => {
@@ -171,7 +172,7 @@ ${fullDatabaseContext}
             trackAIConsumption((currentInput.length + aiText.length) / 4, user, updateUser);
 
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             setMensagens(prev => {
                 const msgs = [...prev];
                 msgs[msgs.length - 1] = { role: 'assistant', text: `Desculpe, houve um erro: ${error.message}` };
@@ -489,5 +490,6 @@ ${fullDatabaseContext}
 };
 
 export default AIClinica;
+
 
 

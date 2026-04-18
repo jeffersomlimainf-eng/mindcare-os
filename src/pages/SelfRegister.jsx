@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { showToast } from '../components/Toast';
 
+import { logger } from '../utils/logger';
 const maskCPF = (value) => {
     return value.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})/, '$1-$2').replace(/(-\d{2})\d+?$/, '$1');
 };
@@ -159,7 +160,7 @@ const SelfRegister = () => {
             showToast('Cadastro realizado com sucesso!', 'success');
             setStep(5);
         } catch (error) {
-            console.error('[SelfRegister] Erro ao cadastrar:', error);
+            logger.error('[SelfRegister] Erro ao cadastrar:', error);
             showToast('Erro ao enviar dados: ' + error.message, 'error');
         } finally {
             setSubmitting(false);
@@ -411,5 +412,6 @@ const SelfRegister = () => {
 };
 
 export default SelfRegister;
+
 
 

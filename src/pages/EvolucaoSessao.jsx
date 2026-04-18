@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+﻿import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { usePatients } from '../contexts/PatientContext';
 import { useEvolutions } from '../contexts/EvolutionContext';
@@ -8,6 +8,7 @@ import { showToast } from '../components/Toast';
 
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
+import { logger } from '../utils/logger';
 const tecnicasDefault = [
     { id: 1, nome: 'Reestruturação Cognitiva', checked: false },
     { id: 2, nome: 'Exposição Gradual', checked: false },
@@ -203,7 +204,7 @@ const EvolucaoSessao = () => {
             await exportToPDF(evolutionRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
         } catch (error) {
-            console.error('Erro na exportação PDF:', error);
+            logger.error('Erro na exportação PDF:', error);
             showToast(`Erro técnico: ${error.message}. Use Ctrl+P.`, 'error');
         }
     };
@@ -467,7 +468,7 @@ const EvolucaoSessao = () => {
             await exportToWord(dataForWord, filename);
             showToast('Word gerado com sucesso!', 'success');
         } catch (error) {
-            console.error('Erro ao gerar Word:', error);
+            logger.error('Erro ao gerar Word:', error);
             showToast('Erro ao gerar Word.', 'error');
         }
     };
@@ -1038,5 +1039,6 @@ const EvolucaoSessao = () => {
 };
 
 export default EvolucaoSessao;
+
 
 

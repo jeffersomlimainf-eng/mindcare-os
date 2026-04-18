@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CadastroPacienteModal from '../components/CadastroPacienteModal';
 import NovoAgendamentoModal from '../components/NovoAgendamentoModal';
@@ -14,7 +14,11 @@ import Modal from '../components/Modal';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
 import FeatureTour from '../components/FeatureTour';
+import SmartTooltip from '../components/SmartTooltip';
+import useFirstVisit from '../hooks/useFirstVisit';
+import useDismissible from '../hooks/useDismissible';
 
+import { logger } from '../utils/logger';
 const maskPhone = (value) => {
     let r = value.replace(/\D/g, '');
     r = r.replace(/^0/, '');
@@ -125,6 +129,11 @@ const Pacientes = () => {
     const [modalCompartilharAberto, setModalCompartilharAberto] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
     const [showTour, setShowTour] = useState(false);
+    const { shouldTrigger: pacientesFirstVisit, markAsCompleted: markPacientesTourCompleted } = useFirstVisit('pacientes');
+    const [pacientesBannerDismissed, dismissPacientesBanner] = useDismissible('pacientes_autocadastro');
+    useEffect(() => {
+        if (pacientesFirstVisit) setShowTour(true);
+    }, [pacientesFirstVisit]);
 
     // Fechar modais locais com Esc primeiro
     useGlobalShortcuts({
@@ -199,7 +208,7 @@ const Pacientes = () => {
                 await addPatient(dados);
             }
         } catch (error) {
-            console.error('[Pacientes] Erro ao salvar paciente:', error);
+            logger.error('[Pacientes] Erro ao salvar paciente:', error);
             throw error;
         }
     };
@@ -211,7 +220,7 @@ const Pacientes = () => {
                 await deletePatient(pacienteParaExcluir.id);
                 setPacienteParaExcluir(null);
             } catch (error) {
-                console.error('[Pacientes] Erro ao excluir paciente:', error);
+                logger.error('[Pacientes] Erro ao excluir paciente:', error);
                 if (error.code === 'CLINICAL_DATA_EXISTS') {
                     setErroExclusao(`Este paciente não pode ser excluído porque possui registros clínicos vinculados (${error.table}). Por favor, remova os documentos do prontuário primeiro.`);
                 } else {
@@ -300,8 +309,12 @@ const Pacientes = () => {
                         </div>
                         <button 
                             onClick={() => setShowHelp(true)}
-                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10 relative"
                         >
+                            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
                             <span className="material-symbols-outlined text-[14px]">help_outline</span>
                             <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
                         </button>
@@ -310,14 +323,20 @@ const Pacientes = () => {
                     <p className="text-slate-500 font-medium mt-1">Gestão de prontuários e vínculos clínicos.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                     <button 
-                        onClick={() => setModalCompartilharAberto(true)}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl h-12 px-5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary hover:text-white transition-all group"
-                        title="Gerar link para o paciente preencher os dados"
+                    <SmartTooltip 
+                        content="Economize tempo! Envie este link seguro para o paciente preencher os próprios dados de cadastro."
+                        position="bottom"
+                        icon="share"
+                        showPulse={true}
                     >
-                        <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">link</span>
-                        <span>Gerar Link</span>
-                    </button>
+                         <button 
+                            onClick={() => setModalCompartilharAberto(true)}
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl h-12 px-5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary hover:text-white transition-all group"
+                        >
+                            <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">link</span>
+                            <span>Gerar Link</span>
+                        </button>
+                    </SmartTooltip>
                     <button
                         id="tour-paciente-add"
                         onClick={handleNovoPaciente}
@@ -329,7 +348,42 @@ const Pacientes = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-4 items-center px-1">
+            {/* Banner Informativo UX */}
+            {!pacientesBannerDismissed && (
+            <div className="px-1 relative mt-6">
+                <div className="relative bg-gradient-to-r from-blue-500/10 via-primary/5 to-cyan-500/10 dark:from-blue-500/10 dark:via-primary/5 dark:to-cyan-500/10 rounded-[2rem] border border-blue-100/50 dark:border-blue-900/30 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+                    <button onClick={dismissPacientesBanner} className="absolute top-2 right-2 z-20 size-10 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-90" title="Dispensar">
+                        <span className="material-symbols-outlined text-xl">close</span>
+                    </button>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/3"></div>
+                    
+                    <div className="flex items-center gap-6 relative z-10 w-full md:w-auto">
+                        <div className="size-16 shrink-0 rounded-[1.5rem] bg-white dark:bg-slate-800 shadow-xl shadow-blue-500/10 flex items-center justify-center border border-blue-50 dark:border-slate-700">
+                            <span className="material-symbols-outlined text-3xl text-blue-500">magic_button</span>
+                        </div>
+                        <div>
+                            <h3 className="text-lg md:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2 mb-1">
+                                Autocadastro Inteligente
+                                <span className="px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[9px] uppercase tracking-widest">Dica</span>
+                            </h3>
+                            <p className="text-sm font-medium text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+                                Pare de digitar fichas cadastrais manualmente! Gere um link seguro, envie para o paciente pelo WhatsApp e ele mesmo preenche seus dados e histórico básico antes da primeira sessão.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <button 
+                        onClick={() => setModalCompartilharAberto(true)}
+                        className="w-full md:w-auto relative z-10 px-6 py-3.5 bg-blue-500 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2 group"
+                    >
+                        Testar Agora
+                        <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">east</span>
+                    </button>
+                </div>
+            </div>
+            )}
+
+            <div className="flex flex-col lg:flex-row gap-4 items-center px-1 mt-6">
                 <div id="tour-paciente-search" className="flex-1 w-full glass dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <label className="relative flex items-center w-full">
                         <span className="material-symbols-outlined absolute left-4 text-slate-400">search</span>
@@ -472,9 +526,13 @@ const Pacientes = () => {
             <FeatureTour 
                 isOpen={showTour} 
                 steps={HELP_CONTENT.pacientes.tourSteps} 
-                onClose={() => setShowTour(false)}
+                onClose={() => {
+                    setShowTour(false);
+                    markPacientesTourCompleted(); // Garante que não apareça mais se fechado
+                }}
                 onComplete={() => {
                     setShowTour(false);
+                    markPacientesTourCompleted(); // Marca como concluído com sucesso
                     alert("Gestão de pacientes pronta! É hora de transformar vidas. 💙");
                 }}
             />
@@ -483,5 +541,6 @@ const Pacientes = () => {
 };
 
 export default Pacientes;
+
 
 

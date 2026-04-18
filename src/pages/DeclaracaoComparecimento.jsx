@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useDeclaracoes } from '../contexts/DeclaracaoContext';
 import { usePatients } from '../contexts/PatientContext';
@@ -7,6 +7,7 @@ import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
+import { logger } from '../utils/logger';
 const DeclaracaoComparecimento = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -225,7 +226,7 @@ const DeclaracaoComparecimento = () => {
             await exportToPDF(documentoRef.current, filename);
             showToast('PDF gerado com sucesso!', 'success');
         } catch (error) {
-            console.error('Erro na exportação PDF:', error);
+            logger.error('Erro na exportação PDF:', error);
             showToast(`Erro: ${error.message}. Use a opção "Imprimir" → "Salvar como PDF".`, 'warning');
         }
     };
@@ -681,5 +682,6 @@ const DeclaracaoComparecimento = () => {
 };
 
 export default DeclaracaoComparecimento;
+
 
 

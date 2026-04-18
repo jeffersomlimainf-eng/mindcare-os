@@ -5,6 +5,7 @@ import {
   Table, TableRow, TableCell, WidthType, BorderStyle, VerticalAlign
 } from 'docx';
 import { saveAs } from 'file-saver';
+import { logger } from './logger';
 
 // Cores Institucionais Exatas
 const COLORS = {
@@ -177,7 +178,7 @@ export const exportToPDF = async (originalElement, filename = 'documento.pdf') =
     // PDF gerado com sucesso.
 
   } catch (error) {
-    console.error('Erro crítico na exportação PDF:', error);
+    logger.error('Erro crítico na exportação PDF:', error);
     throw new Error('Não foi possível gerar o PDF. Tente salvar pela função de impressão (Ctrl+P).');
   } finally {
     if (document.body.contains(sandbox)) {

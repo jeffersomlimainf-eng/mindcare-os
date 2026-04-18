@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+﻿import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import NovoDocumentoModal from '../components/NovoDocumentoModal';
@@ -22,7 +22,9 @@ import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import { INSIGHTS_PSICOLOGICOS } from '../data/insights';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
+import SmartTooltip from '../components/SmartTooltip';
 
+import { logger } from '../utils/logger';
 // PERF-04: ClockWidget isolado para evitar que o Dashboard inteiro re-renderize a cada segundo
 const ClockWidget = React.memo(({ dadosClima, cidade, loadingClima, editandoCidade, setEditandoCidade, onCidadeChange, onAutoLocalizar }) => {
     const [hora, setHora] = React.useState(new Date());
@@ -92,7 +94,7 @@ const Dashboard = () => {
     const [notas, setNotas] = useState(() => {
         const salva = localStorage.getItem('Meu Sistema PSI_dashboard_notes_v2');
         if (salva) {
-            try { return JSON.parse(salva); } catch(e) { console.error(e); }
+            try { return JSON.parse(salva); } catch(e) { logger.error(e); }
         }
         return [{ id: '1', titulo: 'Geral', texto: '' }];
     });
@@ -144,7 +146,7 @@ const Dashboard = () => {
                     setCidade(nomeCidade);
                     localStorage.setItem('dashboard_clima_cidade', nomeCidade);
                 } catch (err) {
-                    console.error("Erro no reverse geocoding:", err);
+                    logger.error("Erro no reverse geocoding:", err);
                 }
             } else {
                 const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cidadeBusca)}&format=json`, {
@@ -187,7 +189,7 @@ const Dashboard = () => {
                 }
             }
         } catch (e) {
-            console.error("Erro ao buscar clima:", e);
+            logger.error("Erro ao buscar clima:", e);
         } finally {
             setLoadingClima(false);
         }
@@ -205,7 +207,7 @@ const Dashboard = () => {
                 fetchClima(null, { lat: latitude, lon: longitude });
             },
             (err) => {
-                console.error("Erro ao obter localização:", err);
+                logger.error("Erro ao obter localização:", err);
                 setLoadingClima(false);
                 // Fallback silencioso para São Paulo se for o primeiro acesso e der erro
                 if (!localStorage.getItem('dashboard_clima_cidade')) {
@@ -333,7 +335,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
             trackAIConsumption((original.length + aiText.length) / 4, user, updateUser);
 
         } catch (error) {
-            console.error('Erro ao gerar insights:', error);
+            logger.error('Erro ao gerar insights:', error);
             const estrutura = `
 🧠 [Sugestão de Estrutura]:
 • Queixa Principal/Sintomas: 
@@ -485,11 +487,11 @@ Retorne SEMPRE no seguinte formato (Markdown):
             const proxima = atendimentosHoje.find(a => a.timeStart + a.duracao/60 > horaAtual && a.status !== 'cancelado') || atendimentosHoje[0];
             
             if (!proxima) {
-                console.log('[Dashboard] Nenhuma próxima sessão identificada para hoje.');
+                logger.log('[Dashboard] Nenhuma próxima sessão identificada para hoje.');
             }
             return proxima;
         } catch (error) {
-            console.error('[Dashboard] Erro ao calcular próxima sessão:', error);
+            logger.error('[Dashboard] Erro ao calcular próxima sessão:', error);
             return null;
         }
     }, [atendimentosHoje]);
@@ -512,7 +514,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
             }
             return `${Math.round(diff)} min`;
         } catch (error) {
-            console.error('[Dashboard] Erro ao calcular tempo restante:', error);
+            logger.error('[Dashboard] Erro ao calcular tempo restante:', error);
             return 'Erro no cálculo';
         }
     }, [proximaSessao]);
@@ -721,8 +723,12 @@ Retorne SEMPRE no seguinte formato (Markdown):
                         </div>
                         <button 
                             onClick={() => setHelpOpen(true)}
-                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10"
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-all border border-primary/10 relative"
                         >
+                            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
                             <span className="material-symbols-outlined text-[14px]">help_outline</span>
                             <span className="text-[9px] font-black uppercase tracking-tighter">Como funciona?</span>
                         </button>
@@ -789,13 +795,21 @@ Retorne SEMPRE no seguinte formato (Markdown):
                         </p>
                         
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-8">
-                            <button 
-                                onClick={() => navigate('/ai-clinica')}
-                                className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2 group/btn"
+                            <SmartTooltip 
+                                content="Sua IA assistente! Peça resumos clínicos, insights para pacientes ou gerencie a agenda."
+                                position="bottom"
+                                icon="auto_awesome"
+                                color="indigo"
+                                showPulse={true}
                             >
-                                <span className="material-symbols-outlined text-lg group-hover/btn:rotate-12 transition-transform">speech_to_text</span>
-                                Falar com Psiquê
-                            </button>
+                                <button 
+                                    onClick={() => navigate('/ai-clinica')}
+                                    className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2 group/btn"
+                                >
+                                    <span className="material-symbols-outlined text-lg group-hover/btn:rotate-12 transition-transform">speech_to_text</span>
+                                    Falar com Psiquê
+                                </button>
+                            </SmartTooltip>
                             <div className="px-4 py-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl border border-white dark:border-slate-700 text-xs font-bold text-slate-500 flex items-center gap-2">
                                 <span className="material-symbols-outlined text-primary text-sm">auto_awesome</span>
                                 {atendimentosHoje.length > 0 ? `${atendimentosHoje.length} sessões preparadas` : "Sistema 100% atualizado"}
@@ -1442,5 +1456,6 @@ Retorne SEMPRE no seguinte formato (Markdown):
 
 
 export default Dashboard;
+
 
 

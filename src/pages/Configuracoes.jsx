@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { exportData, importData } from '../utils/backup';
 import Toggle from '../components/Toggle';
 import { referralInviteTemplate } from '../constants/emailTemplates';
+import { logger } from '../utils/logger';
 
 const maskCpfCnpj = (value) => {
     let r = value.replace(/\D/g, '');
@@ -23,13 +24,29 @@ const Configuracoes = () => {
     const { user, updateUser, updateConfigs, changePassword, logout } = useUser();
     const fileInputRef = useRef(null);
     
+    const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Validação de tipo MIME real (não só extensão)
+        if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+            showToast('Formato inválido. Use JPG, PNG, WebP ou GIF.', 'error');
+            return;
+        }
+
+        // Validação de tamanho
+        if (file.size > MAX_SIZE_BYTES) {
+            showToast('Imagem muito grande. Tamanho máximo: 5MB.', 'error');
+            return;
+        }
+
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+            // Nome seguro: usa tipo MIME real, não extensão informada pelo usuário
+            const safeExt = file.type.split('/')[1];
+            const fileName = `${user.id}_${Date.now()}.${safeExt}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('avatars')
@@ -44,7 +61,7 @@ const Configuracoes = () => {
             await updateUser({ avatar_url: publicUrl });
             showToast('Foto de perfil atualizada!', 'success');
         } catch (error) {
-            console.error('Erro ao enviar foto:', error.message);
+            logger.error('Erro ao enviar foto:', error.message);
             showToast('Erro ao enviar foto.', 'error');
         }
     };
@@ -111,7 +128,7 @@ const Configuracoes = () => {
             if (error) throw error;
             setReferrals(data || []);
         } catch (error) {
-            console.error('Erro ao buscar indicações:', error.message);
+            logger.error('Erro ao buscar indicações:', error.message);
         } finally {
             setLoadingReferrals(false);
         }
@@ -265,7 +282,7 @@ const Configuracoes = () => {
             setReferralContact('');
             fetchReferrals(); // Atualizar lista
         } catch (error) {
-            console.error('Erro ao enviar indicação:', error.message);
+            logger.error('Erro ao enviar indicação:', error.message);
             showToast(`Erro: ${error.message}`, 'error');
         } finally {
             setSubmittingReferral(false);
@@ -499,38 +516,147 @@ const Configuracoes = () => {
             </div>
 
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Notificações */}
-                <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
-                        <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
-                            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-primary text-xl">notifications</span>
-                            </div>
-                            Notificações
-                        </h2>
+            <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between gap-4">
+                    <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
+                        <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-primary text-xl">notifications</span>
+                        </div>
+                        Comunicações e Aparência
+                    </h2>
+                    
+                    <div className="flex items-center gap-3 bg-white dark:bg-slate-800 px-4 py-2 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all shrink-0">
+                         <div className="flex items-center gap-2">
+                             <span className="material-symbols-outlined text-base text-slate-400">dark_mode</span>
+                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest hidden sm:inline">Modo Escuro</span>
+                         </div>
+                         <Toggle value={darkMode} onChange={setDarkMode} />
                     </div>
-                    <div className="p-4 md:p-8 space-y-6">
+                </div>
+
+                <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                    {/* Coluna de Opções Principais */}
+                    <div className="space-y-8">
                         {[
-                            { label: 'E-mail Clínico', desc: 'Avisos de novas consultas', key: 'notifEmail' },
-                            { label: 'Lembrete de Sessão', desc: 'Enviar lembretes por e-mail para pacientes', key: 'reminders_enabled' },
-                            { label: 'Cobrança Automática', desc: 'Régua de cobrança para débitos pendentes', key: 'debt_reminders_enabled' },
+                            { 
+                                label: 'Notificações de Sistema (E-mail)', 
+                                desc: 'Receba alertas sobre novos agendamentos e atualizações importantes diretamente no seu e-mail profissional.', 
+                                key: 'notifEmail', 
+                                icon: 'alternate_email',
+                                color: 'text-blue-500',
+                                bg: 'bg-blue-500/10'
+                            },
+                            { 
+                                label: 'Lembretes de Sessão (Paciente)', 
+                                desc: 'Envio automático de lembretes para seus pacientes via E-mail e WhatsApp para reduzir faltas.', 
+                                key: 'reminders_enabled', 
+                                icon: 'notifications_active',
+                                color: 'text-amber-500',
+                                bg: 'bg-amber-500/10'
+                            },
+                            { 
+                                label: 'Cobrança Automática (Paciente)', 
+                                desc: 'Ativa o envio de lembretes de pagamento para sessões com status pendente no seu financeiro.', 
+                                key: 'debt_reminders_enabled', 
+                                icon: 'payments',
+                                color: 'text-emerald-500',
+                                bg: 'bg-emerald-500/10'
+                            },
                         ].map((n) => (
-                            <div key={n.key} className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-black text-slate-900 dark:text-white leading-tight">{n.label}</p>
-                                    <p className="text-[11px] font-bold text-slate-400">{n.desc}</p>
+                            <div key={n.key} className="flex items-start justify-between gap-6 group">
+                                <div className="flex gap-4">
+                                    <div className={`size-12 rounded-2xl ${n.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                                        <span className={`material-symbols-outlined ${n.color} text-xl`}>{n.icon}</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-[13px] font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight">{n.label}</p>
+                                        <p className="text-[11px] font-bold text-slate-400 mt-1.5 leading-relaxed max-w-[320px]">{n.desc}</p>
+                                    </div>
                                 </div>
-                                <Toggle value={configs[n.key]} onChange={(val) => handleConfigToggle(n.key, val)} />
+                                <div className="pt-1.5">
+                                    <Toggle value={configs[n.key]} onChange={(val) => handleConfigToggle(n.key, val)} />
+                                </div>
                             </div>
                         ))}
 
+                        <div className="pt-4 border-t border-slate-50 dark:border-slate-800">
+                            <div className="flex items-start justify-between gap-6 group">
+                                <div className="flex gap-4">
+                                    <div className="size-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                        <span className="material-symbols-outlined text-indigo-500 text-xl">restart_alt</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-[13px] font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight">Tutoriais e Dicas</p>
+                                        <p className="text-[11px] font-bold text-slate-400 mt-1.5 leading-relaxed max-w-[320px]">
+                                            Deseja rever os tours guiados das páginas? Isso reativará as explicações iniciais em todo o sistema.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="pt-1.5">
+                                    <button 
+                                        onClick={async () => {
+                                            // 1. Limpa Local
+                                            Object.keys(localStorage).forEach(key => {
+                                                if (key.startsWith('psi_tour_')) localStorage.removeItem(key);
+                                                if (key.startsWith('psi_visited_')) localStorage.removeItem(key);
+                                            });
+                                            // 2. Limpa Nuvem
+                                            await updateConfigs({ completed_tours: {} });
+                                            
+                                            import('../components/Toast').then(m => m.showToast('Tutoriais reativados! Eles aparecerão ao visitar as páginas.', 'success'));
+                                        }}
+                                        className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 rounded-xl hover:bg-primary hover:text-white transition-all"
+                                    >
+                                        Reativar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Coluna de Configurações Detalhadas */}
+                    <div className="space-y-6">
+                        {configs.reminders_enabled && (
+                            <div className="bg-slate-50/50 dark:bg-slate-800/30 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="material-symbols-outlined text-sm text-primary">schedule</span>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Antecedência do Lembrete
+                                    </p>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        { label: '30 min', value: 30 },
+                                        { label: '1 hora', value: 60 },
+                                        { label: '2 horas', value: 120 },
+                                        { label: '12 horas', value: 720 },
+                                        { label: '24 horas', value: 1440 },
+                                    ].map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            onClick={() => handleConfigToggle('reminders_before_minutes', opt.value)}
+                                            className={`h-11 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${
+                                                configs.reminders_before_minutes === opt.value
+                                                    ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                                                    : 'border-white dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 hover:border-primary/30'
+                                            }`}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {configs.debt_reminders_enabled && (
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
-                                    Fases da Régua de Cobrança
-                                </p>
-                                <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-slate-50/50 dark:bg-slate-800/30 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="material-symbols-outlined text-sm text-teal-500">rule</span>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Fases da Régua de Cobrança
+                                    </p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
                                     {[
                                         { label: 'No Vencimento', key: 'day0' },
                                         { label: '1 Dia Depois', key: 'day1' },
@@ -544,13 +670,13 @@ const Configuracoes = () => {
                                                 const newStages = { ...currentStages, [stage.key]: !currentStages[stage.key] };
                                                 handleConfigToggle('debt_reminder_stages', newStages);
                                             }}
-                                            className={`h-11 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 flex items-center justify-center gap-2 ${
+                                            className={`h-11 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border-2 flex items-center justify-center gap-2 ${
                                                 configs.debt_reminder_stages?.[stage.key]
                                                     ? 'border-teal-500 bg-teal-500/5 text-teal-600 shadow-sm'
-                                                    : 'border-slate-100 dark:border-slate-800 text-slate-400 hover:border-teal-500/30'
+                                                    : 'border-white dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 hover:border-teal-500/30'
                                             }`}
                                         >
-                                            <span className="material-symbols-outlined text-sm">
+                                            <span className="material-symbols-outlined text-[14px]">
                                                 {configs.debt_reminder_stages?.[stage.key] ? 'check_circle' : 'radio_button_unchecked'}
                                             </span>
                                             {stage.label}
@@ -560,55 +686,12 @@ const Configuracoes = () => {
                             </div>
                         )}
 
-                        {configs.reminders_enabled && (
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
-                                    Enviar Lembrete Quanto Tempo Antes?
-                                </p>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    {[
-                                        { label: '30 min', value: 30 },
-                                        { label: '1 hora', value: 60 },
-                                        { label: '2 horas', value: 120 },
-                                        { label: '12 horas', value: 720 },
-                                        { label: '24 horas', value: 1440 },
-                                    ].map((opt) => (
-                                        <button
-                                            key={opt.value}
-                                            onClick={() => handleConfigToggle('reminders_before_minutes', opt.value)}
-                                            className={`h-11 rounded-xl text-xs font-black uppercase tracking-widest transition-all border-2 ${
-                                                configs.reminders_before_minutes === opt.value
-                                                    ? 'border-primary bg-primary/5 text-primary shadow-sm'
-                                                    : 'border-slate-100 dark:border-slate-800 text-slate-400 hover:border-primary/30'
-                                            }`}
-                                        >
-                                            {opt.label}
-                                        </button>
-                                    ))}
-                                </div>
+                        {!configs.reminders_enabled && !configs.debt_reminders_enabled && (
+                            <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50/30 dark:bg-slate-800/20 rounded-[2rem] border border-dashed border-slate-200 dark:border-slate-700">
+                                <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600 mb-4">auto_fix_high</span>
+                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ative as automações ao lado para ver mais configurações</p>
                             </div>
                         )}
-                    </div>
-                </div>
-
-                {/* Aparência */}
-                <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
-                    <div className="px-4 md:px-8 py-4 md:py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
-                        <h2 className="font-black text-slate-900 dark:text-white flex items-center gap-3">
-                            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-primary text-xl">palette</span>
-                            </div>
-                            Personalização
-                        </h2>
-                    </div>
-                    <div className="p-4 md:p-8 flex-1 flex flex-col justify-center">
-                        <div className="flex items-center justify-between py-4">
-                            <div>
-                                <p className="text-sm font-black text-slate-900 dark:text-white leading-tight">Modo Escuro</p>
-                                <p className="text-[11px] font-bold text-slate-400">Alternar tema do sistema</p>
-                            </div>
-                            <Toggle value={darkMode} onChange={setDarkMode} />
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1079,7 +1162,7 @@ const Configuracoes = () => {
                                     logout();
                                 }, 1500);
                             } catch (error) {
-                                console.error('Erro ao excluir conta:', error.message);
+                                logger.error('Erro ao excluir conta:', error.message);
                                 showToast('Erro ao processar exclusão.', 'error');
                             }
                         }

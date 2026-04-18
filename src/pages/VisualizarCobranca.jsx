@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { gerarCadeiaPix } from '../utils/pix';
 
+import { logger } from '../utils/logger';
 // Gerador de QR Code via API pública (sem dependências)
 const QRCodeImage = ({ text, size = 180 }) => {
     const encoded = encodeURIComponent(text);
@@ -106,7 +107,7 @@ const VisualizarCobranca = () => {
                     patient_name: nomePaciente
                 });
             } catch (e) {
-                console.error(e);
+                logger.error(e);
                 setErro(true);
             } finally {
                 setLoading(false);
@@ -354,5 +355,6 @@ const VisualizarCobranca = () => {
 };
 
 export default VisualizarCobranca;
+
 
 

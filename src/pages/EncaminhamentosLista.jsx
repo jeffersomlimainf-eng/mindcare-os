@@ -187,10 +187,27 @@ const EncaminhamentosLista = () => {
                 </div>
 
                 {filtrados.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <span className="material-symbols-outlined text-4xl text-slate-200 mb-2">send</span>
-                        <h3 className="text-sm font-bold text-slate-400">Nenhum encaminhamento encontrado</h3>
-                    </div>
+                    encaminhamentos.length === 0 ? (
+                        <div className="py-16 flex flex-col items-center text-center px-6">
+                            <div className="size-24 rounded-3xl bg-primary/5 border border-primary/10 flex items-center justify-center mb-5">
+                                <span className="material-symbols-outlined text-5xl text-primary/30">send</span>
+                            </div>
+                            <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">Nenhum encaminhamento ainda</h3>
+                            <p className="text-sm text-slate-400 max-w-sm mx-auto mb-6 leading-relaxed">
+                                Encaminhamentos referenciam pacientes para outros profissionais ou especialidades, documentando a indicação clínica de forma segura.
+                            </p>
+                            <button onClick={() => navigate('/encaminhamentos/novo')} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2">
+                                <span className="material-symbols-outlined text-base">add</span>
+                                Criar Primeiro Encaminhamento
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <span className="material-symbols-outlined text-4xl text-slate-200 dark:text-slate-700 mb-3">search_off</span>
+                            <h3 className="text-sm font-bold text-slate-400">Nenhum resultado encontrado</h3>
+                            <p className="text-xs text-slate-400 mt-1">Tente ajustar os filtros ou a busca</p>
+                        </div>
+                    )
                 )}
             </div>
 

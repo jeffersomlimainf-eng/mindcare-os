@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { logger } from './logger';
 
 /**
  * Utilitários para portabilidade de dados (Exportar/Importar) - Online Supabase
@@ -24,7 +25,7 @@ export const exportData = async () => {
                 .select('*');
             
             if (error) {
-                console.warn(`[Export] Erro ao exportar tabela ${tableName}:`, error.message);
+                logger.warn(`[Export] Erro ao exportar tabela ${tableName}:`, error.message);
                 data.tables[tableName] = []; 
             } else {
                 data.tables[tableName] = rows;
@@ -50,7 +51,7 @@ export const exportData = async () => {
                 return true;
             } catch (err) {
                 if (err.name === 'AbortError') return false;
-                console.error('Erro ao salvar arquivo:', err);
+                logger.error('Erro ao salvar arquivo:', err);
             }
         }
 
@@ -65,7 +66,7 @@ export const exportData = async () => {
         URL.revokeObjectURL(url);
         return true;
     } catch (error) {
-        console.error('Erro crítico no exportData:', error);
+        logger.error('Erro crítico no exportData:', error);
         return false;
     }
 };

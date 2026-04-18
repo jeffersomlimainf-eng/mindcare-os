@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+import { logger } from '../utils/logger';
 /**
  * Hook para gerenciar atalhos globais de teclado no sistema.
  * @param {Object} options - Configurações de estado de modais abertos.
@@ -46,5 +47,6 @@ export const useGlobalShortcuts = (options = {}) => {
         return () => window.removeEventListener('keydown', handleKeyDown, useCapture);
     }, [navigate, location, isModalOpen, closeModal, priority]);
 };
+
 
 

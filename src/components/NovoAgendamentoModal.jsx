@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import Modal from './Modal';
 import { showToast } from './Toast';
 import { usePatients } from '../contexts/PatientContext';
@@ -8,6 +8,7 @@ import { useUser } from '../contexts/UserContext';
 import Toggle from './Toggle';
 import { appointmentReminderTemplate } from '../constants/emailTemplates';
 
+import { logger } from '../utils/logger';
 // HORAS estáticas removidas (agora dinâmicas via contexto)
 
 const DIAS_SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -300,7 +301,7 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
             if (error) throw error;
             showToast('E-mail enviado com sucesso!', 'success');
         } catch (error) {
-            console.error('Erro ao enviar e-mail:', error);
+            logger.error('Erro ao enviar e-mail:', error);
             showToast('Erro ao enviar e-mail.', 'error');
         } finally {
             setEnviandoEmail(false);
@@ -756,5 +757,6 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
 };
 
 export default NovoAgendamentoModal;
+
 
 

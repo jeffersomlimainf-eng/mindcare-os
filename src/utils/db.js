@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { logger } from './logger';
 
 /**
  * Meu Sistema PSI - Supabase Database Service
@@ -62,8 +63,8 @@ class SupabaseDB {
         const { data, error } = isArray ? await query : await query.single();
 
         if (error) {
-            console.error(`[db.insert] ERRO do Supabase ao inserir na tabela '${table}':`, JSON.stringify(error, null, 2));
-            console.error(`[db.insert] Payload que tentamos enviar:`, JSON.stringify(payload, null, 2));
+            logger.error(`[db.insert] ERRO do Supabase ao inserir na tabela '${table}':`, error);
+            logger.error(`[db.insert] Payload que tentamos enviar:`, payload);
             throw error;
         }
         

@@ -41,7 +41,7 @@ export default function Vendas2() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', 'https://meusistemapsi.com.br/');
+    canonical.setAttribute('href', 'https://meusistemapsi.com.br/vendas2');
 
     // Open Graph
     const updateOg = (property, content) => {
@@ -55,7 +55,7 @@ export default function Vendas2() {
     };
     updateOg('og:title', 'Software de Gestão para Psicólogos | Prontuário e Agenda | Meu Sistema Psi');
     updateOg('og:description', 'Mais tempo para a clínica, menos tempo com a burocracia. Software de gestão para psicólogos com prontuário (LGPD), agenda avançada e Bio-Painel. Teste grátis.');
-    updateOg('og:url', 'https://meusistemapsi.com.br/');
+    updateOg('og:url', 'https://meusistemapsi.com.br/vendas2');
     updateOg('og:image', 'https://meusistemapsi.com.br/og-image.png');
 
     // Schema.org

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import { 
   ArrowLeft, Clock, Calendar, Share2, 
   MessageCircle, Heart, ChevronRight, 
@@ -129,7 +130,7 @@ export default function Artigo() {
             
             <div 
               className="article-body text-lg text-slate-600 font-light leading-relaxed space-y-8"
-              dangerouslySetInnerHTML={{ __html: post.content }} 
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} 
             />
           </motion.div>
           

@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const AtestadoContext = createContext();
 
 export const useAtestados = () => {
@@ -39,7 +40,7 @@ export const AtestadoProvider = ({ children }) => {
             setAtestados(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
-            console.error('[AtestadoContext] Erro ao adicionar:', error);
+            logger.error('[AtestadoContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -49,7 +50,7 @@ export const AtestadoProvider = ({ children }) => {
             const atualizado = await db.update('atestados', id, data);
             setAtestados(prev => prev.map(a => a.id === id ? { ...a, ...atualizado } : a)); // PERF-02
         } catch (error) {
-            console.error('[AtestadoContext] Erro ao atualizar:', error);
+            logger.error('[AtestadoContext] Erro ao atualizar:', error);
         }
     };
 
@@ -58,7 +59,7 @@ export const AtestadoProvider = ({ children }) => {
             await db.delete('atestados', id);
             setAtestados(prev => prev.filter(a => a.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[AtestadoContext] Erro ao deletar:', error);
+            logger.error('[AtestadoContext] Erro ao deletar:', error);
         }
     };
 
@@ -84,5 +85,6 @@ export const AtestadoProvider = ({ children }) => {
         </AtestadoContext.Provider>
     );
 };
+
 
 

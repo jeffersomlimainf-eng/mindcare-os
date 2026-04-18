@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const LaudoContext = createContext();
 
 export const useLaudos = () => {
@@ -40,7 +41,7 @@ export const LaudoProvider = ({ children }) => {
             setLaudos(prev => [...prev, novo]); // PERF-02: optimistic update
             return novo;
         } catch (error) {
-            console.error('[LaudoContext] Erro ao adicionar:', error);
+            logger.error('[LaudoContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -50,7 +51,7 @@ export const LaudoProvider = ({ children }) => {
             const atualizado = await db.update('laudos', id, data);
             setLaudos(prev => prev.map(l => l.id === id ? { ...l, ...atualizado } : l)); // PERF-02
         } catch (error) {
-            console.error('[LaudoContext] Erro ao atualizar:', error);
+            logger.error('[LaudoContext] Erro ao atualizar:', error);
         }
     };
 
@@ -59,7 +60,7 @@ export const LaudoProvider = ({ children }) => {
             await db.delete('laudos', id);
             setLaudos(prev => prev.filter(l => l.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[LaudoContext] Erro ao deletar:', error);
+            logger.error('[LaudoContext] Erro ao deletar:', error);
         }
     };
 
@@ -85,5 +86,6 @@ export const LaudoProvider = ({ children }) => {
         </LaudoContext.Provider>
     );
 };
+
 
 

@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { useNotifications } from './NotificationContext';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const AppointmentContext = createContext();
 
 export const useAppointments = () => {
@@ -39,7 +40,7 @@ export const AppointmentProvider = ({ children }) => {
                     setAppointments(apps);
                     setWaitingList(wait);
                 } catch (error) {
-                    console.error('[AppointmentContext] Erro ao carregar dados:', error);
+                    logger.error('[AppointmentContext] Erro ao carregar dados:', error);
                 } finally {
                     setLoading(false);
                 }
@@ -78,7 +79,7 @@ export const AppointmentProvider = ({ children }) => {
             }
             return novo;
         } catch (error) {
-            console.error('[AppointmentContext] Erro ao adicionar:', error);
+            logger.error('[AppointmentContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -89,7 +90,7 @@ export const AppointmentProvider = ({ children }) => {
             setAppointments(prev => prev.map(a => a.id === id ? { ...a, ...atualizado } : a));
             return atualizado;
         } catch (error) {
-            console.error('[AppointmentContext] Erro ao atualizar:', error);
+            logger.error('[AppointmentContext] Erro ao atualizar:', error);
         }
     };
 
@@ -99,7 +100,7 @@ export const AppointmentProvider = ({ children }) => {
             setAppointments(prev => prev.filter(a => a.id !== id));
             return true;
         } catch (error) {
-            console.error('[AppointmentContext] Erro ao deletar:', error);
+            logger.error('[AppointmentContext] Erro ao deletar:', error);
             return false;
         }
     };
@@ -110,7 +111,7 @@ export const AppointmentProvider = ({ children }) => {
             setWaitingList(prev => [...prev, novo]); // PERF-02
             return true;
         } catch (error) {
-            console.error('[AppointmentContext] Erro ao adicionar na fila:', error);
+            logger.error('[AppointmentContext] Erro ao adicionar na fila:', error);
             return false;
         }
     };
@@ -121,7 +122,7 @@ export const AppointmentProvider = ({ children }) => {
             setWaitingList(prev => prev.filter(w => w.id !== id)); // PERF-02
             return true;
         } catch (error) {
-            console.error('[AppointmentContext] Erro ao remover da fila:', error);
+            logger.error('[AppointmentContext] Erro ao remover da fila:', error);
             return false;
         }
     };
@@ -143,5 +144,6 @@ export const AppointmentProvider = ({ children }) => {
         </AppointmentContext.Provider>
     );
 };
+
 
 

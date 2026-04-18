@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { supabase } from '../lib/supabase';
 import { showToast } from '../components/Toast';
 
+import { logger } from '../utils/logger';
 const runDbTest = async () => {
-    console.log("=== INICIANDO TESTE DB ===");
+    logger.log("=== INICIANDO TESTE DB ===");
     try {
         const payload = {
             name: 'Paciente Teste DB',
@@ -14,14 +15,14 @@ const runDbTest = async () => {
         };
         const { data, error } = await supabase.from('patients').insert([payload]).select().single();
         if (error) {
-            console.error("ERRO SUPABASE:", JSON.stringify(error, null, 2));
+            logger.error("ERRO SUPABASE:", JSON.stringify(error, null, 2));
             showToast('Erro no DB, olhe o console', 'error');
         } else {
-            console.log("SUCESSO:", data);
+            logger.log("SUCESSO:", data);
             showToast('Sucesso!', 'success');
         }
     } catch(e) {
-        console.error("CATCH ERRO:", e);
+        logger.error("CATCH ERRO:", e);
     }
 };
 
@@ -70,7 +71,7 @@ const AdminDashboard = () => {
 
                 setClientes(mappedClientes);
             } catch (err) {
-                console.error('[AdminDashboard] Erro ao buscar clientes:', err);
+                logger.error('[AdminDashboard] Erro ao buscar clientes:', err);
             } finally {
                 setLoading(false);
             }
@@ -184,7 +185,7 @@ const AdminDashboard = () => {
             setClientes(prev => prev.map(c => c.id === id ? { ...c, auditLog: [logEntry, ...(c.auditLog || [])] } : c));
 
         } catch (error) {
-            console.error("[AdminDashboard] Erro ao salvar tenancy:", error);
+            logger.error("[AdminDashboard] Erro ao salvar tenancy:", error);
             showToast(`Erro ao salvar: ${error.message}`, 'error');
         } finally {
             setActionLoading(false);
@@ -214,7 +215,7 @@ const AdminDashboard = () => {
             setClientes(prev => prev.filter(c => c.id !== userId));
             
         } catch (error) {
-            console.error("[AdminDashboard] Erro ao deletar usuário:", error);
+            logger.error("[AdminDashboard] Erro ao deletar usuário:", error);
             alert(`Falha ao deletar: ${error.message}`);
         } finally {
             setActionLoading(false);
@@ -254,7 +255,7 @@ const AdminDashboard = () => {
             fetchClientes();
             
         } catch (error) {
-            console.error("[AdminDashboard] Erro ao criar usuário:", error);
+            logger.error("[AdminDashboard] Erro ao criar usuário:", error);
             alert(`Falha ao criar usuário. Certifique-se de que a Edge Function está rodando. Detalhe: ${error.message}`);
         } finally {
             setActionLoading(false);
@@ -777,5 +778,6 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
 
 

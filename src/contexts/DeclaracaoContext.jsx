@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { useUser } from './UserContext';
 
+import { logger } from '../utils/logger';
 const DeclaracaoContext = createContext();
 
 export const useDeclaracoes = () => {
@@ -39,7 +40,7 @@ export const DeclaracaoProvider = ({ children }) => {
             setDeclaracoes(prev => [...prev, novo]); // PERF-02
             return novo;
         } catch (error) {
-            console.error('[DeclaracaoContext] Erro ao adicionar:', error);
+            logger.error('[DeclaracaoContext] Erro ao adicionar:', error);
             throw error;
         }
     };
@@ -49,7 +50,7 @@ export const DeclaracaoProvider = ({ children }) => {
             const atualizado = await db.update('declaracoes', id, data);
             setDeclaracoes(prev => prev.map(d => d.id === id ? { ...d, ...atualizado } : d)); // PERF-02
         } catch (error) {
-            console.error('[DeclaracaoContext] Erro ao atualizar:', error);
+            logger.error('[DeclaracaoContext] Erro ao atualizar:', error);
         }
     };
 
@@ -58,7 +59,7 @@ export const DeclaracaoProvider = ({ children }) => {
             await db.delete('declaracoes', id);
             setDeclaracoes(prev => prev.filter(d => d.id !== id)); // PERF-02
         } catch (error) {
-            console.error('[DeclaracaoContext] Erro ao deletar:', error);
+            logger.error('[DeclaracaoContext] Erro ao deletar:', error);
         }
     };
 
@@ -84,5 +85,6 @@ export const DeclaracaoProvider = ({ children }) => {
         </DeclaracaoContext.Provider>
     );
 };
+
 
 

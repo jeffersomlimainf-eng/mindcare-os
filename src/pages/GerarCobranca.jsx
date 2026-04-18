@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFinance } from '../contexts/FinanceContext';
 import { useUser } from '../contexts/UserContext';
@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 import { invoiceReminderTemplate } from '../constants/emailTemplates';
 
 
+import { logger } from '../utils/logger';
 const GerarCobranca = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -60,7 +61,7 @@ const GerarCobranca = () => {
                     .single();
                 if (data?.email) setPacienteEmail(data.email);
             } catch (e) {
-                console.error('[GerarCobranca] Erro ao carregar paciente:', e);
+                logger.error('[GerarCobranca] Erro ao carregar paciente:', e);
             } finally {
                 setCarregandoDados(false);
             }
@@ -132,7 +133,7 @@ const GerarCobranca = () => {
         ids.forEach(childId => {
             const t = transacoesSel.find(x => x.id === childId);
             if (t && !t.link_sent) {
-                updateTransaction(childId, { link_sent: true }).catch(console.error);
+                updateTransaction(childId, { link_sent: true }).catch((e) => logger.error(e));
             }
         });
     };
@@ -214,7 +215,7 @@ const GerarCobranca = () => {
             showToast('E-mail enviado com sucesso!', 'success');
             handleUpdateLinkSent();
         } catch (e) {
-            console.error('[GerarCobranca] Erro ao enviar e-mail:', e);
+            logger.error('[GerarCobranca] Erro ao enviar e-mail:', e);
             showToast(`Erro no E-mail: ${e.message}`, 'error');
         } finally {
             setEnviandoEmail(false);
@@ -501,5 +502,6 @@ const GerarCobranca = () => {
 };
 
 export default GerarCobranca;
+
 
 

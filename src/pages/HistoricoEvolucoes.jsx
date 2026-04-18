@@ -1,9 +1,10 @@
-import { useState, useMemo, useRef } from 'react';
+﻿import { useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePatients } from '../contexts/PatientContext';
 import { useEvolutions } from '../contexts/EvolutionContext';
 
 
+import { logger } from '../utils/logger';
 const HistoricoEvolucoes = () => {
     const navigate = useNavigate();
     const { pacienteId } = useParams();
@@ -59,7 +60,7 @@ const HistoricoEvolucoes = () => {
         try {
             await exportToPDF(historyRef.current, `Historico_Evolucoes_${paciente.nome.replace(/\s+/g, '_')}.pdf`);
         } catch (error) {
-            console.error('Erro ao exportar histórico:', error);
+            logger.error('Erro ao exportar histórico:', error);
         }
     };
 
@@ -221,5 +222,6 @@ const HistoricoEvolucoes = () => {
 };
 
 export default HistoricoEvolucoes;
+
 
 

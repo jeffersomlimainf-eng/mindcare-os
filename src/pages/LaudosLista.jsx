@@ -204,25 +204,27 @@ const LaudosLista = () => {
                 </div>
 
                 {filtrados.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <div className="size-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                            <span className="material-symbols-outlined text-4xl text-slate-300">clinical_notes</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">Nenhum laudo encontrado</h3>
-                        <p className="text-slate-400 max-w-xs mx-auto mb-4">
-                            {busca || filtroStatus !== 'Todos'
-                                ? 'Tente ajustar seus filtros de busca.'
-                                : 'Comece criando seu primeiro laudo psicológico.'}
-                        </p>
-                        {!busca && filtroStatus === 'Todos' && (
-                            <button
-                                onClick={() => navigate('/laudos/novo')}
-                                className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
-                            >
-                                <span className="material-symbols-outlined text-sm">add</span> Criar Primeiro Laudo
+                    laudos.length === 0 ? (
+                        <div className="py-16 flex flex-col items-center text-center px-6">
+                            <div className="size-24 rounded-3xl bg-violet-500/5 border border-violet-500/10 flex items-center justify-center mb-5">
+                                <span className="material-symbols-outlined text-5xl text-violet-400/40">history_edu</span>
+                            </div>
+                            <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">Nenhum laudo ainda</h3>
+                            <p className="text-sm text-slate-400 max-w-sm mx-auto mb-6 leading-relaxed">
+                                Laudos psicológicos são documentos técnicos que embasam decisões jurídicas, escolares ou de saúde sobre o paciente. Redija com IA.
+                            </p>
+                            <button onClick={() => navigate('/laudos/novo')} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2">
+                                <span className="material-symbols-outlined text-base">add</span>
+                                Criar Primeiro Laudo
                             </button>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <span className="material-symbols-outlined text-4xl text-slate-200 dark:text-slate-700 mb-3">search_off</span>
+                            <h3 className="text-sm font-bold text-slate-400">Nenhum resultado encontrado</h3>
+                            <p className="text-xs text-slate-400 mt-1">Tente ajustar os filtros ou a busca</p>
+                        </div>
+                    )
                 )}
             </div>
 
