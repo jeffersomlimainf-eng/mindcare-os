@@ -1,14 +1,16 @@
-﻿import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { usePatients } from '../contexts/PatientContext';
 import { useEvolutions } from '../contexts/EvolutionContext';
 import { useUser } from '../contexts/UserContext';
 import { useFinance } from '../contexts/FinanceContext';
 import { showToast } from '../components/Toast';
-
 import { formatDisplayId, formatFileId } from '../utils/formatId';
-
+import { evolutionSchema } from '../schemas/evolutionSchema';
 import { logger } from '../utils/logger';
+
 const tecnicasDefault = [
     { id: 1, nome: 'Reestruturação Cognitiva', checked: false },
     { id: 2, nome: 'Exposição Gradual', checked: false },
@@ -104,100 +106,109 @@ const EvolucaoSessao = () => {
         return !isVisualizando;
     });
 
-    const pacienteInicial = useMemo(() => {
-        if (evolucaoExistente) {
-            const normalize = id => id?.toString().replace('#', '');
-            return patients.find(p => normalize(p.id) === normalize(evolucaoExistente.pacienteId)) || null;
-        }
-        return null;
-    }, [evolucaoExistente, patients]);
-
-    const [pacienteSelecionado, setPacienteSelecionado] = useState(pacienteInicial);
     const [buscaPaciente, setBuscaPaciente] = useState('');
-    const [dropdownAberto, setDropdownAberto] = useState(!pacienteInicial && id === 'novo');
-    const [dataHora, setDataHora] = useState(() => {
-        if (evolucaoExistente?.dataHora) {
-            // Se já estiver no formato ISO datetime-local (YYYY-MM-DDTHH:mm), usa direto
-            if (typeof evolucaoExistente.dataHora === 'string' && evolucaoExistente.dataHora.includes('T')) {
-                return evolucaoExistente.dataHora.slice(0, 16);
-            }
-            try {
-                const d = new Date(evolucaoExistente.dataHora);
-                if (isNaN(d.getTime())) return evolucaoExistente.dataHora;
-                // Ajustar para o fuso local para o input datetime-local
-                return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            } catch (e) {
-                return evolucaoExistente.dataHora;
-            }
-        }
-        const now = new Date();
-        // Formato local para o input
-        return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    });
-    const [tipoAtendimento, setTipoAtendimento] = useState(evolucaoExistente?.tipoAtendimento || evolucaoExistente?.tipo || 'Psicoterapia Individual');
-    const [duracaoSessao, setDuracaoSessao] = useState(evolucaoExistente?.duracaoSessao || evolucaoExistente?.duration || '50');
-    const [numeroSessao, setNumeroSessao] = useState(evolucaoExistente?.numeroSessao || evolucaoExistente?.session_number || '');
-
-    // SOAP fields
-    const [subjetivo, setSubjetivo] = useState(() => {
-        if (evolucaoExistente) {
-            return evolucaoExistente.conteudo?.subjetivo || evolucaoExistente.subjetivo || evolucaoExistente.evolucao || '';
-        }
-        if (location.state?.modelo?.conteudo) return location.state.modelo.conteudo;
-        if (location.state?.documentoReferencia?.conteudo) return location.state.documentoReferencia.conteudo;
-        return '';
-    });
-    const [objetivo, setObjetivo] = useState(() => {
-        return evolucaoExistente?.conteudo?.objetivo || evolucaoExistente?.objetivo || '';
-    });
-    const [avaliacao, setAvaliacao] = useState(() => {
-        return evolucaoExistente?.conteudo?.avaliacao || evolucaoExistente?.avaliacao || '';
-    });
-    const [plano, setPlano] = useState(() => {
-        return evolucaoExistente?.conteudo?.plano || evolucaoExistente?.plano || evolucaoExistente?.planejamento || '';
-    });
-
-    const ultimaEvolucao = useMemo(() => {
-        if (!pacienteSelecionado) return null;
-        const historico = evolutions
-            .filter(ev => ev.pacienteId === pacienteSelecionado.id && ev.id !== id)
-            .sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
-        return historico[0] || null;
-    }, [pacienteSelecionado, evolutions, id]);
-
-    const [tecnicas, setTecnicas] = useState(() => {
-        const saved = evolucaoExistente?.tecnicas || [];
-        // Garantir que as técnicas salvas (que podem ser apenas strings ou objetos parciais) 
-        // sejam mescladas com a lista padrão para que o usuário não perca as sugestões
-        const base = [...tecnicasDefault];
-        
-        // Converter strings antigas para o formato de objeto esperado
-        const normalizedSaved = saved.map(t => 
-            typeof t === 'string' ? { id: Math.random(), nome: t, checked: true } : t
-        );
-
-        normalizedSaved.forEach(s => {
-            const idx = base.findIndex(b => b.nome === s.nome);
-            if (idx !== -1) {
-                base[idx] = { ...base[idx], ...s };
-            } else {
-                base.push(s);
-            }
-        });
-        return base;
-    });
-    const [novaTecnica, setNovaTecnica] = useState('');
-    const [observacoes, setObservacoes] = useState(evolucaoExistente?.observacoes || '');
-    const [humorPaciente, setHumorPaciente] = useState(evolucaoExistente?.humor || evolucaoExistente?.humorPaciente || 'neutro');
-    const [nivelRisco, setNivelRisco] = useState(evolucaoExistente?.nivelRisco || evolucaoExistente?.nivel_risco || 'baixo');
+    const [dropdownAberto, setDropdownAberto] = useState(id === 'novo' && !location.state?.pacienteId);
+    const [secaoAberta, setSecaoAberta] = useState('subjetivo');
     const [salvando, setSalvando] = useState(false);
+    const [novaTecnica, setNovaTecnica] = useState('');
 
+    const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+        resolver: zodResolver(evolutionSchema),
+        defaultValues: {
+            dataHora: '',
+            tipoAtendimento: 'Psicoterapia Individual',
+            duracaoSessao: 50,
+            numeroSessao: '',
+            pacienteId: '',
+            pacienteNome: '',
+            subjetivo: '',
+            objetivo: '',
+            avaliacao: '',
+            plano: '',
+            humorPaciente: 'neutro',
+            nivelRisco: 'baixo',
+            observacoes: '',
+            tecnicas: tecnicasDefault
+        }
+    });
+
+    const formValues = watch();
+
+    useEffect(() => {
+        const now = new Date();
+        const defaultDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+        if (evolucaoExistente) {
+            let dataFormatted = evolucaoExistente.dataHora;
+            if (typeof dataFormatted === 'string' && dataFormatted.includes('T')) {
+                dataFormatted = dataFormatted.slice(0, 16);
+            } else {
+                try {
+                    const d = new Date(evolucaoExistente.dataHora);
+                    if (!isNaN(d.getTime())) {
+                        dataFormatted = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                    }
+                } catch (e) {
+                    dataFormatted = defaultDate;
+                }
+            }
+
+            const savedTecnicas = evolucaoExistente.tecnicas || [];
+            const baseTecnicas = [...tecnicasDefault];
+            const normalizedSaved = savedTecnicas.map(t => 
+                typeof t === 'string' ? { id: Math.random(), nome: t, checked: true } : t
+            );
+
+            normalizedSaved.forEach(s => {
+                const idx = baseTecnicas.findIndex(b => b.nome === s.nome);
+                if (idx !== -1) {
+                    baseTecnicas[idx] = { ...baseTecnicas[idx], ...s };
+                } else {
+                    baseTecnicas.push(s);
+                }
+            });
+
+            reset({
+                dataHora: dataFormatted,
+                tipoAtendimento: evolucaoExistente.tipoAtendimento || evolucaoExistente.tipo || 'Psicoterapia Individual',
+                duracaoSessao: evolucaoExistente.duracaoSessao || evolucaoExistente.duration || 50,
+                numeroSessao: evolucaoExistente.numeroSessao || evolucaoExistente.session_number || '',
+                pacienteId: evolucaoExistente.pacienteId || '',
+                pacienteNome: evolucaoExistente.pacienteNome || '',
+                subjetivo: evolucaoExistente.conteudo?.subjetivo || evolucaoExistente.subjetivo || evolucaoExistente.evolucao || '',
+                objetivo: evolucaoExistente.conteudo?.objetivo || evolucaoExistente.objetivo || '',
+                avaliacao: evolucaoExistente.conteudo?.avaliacao || evolucaoExistente.avaliacao || '',
+                plano: evolucaoExistente.conteudo?.plano || evolucaoExistente.plano || evolucaoExistente.planejamento || '',
+                humorPaciente: evolucaoExistente.humor || evolucaoExistente.humorPaciente || 'neutro',
+                nivelRisco: evolucaoExistente.nivelRisco || evolucaoExistente.nivel_risco || 'baixo',
+                observacoes: evolucaoExistente.observacoes || '',
+                tecnicas: baseTecnicas
+            });
+        } else {
+            reset({
+                dataHora: defaultDate,
+                tipoAtendimento: 'Psicoterapia Individual',
+                duracaoSessao: 50,
+                numeroSessao: '',
+                pacienteId: '',
+                pacienteNome: '',
+                subjetivo: '',
+                objetivo: '',
+                avaliacao: '',
+                plano: '',
+                humorPaciente: 'neutro',
+                nivelRisco: 'baixo',
+                observacoes: '',
+                tecnicas: tecnicasDefault
+            });
+        }
+    }, [evolucaoExistente, reset]);
     const handleExportPDF = async () => {
         if (!evolutionRef.current) return;
         try {
             const { exportToPDF } = await import('../utils/exportUtils');
-            const nomePaciente = pacienteSelecionado?.nome || 'paciente';
-            const dataStr = new Date(dataHora).toLocaleDateString('pt-BR').replace(/\//g, '-');
+            const nomePaciente = formValues.pacienteNome || 'paciente';
+            const dataStr = new Date(formValues.dataHora).toLocaleDateString('pt-BR').replace(/\//g, '-');
             const sanitizedId = formatFileId(id || 'novo');
             const filename = `evolucao_${formatFileId(nomePaciente)}_${sanitizedId}_${dataStr}.pdf`;
             
@@ -208,74 +219,6 @@ const EvolucaoSessao = () => {
             showToast(`Erro técnico: ${error.message}. Use Ctrl+P.`, 'error');
         }
     };
-    const [secaoAberta, setSecaoAberta] = useState('subjetivo');
-
-    // Automação: Capturar dados vindos da Agenda ou outros links
-    useEffect(() => {
-        if (!evolucaoExistente && location.state) {
-            const { pacienteId, tipoAtendimento: tAtend, duracaoSessao: durSess, modelo, documentoReferencia } = location.state;
-            
-            const targetPatientId = pacienteId || documentoReferencia?.pacienteId || documentoReferencia?.id;
-
-            if (targetPatientId) {
-                const searchId = targetPatientId.toString().startsWith('#') ? targetPatientId : `#${targetPatientId}`;
-                const pac = patients.find(p => p.id === targetPatientId || p.id === searchId);
-                if (pac) {
-                    setPacienteSelecionado(pac);
-                    setDropdownAberto(false);
-                }
-            } else if (location.state?.pacienteId || location.state?.pacienteObjeto) {
-                const targetId = location.state.pacienteId || location.state.pacienteObjeto?.id;
-                const normalize = id => id?.toString().replace('#', '');
-                const p = patients.find(p => normalize(p.id) === normalize(targetId));
-                if (p) {
-                    setPacienteSelecionado(p);
-                    setBuscaPaciente(p.nome);
-                }
-            }
-
-            if (documentoReferencia) {
-                if (documentoReferencia.tipoAtendimento) setTipoAtendimento(documentoReferencia.tipoAtendimento);
-                if (documentoReferencia.duracaoSessao) setDuracaoSessao(String(documentoReferencia.duracaoSessao));
-                if (documentoReferencia.numeroSessao) setNumeroSessao(String(documentoReferencia.numeroSessao));
-                
-                // SOAP
-                if (documentoReferencia.subjetivo) setSubjetivo(documentoReferencia.subjetivo);
-                else if (documentoReferencia.conteudo) setSubjetivo(documentoReferencia.conteudo); // fallback
-                if (documentoReferencia.objetivo) setObjetivo(documentoReferencia.objetivo);
-                if (documentoReferencia.avaliacao) setAvaliacao(documentoReferencia.avaliacao);
-                if (documentoReferencia.plano) setPlano(documentoReferencia.plano);
-                
-                if (documentoReferencia.humorPaciente) setHumorPaciente(documentoReferencia.humorPaciente);
-                if (documentoReferencia.nivelRisco) setNivelRisco(documentoReferencia.nivelRisco);
-                if (documentoReferencia.observacoes) setObservacoes(documentoReferencia.observacoes);
-            }
-
-            if (tAtend) setTipoAtendimento(tAtend);
-            if (durSess) setDuracaoSessao(String(durSess));
-            if (modelo?.conteudo) setSubjetivo(modelo.conteudo);
-        }
-    }, [location.state, evolucaoExistente, patients]);
-
-    // Fallback: Se o ID vier na URL (mock records), tentar carregar o paciente diretamente
-    useEffect(() => {
-        if (!evolucaoExistente && !pacienteSelecionado && id && id !== 'novo') {
-            const cleanId = id.toString().replace('#', '');
-            const searchId = `#${cleanId}`;
-            
-            const pac = patients.find(p => 
-                p.id === id || 
-                p.id === searchId || 
-                p.id === cleanId ||
-                (location.state?.documentoReferencia?.paciente && p.nome === location.state.documentoReferencia.paciente)
-            );
-
-            if (pac) {
-                setPacienteSelecionado(pac);
-                setDropdownAberto(false);
-            }
-        }
-    }, [id, evolucaoExistente, pacienteSelecionado, patients, location.state]);
 
     const pacientesFiltrados = useMemo(() => {
         if (!buscaPaciente) return patients.filter(p => p.status === 'Ativo');
@@ -286,91 +229,69 @@ const EvolucaoSessao = () => {
     }, [patients, buscaPaciente]);
 
     const selecionarPaciente = (p) => {
-        setPacienteSelecionado(p);
+        setValue('pacienteId', p.id);
+        setValue('pacienteNome', p.nome);
         setBuscaPaciente('');
         setDropdownAberto(false);
     };
 
     const toggleTecnica = (tid) => {
         if (!modoEdicao) return;
-        setTecnicas(prev => prev.map(t => t.id === tid ? { ...t, checked: !t.checked } : t));
+        const updated = formValues.tecnicas.map(t => t.id === tid ? { ...t, checked: !t.checked } : t);
+        setValue('tecnicas', updated);
     };
 
     const adicionarTecnica = () => {
         if (!novaTecnica.trim() || !modoEdicao) return;
-        setTecnicas(prev => [...prev, { id: Date.now(), nome: novaTecnica.trim(), checked: true }]);
+        const nova = { id: Date.now(), nome: novaTecnica.trim(), checked: true };
+        setValue('tecnicas', [...formValues.tecnicas, nova]);
         setNovaTecnica('');
     };
-
-    const soapValues = { subjetivo, objetivo, avaliacao, plano };
-    const soapSetters = {
-        subjetivo: setSubjetivo,
-        objetivo: setObjetivo,
-        avaliacao: setAvaliacao,
-        plano: setPlano,
-    };
-
-    const preenchimentoSOAP = soapSections.filter(s => soapValues[s.key]?.trim().length > 0).length;
-    const progressoSOAP = Math.round((preenchimentoSOAP / 4) * 100);
 
     const { addTransaction } = useFinance();
 
     // Automação: Sugerir próximo número de sessão
     useEffect(() => {
-        if (pacienteSelecionado && !evolucaoExistente && !numeroSessao) {
-            const count = evolutions.filter(ev => ev.pacienteId === pacienteSelecionado.id).length;
-            setNumeroSessao(String(count + 1));
+        if (formValues.pacienteId && !evolucaoExistente && !formValues.numeroSessao) {
+            const count = evolutions.filter(ev => ev.pacienteId === formValues.pacienteId).length;
+            setValue('numeroSessao', String(count + 1));
         }
-    }, [pacienteSelecionado, evolucaoExistente, evolutions, numeroSessao]);
+    }, [formValues.pacienteId, evolucaoExistente, evolutions, formValues.numeroSessao, setValue]);
 
-    const handleSalvar = (finalizar = false) => {
-        if (!pacienteSelecionado) { showToast('Selecione um paciente.', 'warning'); return; }
-        if (!subjetivo.trim()) { showToast('Preencha pelo menos o campo Subjetivo (S).', 'warning'); return; }
-
+    const onSubmit = async (data, finalizar = false) => {
         setSalvando(true);
+        
+        const pac = patients.find(p => p.id === data.pacienteId);
+
         const dados = {
-            pacienteId: pacienteSelecionado.id,
-            pacienteNome: pacienteSelecionado.nome,
-            pacienteIniciais: pacienteSelecionado.iniciais,
-            pacienteCor: pacienteSelecionado.cor,
-            dataHora,
-            tipoAtendimento,
-            duracaoSessao,
-            numeroSessao,
-            subjetivo,
-            objetivo,
-            avaliacao,
-            plano,
-            evolucao: subjetivo, // backwards compat
-            planejamento: plano, // backwards compat
-            tecnicas,
-            observacoes,
-            humorPaciente,
-            nivelRisco,
+            ...data,
+            pacienteIniciais: pac?.iniciais,
+            pacienteCor: pac?.cor,
+            evolucao: data.subjetivo, // backwards compat
+            planejamento: data.plano, // backwards compat
             formato: 'SOAP',
             status: finalizar ? 'Finalizado' : 'Rascunho',
             profissionalNome: user.nome,
             profissionalCrp: user.crp,
         };
 
-        setTimeout(async () => {
-            let result;
+        try {
             if (evolucaoExistente) {
-                result = await updateEvolution(evolucaoExistente.id, dados);
-                showToast(finalizar ? `Evolução de ${pacienteSelecionado.nome} finalizada! ✅` : `Rascunho salvo! 📝`, 'success');
+                await updateEvolution(evolucaoExistente.id, dados);
+                showToast(finalizar ? `Evolução de ${data.pacienteNome} finalizada! ✅` : `Rascunho salvo! 📝`, 'success');
             } else {
-                result = await addEvolution(dados);
-                showToast(finalizar ? `Evolução de ${pacienteSelecionado.nome} registrada! ✅` : `Rascunho salvo! 📝`, 'success');
+                await addEvolution(dados);
+                showToast(finalizar ? `Evolução de ${data.pacienteNome} registrada! ✅` : `Rascunho salvo! 📝`, 'success');
                 
                 // Automação: Faturamento Automático
-                if (finalizar && pacienteSelecionado) {
-                    const valorStr = pacienteSelecionado.precoSessao || '0,00';
+                if (finalizar && pac) {
+                    const valorStr = pac.precoSessao || '0,00';
                     const valorNum = parseFloat(valorStr.replace('.', '').replace(',', '.')) || 0;
                     
                     addTransaction({
-                        desc: `Sessão #${numeroSessao || '1'} — ${pacienteSelecionado.nome}`,
-                        data: dataHora.split('T')[0],
-                        dataVencimento: dataHora.split('T')[0],
+                        desc: `Sessão #${data.numeroSessao || '1'} — ${pac.nome}`,
+                        data: data.dataHora.split('T')[0],
+                        dataVencimento: data.dataHora.split('T')[0],
                         tipo: 'Receita',
                         valor: valorNum,
                         status: 'Recebido',
@@ -381,18 +302,16 @@ const EvolucaoSessao = () => {
                 }
             }
             
-            setSalvando(false);
-
             if (finalizar) {
-                setModoEdicao(false);
-                if (!evolucaoExistente && result?.id) {
-                    // Se for novo, navegar para o ID real para permitir recarregar/compartilhar
-                    navigate(`/prontuarios/evolucao/${result.id}`, { replace: true });
-                }
+                navigate(-1);
             }
-        }, 800);
+        } catch (error) {
+            logger.error('Erro ao salvar evolução:', error);
+            showToast('Erro ao salvar os dados.', 'error');
+        } finally {
+            setSalvando(false);
+        }
     };
-
     const humores = [
         { v: 'muito_baixo', icon: 'sentiment_very_dissatisfied', label: 'Muito Baixo', color: 'text-red-500 bg-red-50 border-red-300' },
         { v: 'baixo', icon: 'sentiment_dissatisfied', label: 'Baixo', color: 'text-orange-500 bg-orange-50 border-orange-300' },
@@ -419,39 +338,40 @@ const EvolucaoSessao = () => {
     const handleExportWord = async () => {
         try {
             const { exportToWord } = await import('../utils/exportUtils');
-            const nomePaciente = pacienteSelecionado?.nome || 'Paciente';
-            const dataStr = dataHora ? new Date(dataHora).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
-            const horaStr = dataHora ? new Date(dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+            const nomePaciente = formValues.pacienteNome || 'Paciente';
+            const pac = patients.find(p => p.id === formValues.pacienteId);
+            const dataStr = formValues.dataHora ? new Date(formValues.dataHora).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+            const horaStr = formValues.dataHora ? new Date(formValues.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
             
-            const humorLabel = humores.find(h => h.v === humorPaciente)?.label || humorPaciente;
+            const humorLabel = humores.find(h => h.v === formValues.humorPaciente)?.label || formValues.humorPaciente;
             const riscoLabel = [
                 { v: 'baixo', label: 'Baixo' },
                 { v: 'moderado', label: 'Moderado' },
                 { v: 'alto', label: 'Alto' },
                 { v: 'critico', label: 'Crítico' },
-            ].find(r => r.v === nivelRisco)?.label || nivelRisco;
+            ].find(r => r.v === formValues.nivelRisco)?.label || formValues.nivelRisco;
             
-            const tecnicasAplicadas = tecnicas.filter(t => t.checked).map(t => t.nome).join(', ') || 'Nenhuma técnica registrada';
+            const tecnicasAplicadas = (formValues.tecnicas || []).filter(t => t.checked).map(t => t.nome).join(', ') || 'Nenhuma técnica registrada';
 
             const secoes = [];
             
-            if (subjetivo) secoes.push({ titulo: 'S — Subjetivo (Relato do Paciente)', conteudo: subjetivo });
-            if (objetivo) secoes.push({ titulo: 'O — Objetivo (Observação Clínica)', conteudo: objetivo });
-            if (avaliacao) secoes.push({ titulo: 'A — Avaliação (Análise Clínica)', conteudo: avaliacao });
-            if (plano) secoes.push({ titulo: 'P — Plano (Conduta Terapêutica)', conteudo: plano });
+            if (formValues.subjetivo) secoes.push({ titulo: 'S — Subjetivo (Relato do Paciente)', conteudo: formValues.subjetivo });
+            if (formValues.objetivo) secoes.push({ titulo: 'O — Objetivo (Observação Clínica)', conteudo: formValues.objetivo });
+            if (formValues.avaliacao) secoes.push({ titulo: 'A — Avaliação (Análise Clínica)', conteudo: formValues.avaliacao });
+            if (formValues.plano) secoes.push({ titulo: 'P — Plano (Conduta Terapêutica)', conteudo: formValues.plano });
             
             secoes.push({
                 titulo: 'Dados Complementares',
-                conteudo: `Humor do Paciente: ${humorLabel}\nAvaliação de Risco: ${riscoLabel}\nTécnicas Aplicadas: ${tecnicasAplicadas}${observacoes ? '\n\nObservações Internas: ' + observacoes : ''}`
+                conteudo: `Humor do Paciente: ${humorLabel}\nAvaliação de Risco: ${riscoLabel}\nTécnicas Aplicadas: ${tecnicasAplicadas}${formValues.observacoes ? '\n\nObservações Internas: ' + formValues.observacoes : ''}`
             });
 
             const dataForWord = {
                 titulo: 'Evolução de Sessão — SOAP',
-                subtitulo: `Sessão #${numeroSessao || '-'} · ${tipoAtendimento} · ${duracaoSessao} min`,
+                subtitulo: `Sessão #${formValues.numeroSessao || '-'} · ${formValues.tipoAtendimento} · ${formValues.duracaoSessao} min`,
                 paciente: {
                     nome: nomePaciente,
-                    cpf: pacienteSelecionado?.cpf || '—',
-                    nascimento: pacienteSelecionado?.dataNascimento || pacienteSelecionado?.nascimento || '—'
+                    cpf: pac?.cpf || '—',
+                    nascimento: pac?.dataNascimento || pac?.nascimento || '—'
                 },
                 dataEmissao: `${dataStr}${horaStr ? ' às ' + horaStr : ''}`,
                 secoes,
@@ -464,7 +384,7 @@ const EvolucaoSessao = () => {
 
             const cleanNome = formatFileId(nomePaciente);
             const sanitizedId = formatFileId(id || 'novo');
-            const filename = `evolucao_${cleanNome}_${sanitizedId}_sessao${numeroSessao || 'X'}_${dataStr.replace(/\//g, '-')}.docx`;
+            const filename = `evolucao_${cleanNome}_${sanitizedId}_sessao${formValues.numeroSessao || 'X'}_${dataStr.replace(/\//g, '-')}.docx`;
             await exportToWord(dataForWord, filename);
             showToast('Word gerado com sucesso!', 'success');
         } catch (error) {
@@ -478,7 +398,7 @@ const EvolucaoSessao = () => {
             {/* Header */}
             <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
                 <div>
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-500 hover:text-primary font-bold text-sm transition-colors mb-2">
+                    <button type="button" onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-500 hover:text-primary font-bold text-sm transition-colors mb-2">
                         <span className="material-symbols-outlined text-sm">arrow_back</span> Voltar
                     </button>
                     <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
@@ -486,17 +406,17 @@ const EvolucaoSessao = () => {
                         <span className="px-3 py-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-lg text-xs font-black tracking-wider">SOAP</span>
                     </h1>
                     <p className="text-sm text-slate-500 flex items-center gap-2 flex-wrap">
-                        {pacienteSelecionado ? (
+                        {formValues.pacienteId ? (
                             <>
-                                Paciente: <span className="text-primary font-bold">{pacienteSelecionado.nome}</span>
+                                Paciente: <span className="text-primary font-bold">{formValues.pacienteNome}</span>
                                 <span className="opacity-30">·</span>
-                                <span className="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">{formatDisplayId(pacienteSelecionado.id, 'PAC')}</span>
+                                <span className="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">{formatDisplayId(formValues.pacienteId, 'PAC')}</span>
                                 {!modoEdicao && (
                                     <>
                                         <span className="opacity-30">·</span>
                                         <span className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md font-bold text-[11px]">
                                             <span className="material-symbols-outlined text-[14px]">event</span>
-                                            {formatarDataExibicao(dataHora)}
+                                            {new Date(formValues.dataHora).toLocaleString('pt-BR')}
                                         </span>
                                     </>
                                 )}
@@ -507,22 +427,16 @@ const EvolucaoSessao = () => {
                     </p>
                 </div>
                 <div className="flex items-center gap-3 print:hidden">
-                    <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:border-primary transition-all shadow-sm">
-                        <span className="material-symbols-outlined text-sm">print</span> Imprimir
-                    </button>
-                    <button onClick={handleExportWord} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:border-primary transition-all shadow-sm">
-                        <span className="material-symbols-outlined text-sm">description</span> Word
-                    </button>
                     {!modoEdicao ? (
-                        <button onClick={() => setModoEdicao(true)} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+                        <button type="button" onClick={() => setModoEdicao(true)} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
                             <span className="material-symbols-outlined text-base">edit</span> Editar
                         </button>
                     ) : (
                         <>
-                            <button onClick={() => handleSalvar(false)} disabled={salvando} className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 hover:border-primary transition-all shadow-sm disabled:opacity-50">
+                            <button type="button" onClick={handleSubmit((d) => onSubmit(d, false))} disabled={salvando} className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 hover:border-primary transition-all shadow-sm disabled:opacity-50">
                                 <span className="material-symbols-outlined text-sm">save</span> Salvar Rascunho
                             </button>
-                            <button onClick={() => handleSalvar(true)} disabled={salvando || !pacienteSelecionado}
+                            <button type="button" onClick={handleSubmit((d) => onSubmit(d, true))} disabled={salvando || !formValues.pacienteId}
                                 className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-black shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50 uppercase tracking-widest text-xs">
                                 {salvando ? (<><span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Salvando...</>) : (<><span className="material-symbols-outlined text-sm">check_circle</span> Finalizar Registro</>)}
                             </button>
@@ -535,7 +449,8 @@ const EvolucaoSessao = () => {
                 {/* Main Column (2/3) */}
                 <div className="lg:col-span-2 space-y-0">
                     {/* Paciente Seletor */}
-                    {!pacienteSelecionado && modoEdicao && (
+                    {/* Paciente Seletor */}
+                    {!formValues.pacienteId && modoEdicao && (
                         <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-primary/30 shadow-sm overflow-visible relative mb-6">
                             <div className="p-5">
                                 <div className="flex items-center gap-2 mb-3">
@@ -544,13 +459,13 @@ const EvolucaoSessao = () => {
                                 </div>
                                 <div className="relative">
                                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                                    <input className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm" placeholder="Buscar paciente por nome ou ID..." value={buscaPaciente} onChange={e => { setBuscaPaciente(e.target.value); setDropdownAberto(true); }} onFocus={() => setDropdownAberto(true)} autoFocus />
+                                    <input className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800 border focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm ${errors.pacienteId ? 'border-rose-300' : 'border-slate-200 dark:border-slate-700'}`} placeholder="Buscar paciente por nome ou ID..." value={buscaPaciente} onChange={e => { setBuscaPaciente(e.target.value); setDropdownAberto(true); }} onFocus={() => setDropdownAberto(true)} autoFocus />
                                     {dropdownAberto && (
                                         <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 max-h-[280px] overflow-y-auto">
                                             {pacientesFiltrados.length === 0 ? (
                                                 <div className="p-4 text-center text-slate-400 text-sm">Nenhum paciente encontrado</div>
                                             ) : pacientesFiltrados.map(p => (
-                                                <button key={p.id} onClick={() => selecionarPaciente(p)} className="w-full flex items-center gap-3 p-3 hover:bg-primary/5 transition-colors text-left border-b border-slate-100 dark:border-slate-800 last:border-0">
+                                                <button key={p.id} type="button" onClick={() => selecionarPaciente(p)} className="w-full flex items-center gap-3 p-3 hover:bg-primary/5 transition-colors text-left border-b border-slate-100 dark:border-slate-800 last:border-0">
                                                     <div className={`size-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${p.cor || 'bg-primary/10 text-primary'}`}>{p.iniciais}</div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{p.nome}</p>
@@ -562,27 +477,35 @@ const EvolucaoSessao = () => {
                                         </div>
                                     )}
                                 </div>
+                                {errors.pacienteId && <p className="mt-2 text-[10px] text-rose-500 font-bold uppercase">{errors.pacienteId.message}</p>}
                             </div>
                         </div>
                     )}
 
                     {/* Paciente selecionado */}
-                    {pacienteSelecionado && (
+                    {formValues.pacienteId && (
                         <div className="bg-white dark:bg-slate-900 rounded-t-2xl border border-slate-200 dark:border-slate-800 border-b-0 p-5">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className={`size-12 rounded-full flex items-center justify-center text-sm font-bold ${pacienteSelecionado.cor || 'bg-primary/10 text-primary'}`}>{pacienteSelecionado.iniciais}</div>
-                                    <div>
-                                        <p className="font-black text-slate-900 dark:text-white">{pacienteSelecionado.nome}</p>
-                                        <p className="text-xs text-slate-500">{formatDisplayId(pacienteSelecionado.id, 'PAC')} · {tipoAtendimento}</p>
-                                    </div>
+                                    {(() => {
+                                        const pac = patients.find(p => p.id === formValues.pacienteId);
+                                        return (
+                                            <>
+                                                <div className={`size-12 rounded-full flex items-center justify-center text-sm font-bold ${pac?.cor || 'bg-primary/10 text-primary'}`}>{pac?.iniciais}</div>
+                                                <div>
+                                                    <p className="font-black text-slate-900 dark:text-white">{formValues.pacienteNome}</p>
+                                                    <p className="text-xs text-slate-500">{formatDisplayId(formValues.pacienteId, 'PAC')} · {formValues.tipoAtendimento}</p>
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    {numeroSessao && (
-                                        <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-xs font-black">Sessão #{numeroSessao}</span>
+                                    {formValues.numeroSessao && (
+                                        <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-xs font-black">Sessão #{formValues.numeroSessao}</span>
                                     )}
                                     {modoEdicao && (
-                                        <button onClick={() => { setPacienteSelecionado(null); setDropdownAberto(true); }} className="text-xs font-bold text-primary hover:text-primary/70 transition-colors flex items-center gap-1">
+                                        <button type="button" onClick={() => { setValue('pacienteId', ''); setDropdownAberto(true); }} className="text-xs font-bold text-primary hover:text-primary/70 transition-colors flex items-center gap-1">
                                             <span className="material-symbols-outlined text-sm">swap_horiz</span> Trocar
                                         </button>
                                     )}
@@ -598,6 +521,7 @@ const EvolucaoSessao = () => {
                             className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-t-0 ${idx === soapSections.length - 1 ? 'rounded-b-2xl' : ''} transition-all overflow-hidden`}
                         >
                             <button
+                                type="button"
                                 onClick={() => setSecaoAberta(secaoAberta === section.key ? null : section.key)}
                                 className={`w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors`}
                             >
@@ -608,7 +532,7 @@ const EvolucaoSessao = () => {
                                     <div className="text-left">
                                         <p className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
                                             {section.titulo}
-                                            {soapValues[section.key]?.trim() && (
+                                            {formValues[section.key]?.trim() && (
                                                 <span className={`material-symbols-outlined text-sm ${section.corText}`}>check_circle</span>
                                             )}
                                         </p>
@@ -616,8 +540,8 @@ const EvolucaoSessao = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    {soapValues[section.key]?.trim() && (
-                                        <span className="text-[10px] font-bold text-slate-400">{soapValues[section.key].length} chars</span>
+                                    {formValues[section.key]?.trim() && (
+                                        <span className="text-[10px] font-bold text-slate-400">{formValues[section.key].length} chars</span>
                                     )}
                                     <span className={`material-symbols-outlined text-slate-400 transition-transform ${secaoAberta === section.key ? 'rotate-180' : ''}`}>expand_more</span>
                                 </div>
@@ -638,15 +562,17 @@ const EvolucaoSessao = () => {
                                     </div>
                                 )}
                                 {modoEdicao ? (
-                                    <textarea
-                                        value={soapValues[section.key]}
-                                        onChange={e => soapSetters[section.key](e.target.value)}
-                                        className="w-full text-[13px] leading-relaxed text-slate-700 dark:text-slate-300 bg-white/70 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 rounded-xl outline-none resize-none min-h-[160px] p-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all print:border-none print:p-2 print:text-black"
-                                        placeholder={section.placeholder}
-                                    />
+                                    <>
+                                        <textarea
+                                            {...register(section.key)}
+                                            className={`w-full text-[13px] leading-relaxed text-slate-700 dark:text-slate-300 bg-white/70 dark:bg-slate-800/50 border rounded-xl outline-none resize-none min-h-[160px] p-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all print:border-none print:p-2 print:text-black ${errors[section.key] ? 'border-rose-300' : 'border-slate-200/50 dark:border-slate-700/50'}`}
+                                            placeholder={section.placeholder}
+                                        />
+                                        {errors[section.key] && <p className="mt-1 text-[10px] text-rose-500 font-bold uppercase">{errors[section.key].message}</p>}
+                                    </>
                                 ) : (
                                     <div className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap p-4 bg-white/70 dark:bg-slate-800/50 rounded-xl min-h-[80px] border border-slate-200/50 print:border-none print:p-2 print:text-black">
-                                        {soapValues[section.key] || <span className="text-slate-400 italic">Não preenchido</span>}
+                                        {formValues[section.key] || <span className="text-slate-400 italic">Não preenchido</span>}
                                     </div>
                                 )}
                             </div>
@@ -674,13 +600,14 @@ const EvolucaoSessao = () => {
                             </div>
                             <div className="flex gap-2">
                                 {humores.map(h => (
-                                    <button key={h.v} onClick={() => modoEdicao && setHumorPaciente(h.v)}
-                                        className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition-all ${!modoEdicao ? 'cursor-default' : 'cursor-pointer'} ${humorPaciente === h.v ? h.color : 'border-slate-200 dark:border-slate-700 text-slate-400'}`}>
+                                    <button key={h.v} type="button" onClick={() => modoEdicao && setValue('humorPaciente', h.v)}
+                                        className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition-all ${!modoEdicao ? 'cursor-default' : 'cursor-pointer'} ${formValues.humorPaciente === h.v ? h.color : 'border-slate-200 dark:border-slate-700 text-slate-400'}`}>
                                         <span className="material-symbols-outlined text-2xl">{h.icon}</span>
                                         <span className="text-[9px] font-bold uppercase tracking-wider">{h.label}</span>
                                     </button>
                                 ))}
                             </div>
+                            {errors.humorPaciente && <p className="mt-2 text-[10px] text-rose-500 font-bold uppercase">{errors.humorPaciente.message}</p>}
                         </div>
                         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
                             <div className="flex items-center gap-2 mb-4">
@@ -694,12 +621,13 @@ const EvolucaoSessao = () => {
                                     { v: 'alto', label: 'Alto', color: 'text-orange-600 bg-orange-50 border-orange-400' },
                                     { v: 'critico', label: 'Crítico', color: 'text-red-600 bg-red-50 border-red-400' },
                                 ].map(r => (
-                                    <button key={r.v} onClick={() => modoEdicao && setNivelRisco(r.v)}
-                                        className={`flex-1 py-3 rounded-xl text-xs font-bold border-2 transition-all ${!modoEdicao ? 'cursor-default' : 'cursor-pointer'} ${nivelRisco === r.v ? r.color : 'border-slate-200 dark:border-slate-700 text-slate-400'}`}>
+                                    <button key={r.v} type="button" onClick={() => modoEdicao && setValue('nivelRisco', r.v)}
+                                        className={`flex-1 py-3 rounded-xl text-xs font-bold border-2 transition-all ${!modoEdicao ? 'cursor-default' : 'cursor-pointer'} ${formValues.nivelRisco === r.v ? r.color : 'border-slate-200 dark:border-slate-700 text-slate-400'}`}>
                                         {r.label}
                                     </button>
                                 ))}
                             </div>
+                            {errors.nivelRisco && <p className="mt-2 text-[10px] text-rose-500 font-bold uppercase">{errors.nivelRisco.message}</p>}
                         </div>
                     </div>
 
@@ -711,20 +639,20 @@ const EvolucaoSessao = () => {
                                 <h2 className="font-bold text-slate-900 dark:text-white">Técnicas Aplicadas</h2>
                             </div>
                             <div className="space-y-2 mb-4 max-h-[220px] overflow-y-auto">
-                                {tecnicas.filter(t => modoEdicao || t.checked).map(t => (
+                                {(formValues.tecnicas || []).filter(t => modoEdicao || t.checked).map(t => (
                                     <label key={t.id} className={`flex items-center gap-3 p-3 rounded-xl transition-all border ${modoEdicao ? 'cursor-pointer' : 'cursor-default'} ${t.checked ? 'bg-primary/5 border-primary/20' : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
                                         <input type="checkbox" checked={t.checked} onChange={() => toggleTecnica(t.id)} className="size-5 rounded accent-primary" disabled={!modoEdicao} />
                                         <span className={`text-sm font-medium ${t.checked ? 'text-primary' : 'text-slate-600 dark:text-slate-400'}`}>{t.nome}</span>
                                     </label>
                                 ))}
-                                {!modoEdicao && tecnicas.filter(t => t.checked).length === 0 && (
+                                {!modoEdicao && (formValues.tecnicas || []).filter(t => t.checked).length === 0 && (
                                     <p className="text-sm text-slate-400 italic p-3">Nenhuma técnica</p>
                                 )}
                             </div>
                             {modoEdicao && (
                                 <div className="flex gap-2">
                                     <input className="flex-1 h-9 px-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none placeholder:text-slate-400" placeholder="+ técnica..." value={novaTecnica} onChange={e => setNovaTecnica(e.target.value)} onKeyDown={e => e.key === 'Enter' && adicionarTecnica()} />
-                                    <button onClick={adicionarTecnica} className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors">Adicionar</button>
+                                    <button type="button" onClick={adicionarTecnica} className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors">Adicionar</button>
                                 </div>
                             )}
                         </div>
@@ -738,10 +666,10 @@ const EvolucaoSessao = () => {
                             </div>
                             <p className="text-[10px] text-slate-400 italic mb-3">Notas privadas — não aparecem em laudos ou relatórios.</p>
                             {modoEdicao ? (
-                                <textarea className="w-full px-4 py-3 text-sm text-slate-700 dark:text-slate-300 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-500/20 rounded-xl outline-none resize-none placeholder:text-slate-400 min-h-[140px]" placeholder="Anotações para supervisão ou próximos passos..." value={observacoes} onChange={e => setObservacoes(e.target.value)} />
+                                <textarea {...register('observacoes')} className="w-full px-4 py-3 text-sm text-slate-700 dark:text-slate-300 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-500/20 rounded-xl outline-none resize-none placeholder:text-slate-400 min-h-[140px]" placeholder="Anotações para supervisão ou próximos passos..." />
                             ) : (
                                 <div className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 bg-amber-50/50 border border-amber-200 rounded-xl min-h-[80px] whitespace-pre-wrap">
-                                    {observacoes || <span className="text-slate-400 italic">Sem observações</span>}
+                                    {formValues.observacoes || <span className="text-slate-400 italic">Sem observações</span>}
                                 </div>
                             )}
                         </div>
@@ -755,32 +683,41 @@ const EvolucaoSessao = () => {
                         <h4 className="font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                             <span className="material-symbols-outlined text-rose-500">bar_chart</span> Progresso SOAP
                         </h4>
-                        <div className="mb-3">
-                            <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                                <span>{preenchimentoSOAP}/4 seções</span>
-                                <span>{progressoSOAP}%</span>
-                            </div>
-                            <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-gradient-to-r from-rose-400 to-pink-500 rounded-full transition-all" style={{ width: `${progressoSOAP}%` }}></div>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2 mt-4">
-                            {soapSections.map(s => (
-                                <button
-                                    key={s.key}
-                                    onClick={() => setSecaoAberta(s.key)}
-                                    className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${soapValues[s.key]?.trim()
-                                        ? `${s.corBg} ${s.corText} border ${s.corBorder}`
-                                        : secaoAberta === s.key
-                                            ? 'bg-primary/10 text-primary border border-primary/20'
-                                            : 'bg-slate-50 dark:bg-slate-800 text-slate-400 border border-transparent hover:border-slate-200'
-                                        }`}
-                                >
-                                    <span className={`text-lg font-black`}>{s.letra}</span>
-                                    <span className="text-[8px] font-bold uppercase">{s.titulo}</span>
-                                </button>
-                            ))}
-                        </div>
+                        {(() => {
+                            const preenchimento = soapSections.filter(s => formValues[s.key]?.trim().length > 0).length;
+                            const progresso = Math.round((preenchimento / 4) * 100);
+                            return (
+                                <>
+                                    <div className="mb-3">
+                                        <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                            <span>{preenchimento}/4 seções</span>
+                                            <span>{progresso}%</span>
+                                        </div>
+                                        <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                            <div className="h-full bg-gradient-to-r from-rose-400 to-pink-500 rounded-full transition-all" style={{ width: `${progresso}%` }}></div>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-4 gap-2 mt-4">
+                                        {soapSections.map(s => (
+                                            <button
+                                                key={s.key}
+                                                type="button"
+                                                onClick={() => setSecaoAberta(s.key)}
+                                                className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${formValues[s.key]?.trim()
+                                                    ? `${s.corBg} ${s.corText} border ${s.corBorder}`
+                                                    : secaoAberta === s.key
+                                                        ? 'bg-primary/10 text-primary border border-primary/20'
+                                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-400 border border-transparent hover:border-slate-200'
+                                                    }`}
+                                            >
+                                                <span className={`text-lg font-black`}>{s.letra}</span>
+                                                <span className="text-[8px] font-bold uppercase">{s.titulo}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            );
+                        })()}
                     </div>
 
                     {/* Info da Sessão - Sempre visível, mas com estilos diferentes */}
@@ -794,7 +731,7 @@ const EvolucaoSessao = () => {
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Data e Hora</p>
-                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{formatarDataExibicao(dataHora)}</p>
+                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{new Date(formValues.dataHora).toLocaleString('pt-BR')}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -803,7 +740,7 @@ const EvolucaoSessao = () => {
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tipo</p>
-                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{tipoAtendimento}</p>
+                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{formValues.tipoAtendimento}</p>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
@@ -813,7 +750,7 @@ const EvolucaoSessao = () => {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Duração</p>
-                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{duracaoSessao} min</p>
+                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{formValues.duracaoSessao} min</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -822,7 +759,7 @@ const EvolucaoSessao = () => {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Número</p>
-                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Sessão #{numeroSessao || '-'}</p>
+                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Sessão #{formValues.numeroSessao || '-'}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -831,22 +768,23 @@ const EvolucaoSessao = () => {
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Data e Hora</label>
-                                    <input type="datetime-local" className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" value={dataHora} onChange={e => setDataHora(e.target.value)} />
+                                    <input type="datetime-local" {...register('dataHora')} className={`w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.dataHora ? 'border-rose-300' : 'border-slate-200 dark:border-slate-700'}`} />
+                                    {errors.dataHora && <p className="mt-1 text-[10px] text-rose-500 font-bold">{errors.dataHora.message}</p>}
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Tipo de Atendimento</label>
-                                    <select className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none" value={tipoAtendimento} onChange={e => setTipoAtendimento(e.target.value)}>
+                                    <select {...register('tipoAtendimento')} className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                         {tiposAtendimento.map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Duração (min)</label>
-                                        <input type="number" className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none" value={duracaoSessao} onChange={e => setDuracaoSessao(e.target.value)} />
+                                        <input type="number" {...register('duracaoSessao')} className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Nº Sessão</label>
-                                        <input type="number" className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none" value={numeroSessao} onChange={e => setNumeroSessao(e.target.value)} placeholder="Ex: 12" />
+                                        <input type="number" {...register('numeroSessao')} className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none" placeholder="Ex: 12" />
                                     </div>
                                 </div>
                             </div>
@@ -876,10 +814,10 @@ const EvolucaoSessao = () => {
                         <div className="space-y-3">
                             {modoEdicao ? (
                                 <>
-                                    <button onClick={() => handleSalvar(false)} disabled={salvando} className="w-full py-3.5 bg-primary text-white rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50">
+                                    <button type="button" onClick={handleSubmit((d) => onSubmit(d, false))} disabled={salvando} className="w-full py-3.5 bg-primary text-white rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50">
                                         <span className="material-symbols-outlined text-sm">save</span> Salvar Rascunho
                                     </button>
-                                    <button onClick={() => handleSalvar(true)} disabled={salvando || !pacienteSelecionado} className="w-full py-3.5 bg-rose-500 text-white rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-200/50 hover:scale-[1.02] transition-all disabled:opacity-50">
+                                    <button type="button" onClick={handleSubmit((d) => onSubmit(d, true))} disabled={salvando || !formValues.pacienteId} className="w-full py-3.5 bg-rose-500 text-white rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-200/50 hover:scale-[1.02] transition-all disabled:opacity-50">
                                         <span className="material-symbols-outlined text-sm">check_circle</span> Finalizar Registro
                                     </button>
                                 </>
@@ -961,7 +899,7 @@ const EvolucaoSessao = () => {
 
                 {/* Seções SOAP */}
                 {soapSections.map(section => {
-                    const val = soapValues[section.key];
+                    const val = formValues[section.key];
                     if (!val?.trim()) return null;
                     const colors = {
                         subjetivo: '#3b82f6',

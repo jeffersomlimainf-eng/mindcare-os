@@ -105,13 +105,15 @@ const FeatureTour = ({ isOpen, steps, onComplete, onClose }) => {
                             scale: 1, 
                             y: 0,
                             // Manter o card visível dentro da tela
-                            top: targetRect.top + targetRect.height + 20 > window.innerHeight - 250 
-                                ? targetRect.top - 240 
+                            top: targetRect.top + targetRect.height + 20 > window.innerHeight - 280 
+                                ? Math.max(20, targetRect.top - 260)
                                 : targetRect.top + targetRect.height + 20,
-                            left: Math.min(Math.max(20, targetRect.left + (targetRect.width / 2) - 160), window.innerWidth - 340)
+                            left: window.innerWidth < 640 
+                                ? 20 
+                                : Math.min(Math.max(20, targetRect.left + (targetRect.width / 2) - 160), window.innerWidth - 340)
                         }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="fixed w-[320px] bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-6 pointer-events-auto border border-slate-100 dark:border-slate-700 z-[100000]"
+                        className="fixed w-[calc(100vw-40px)] sm:w-[320px] bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl p-6 pointer-events-auto border border-slate-100 dark:border-slate-700 z-[100000]"
                     >
                         {/* Progress Header */}
                         <div className="flex items-center justify-between mb-4">
@@ -120,9 +122,9 @@ const FeatureTour = ({ isOpen, steps, onComplete, onClose }) => {
                             </span>
                             <button 
                                 onClick={onClose}
-                                className="size-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center text-slate-400 transition-all"
+                                className="size-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center text-slate-400 transition-all active:scale-90"
                             >
-                                <span className="material-symbols-outlined text-lg">close</span>
+                                <span className="material-symbols-outlined text-xl">close</span>
                             </button>
                         </div>
 

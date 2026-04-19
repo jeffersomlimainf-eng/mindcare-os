@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
@@ -16,6 +16,7 @@ import { AtestadoProvider } from './contexts/AtestadoContext';
 import { AnamneseProvider } from './contexts/AnamneseContext';
 import { EncaminhamentoProvider } from './contexts/EncaminhamentoContext';
 import { TcleProvider } from './contexts/TcleContext';
+import { logger } from './utils/logger';
 
 /**
  * ErrorBoundary Global para capturar falhas críticas e oferecer recuperação.

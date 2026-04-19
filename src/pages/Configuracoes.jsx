@@ -196,7 +196,7 @@ const Configuracoes = () => {
         }
 
         setChangingPassword(true);
-        const result = await changePassword(null, novaSenha); // Passed null for currentPassword
+        const result = await changePassword(passwordData.senhaAtual, novaSenha); 
         setChangingPassword(false);
 
         if (result.success) {
@@ -708,6 +708,21 @@ const Configuracoes = () => {
                 </div>
                 <div className="p-4 md:p-8 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                <span className="material-symbols-outlined text-sm">lock_open</span>
+                                Senha Atual
+                            </label>
+                            <input
+                                type="password"
+                                autoComplete="current-password"
+                                value={passwordData.senhaAtual}
+                                onChange={(e) => setPasswordData({ ...passwordData, senhaAtual: e.target.value })}
+                                className="w-full h-14 px-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 text-slate-900 dark:text-slate-100 font-bold outline-none transition-all shadow-sm"
+                                placeholder="Digite sua senha atual por segurança..."
+                            />
+                        </div>
+
                         {[
                             { label: 'Nova Senha', key: 'novaSenha', icon: 'key' },
                             { label: 'Confirmar Nova Senha', key: 'confirmarSenha', icon: 'key' },

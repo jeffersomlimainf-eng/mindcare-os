@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import NovoDocumentoModal from '../components/NovoDocumentoModal';
@@ -19,6 +19,10 @@ import { checkAIAccess, trackAIConsumption } from '../utils/authMiddleware';
 import { formatDateLocal } from '../utils/date';
 import { safeRender } from '../utils/render';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
+import { useDashboardWeather } from '../hooks/useDashboardWeather';
+import { useDashboardStats } from '../hooks/useDashboardStats';
+import { useDashboardTasks } from '../hooks/useDashboardTasks';
+import { useDashboardAgenda } from '../hooks/useDashboardAgenda';
 import { INSIGHTS_PSICOLOGICOS } from '../data/insights';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
@@ -91,6 +95,21 @@ const ClockWidget = React.memo(({ dadosClima, cidade, loadingClima, editandoCida
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    
+    // Contextos
+    const { patients } = usePatients();
+    const { appointments, agendaSettings } = useAppointments();
+    const { evolutions } = useEvolutions();
+    const { laudos } = useLaudos();
+    const { atestados } = useAtestados();
+    const { declaracoes } = useDeclaracoes();
+    const { anamneses } = useAnamneses();
+    const { encaminhamentos } = useEncaminhamentos();
+    const { user, updateUser } = useUser();
+    const { getContasVencidas } = useFinance();
+    const { tcles } = useTcles();
+
+    // Notas Rápidas
     const [notas, setNotas] = useState(() => {
         const salva = localStorage.getItem('Meu Sistema PSI_dashboard_notes_v2');
         if (salva) {
@@ -111,129 +130,10 @@ const Dashboard = () => {
     }, [notas]);
 
     const ativoNota = notas.find(n => n.id === ativaNotaId) || notas[0] || { texto: '' };
-    const { patients } = usePatients();
     const [loadingInsight, setLoadingInsight] = useState(false);
     
-    // Estados do Clima Tempo
-    const [cidade, setCidade] = useState(() => localStorage.getItem('dashboard_clima_cidade') || 'São Paulo, SP');
-    const [dadosClima, setDadosClima] = useState({ temp: 26, condicao: 'Ensolarado', icone: 'wb_sunny', umidade: 60, vento: 12 });
-    const [loadingClima, setLoadingClima] = useState(false);
-    const [editandoCidade, setEditandoCidade] = useState(false);
-
-    useEffect(() => {
-        if (cidade) localStorage.setItem('dashboard_clima_cidade', cidade);
-    }, [cidade]);
-    
-    // PERF-04 FIX: hora movida para ClockWidget isolado — Dashboard não re-renderiza mais a cada 1 segundo
-
-    const fetchClima = useCallback(async (cidadeBusca = cidade, coords = null) => {
-        if (!cidadeBusca && !coords) return;
-        setLoadingClima(true);
-        try {
-            let lat, lon, nomeCidade;
-
-            if (coords) {
-                lat = coords.lat;
-                lon = coords.lon;
-                
-                // Reverse Geocoding para pegar o nome da cidade
-                try {
-                    const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`, {
-                        headers: { 'User-Agent': 'Meu Sistema PSIOS/1.0' }
-                    });
-                    const revData = await revRes.json();
-                    nomeCidade = revData.address.city || revData.address.town || revData.address.village || revData.address.suburb || "Localidade Atual";
-                    setCidade(nomeCidade);
-                    localStorage.setItem('dashboard_clima_cidade', nomeCidade);
-                } catch (err) {
-                    logger.error("Erro no reverse geocoding:", err);
-                }
-            } else {
-                const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cidadeBusca)}&format=json`, {
-                    headers: { 'User-Agent': 'Meu Sistema PSIOS/1.0' }
-                });
-                const geoData = await geoRes.json();
-                if (geoData && geoData.length > 0) {
-                    lat = geoData[0].lat;
-                    lon = geoData[0].lon;
-                }
-            }
-
-            if (lat && lon) {
-                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`);
-                const weatherData = await weatherRes.json();
-                
-                if (weatherData.current_weather) {
-                    const current = weatherData.current_weather;
-                    const horaAtual = new Date().toISOString().substring(0, 13) + ":00";
-                    const indexHora = weatherData.hourly?.time.indexOf(horaAtual) ?? -1;
-                    const umidade = indexHora >= 0 ? weatherData.hourly.relative_humidity_2m[indexHora] : 60;
-
-                    const code = current.weathercode;
-                    let condicao = 'Ensolarado';
-                    let icone = 'wb_sunny';
-                    
-                    if (code === 0) { condicao = 'Ensolarado'; icone = 'wb_sunny'; }
-                    else if ([1, 2, 3].includes(code)) { condicao = 'Parcialmente Nublado'; icone = 'partly_cloudy_day'; }
-                    else if ([45, 48].includes(code)) { condicao = 'Névoa'; icone = 'foggy'; }
-                    else if ([51, 53, 55, 61, 63, 65].includes(code)) { condicao = 'Chuva'; icone = 'rainy'; }
-                    else if ([95].includes(code)) { condicao = 'Tempestade'; icone = 'thunderstorm'; }
-
-                    setDadosClima({
-                        temp: Math.round(current.temperature),
-                        condicao,
-                        icone,
-                        umidade,
-                        vento: Math.round(current.windspeed)
-                    });
-                }
-            }
-        } catch (e) {
-            logger.error("Erro ao buscar clima:", e);
-        } finally {
-            setLoadingClima(false);
-        }
-    }, [cidade]);
-
-    const handleAutoLocalizar = useCallback(() => {
-        if (!navigator.geolocation) {
-            return;
-        }
-
-        setLoadingClima(true);
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const { latitude, longitude } = pos.coords;
-                fetchClima(null, { lat: latitude, lon: longitude });
-            },
-            (err) => {
-                logger.error("Erro ao obter localização:", err);
-                setLoadingClima(false);
-                // Fallback silencioso para São Paulo se for o primeiro acesso e der erro
-                if (!localStorage.getItem('dashboard_clima_cidade')) {
-                    fetchClima('São Paulo, SP');
-                }
-            },
-            { timeout: 10000 }
-        );
-    }, [fetchClima]);
-
-    useEffect(() => {
-        const salva = localStorage.getItem('dashboard_clima_cidade');
-        if (!salva) {
-            handleAutoLocalizar();
-        } else {
-            fetchClima(salva);
-        }
-    }, []); // Executa apenas no mount inicial
-
-    // Sincroniza clima quando a cidade muda manualmente via input
-    useEffect(() => {
-        const salva = localStorage.getItem('dashboard_clima_cidade');
-        if (salva && cidade !== salva) {
-            fetchClima(cidade);
-        }
-    }, [cidade, fetchClima]);
+    // Hooks Personalizados
+    const weather = useDashboardWeather();
     
     const textareaRef = useRef(null);
 
@@ -348,42 +248,24 @@ Retorne SEMPRE no seguinte formato (Markdown):
             setLoadingInsight(false);
         }
     };
-    const { appointments, agendaSettings } = useAppointments();
-    const { evolutions } = useEvolutions();
-    const { laudos } = useLaudos();
-    const { atestados } = useAtestados();
-    const { declaracoes } = useDeclaracoes();
-    const { anamneses } = useAnamneses();
-    const { encaminhamentos } = useEncaminhamentos();
-    const { user, updateUser } = useUser();
-    const { getContasVencidas } = useFinance();
-    const { tcles } = useTcles();
+    // Hooks Personalizados
+    const agenda = useDashboardAgenda({ appointments, agendaSettings });
+    const stats = useDashboardStats({ evolutions, laudos, atestados, declaracoes, anamneses, encaminhamentos, patients });
+    const tasks = useDashboardTasks({ 
+        atendimentosHoje: agenda.atendimentosHoje, 
+        evolutions, 
+        getContasVencidas, 
+        patients, 
+        tcles, 
+        proximaSessao: agenda.proximaSessao, 
+        appointments 
+    });
+
     const [modalDoc, setModalDoc] = useState(false);
-    const [tarefasManuais, setTarefasManuais] = useState(() => {
-        try {
-            const salvas = localStorage.getItem('tarefasManuais');
-            return salvas ? JSON.parse(salvas) : [];
-        } catch (e) { return []; }
-    });
-    const [completadas, setCompletadas] = useState(() => {
-        try {
-            const salvas = localStorage.getItem('tarefasCompletadas');
-            return salvas ? JSON.parse(salvas) : {};
-        } catch (e) { return {}; }
-    });
     const [novaTarefa, setNovaTarefa] = useState('');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [helpOpen, setHelpOpen] = useState(false);
     const [tipoModalDoc, setTipoModalDoc] = useState(null);
-
-
-    useEffect(() => {
-        localStorage.setItem('tarefasManuais', JSON.stringify(tarefasManuais));
-    }, [tarefasManuais]);
-
-    useEffect(() => {
-        localStorage.setItem('tarefasCompletadas', JSON.stringify(completadas));
-    }, [completadas]);
 
     // Fechar modais locais do Dashboard com Esc
     useGlobalShortcuts({
@@ -394,63 +276,6 @@ Retorne SEMPRE no seguinte formato (Markdown):
         },
         priority: 1
     });
-
-    const totalDocumentos = (evolutions?.length || 0) + (laudos?.length || 0) + (atestados?.length || 0) + (declaracoes?.length || 0) + (anamneses?.length || 0) + (encaminhamentos?.length || 0);
-
-    // PERF-06 FIX: memoizar para não recriar arrays em cada render
-    const todosDocumentosRecentes = useMemo(() => [
-        ...(evolutions || []).map(ev => ({
-            id: ev.id,
-            type: 'evolucao',
-            name: `Evolução_${(ev.pacienteNome || '').split(' ')[0]}.pdf`,
-            patient: ev.pacienteNome,
-            status: ev.status || 'Finalizado',
-            statusColor: 'bg-green-100 text-green-700',
-            date: ev.criadoEm ? new Date(ev.criadoEm).toLocaleDateString('pt-BR') : 'Hoje',
-            icon: 'clinical_notes'
-        })),
-        ...(laudos || []).map(doc => ({
-            id: doc.id,
-            type: 'laudo',
-            name: `Laudo_${(doc.pacienteNome || '').split(' ')[0]}.pdf`,
-            patient: doc.pacienteNome,
-            status: doc.status || 'Finalizado',
-            statusColor: doc.status === 'Finalizado' ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary',
-            date: doc.criadoEm ? new Date(doc.criadoEm).toLocaleDateString('pt-BR') : 'Hoje',
-            icon: 'description'
-        })),
-        ...(atestados || []).map(doc => ({
-            id: doc.id,
-            type: 'atestado',
-            name: `Atestado_${(doc.pacienteNome || '').split(' ')[0]}.pdf`,
-            patient: doc.pacienteNome,
-            status: doc.status || 'Finalizado',
-            statusColor: doc.status === 'Finalizado' ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary',
-            date: doc.criadoEm ? new Date(doc.criadoEm).toLocaleDateString('pt-BR') : 'Hoje',
-            icon: 'medical_information'
-        }))
-    ].sort((a, b) => {
-        const dateA = a.date === 'Hoje' ? new Date() : new Date(a.date.split('/').reverse().join('-') || a.date);
-        const dateB = b.date === 'Hoje' ? new Date() : new Date(b.date.split('/').reverse().join('-') || b.date);
-        return dateB - dateA;
-    }).slice(0, 5), [evolutions, laudos, atestados]);
-
-
-    // PERF-06 FIX: memoizar stats e quickActions (evitar recriar arrays a cada render)
-    const stats = useMemo(() => [
-        { title: 'Total de Prontuários', value: totalDocumentos.toLocaleString(), trend: '+12.5%', icon: 'folder_shared', color: 'text-primary', bgColor: 'bg-primary/10', rota: '/prontuarios' },
-        { title: 'Pacientes Ativos', value: (patients || []).length.toString(), trend: 'Total', icon: 'group', color: 'text-amber-500', bgColor: 'bg-amber-500/10', rota: '/pacientes' },
-        { title: 'Laudos Emitidos', value: laudos.length.toString(), trend: '+5.2%', icon: 'history_edu', color: 'text-emerald-500', bgColor: 'bg-emerald-500/10', rota: '/laudos' },
-        { title: 'Declarações', value: declaracoes.length.toString(), trend: '-2.4%', icon: 'assignment_ind', color: 'text-indigo-500', bgColor: 'bg-indigo-500/10', rota: '/declaracoes' },
-    ], [totalDocumentos, patients, laudos, declaracoes]);
-
-    const quickActions = useMemo(() => [
-        { title: 'Criar Novo Laudo', desc: 'Relatório psicológico', icon: 'article', color: 'text-primary', bgColor: 'bg-primary/10', count: laudos.length, path: '/laudos/novo', categoria: 'Laudos' },
-        { title: 'Nova Declaração', desc: 'Comprovante de comparecimento', icon: 'verified', color: 'text-emerald-500', bgColor: 'bg-emerald-100', count: declaracoes.length, path: '/declaracoes/novo', categoria: 'Declarações' },
-        { title: 'Emitir Atestado', desc: 'Certificado clínico', icon: 'medical_information', color: 'text-orange-500', bgColor: 'bg-orange-100', count: atestados.length, path: '/atestados/novo', categoria: 'Atestados' },
-        { title: 'Ficha de Anamnese', desc: 'Formulário detalhado', icon: 'patient_list', color: 'text-purple-500', bgColor: 'bg-purple-100', count: anamneses.length, path: '/anamneses/novo', categoria: 'Anamneses' },
-        { title: 'Novo Encaminhamento', desc: 'Encaminhar paciente', icon: 'send', color: 'text-sky-500', bgColor: 'bg-sky-100', count: encaminhamentos.length, path: '/encaminhamentos/novo', categoria: 'Encaminhamentos' },
-    ], [laudos.length, declaracoes.length, atestados.length, anamneses.length, encaminhamentos.length]);
 
     // Jarvis Mode: Alerta de Risco Clínico
     const pacientesEmRisco = useMemo(() => {
@@ -465,227 +290,6 @@ Retorne SEMPRE no seguinte formato (Markdown):
         });
         return Object.values(unicos);
     }, [evolutions]);
-
-    // Lógica para Próxima Sessão e Agenda de Hoje
-    const hojeISO = useMemo(() => formatDateLocal(new Date()), []);
-
-    const dataHojeFormatada = useMemo(() => {
-        const d = new Date();
-        const meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-        return `${String(d.getDate()).padStart(2, '0')} ${meses[d.getMonth()]}`;
-    }, []);
-    const atendimentosHoje = useMemo(() => {
-        return (appointments || [])
-            .filter(a => a.data === hojeISO)
-            .sort((a, b) => a.timeStart - b.timeStart);
-    }, [appointments, hojeISO]);
-
-    const proximaSessao = useMemo(() => {
-        try {
-            const agora = new Date();
-            const horaAtual = agora.getHours() + agora.getMinutes() / 60;
-            const proxima = atendimentosHoje.find(a => a.timeStart + a.duracao/60 > horaAtual && a.status !== 'cancelado') || atendimentosHoje[0];
-            
-            if (!proxima) {
-                logger.log('[Dashboard] Nenhuma próxima sessão identificada para hoje.');
-            }
-            return proxima;
-        } catch (error) {
-            logger.error('[Dashboard] Erro ao calcular próxima sessão:', error);
-            return null;
-        }
-    }, [atendimentosHoje]);
-
-    const tempoRestante = useMemo(() => {
-        try {
-            if (!proximaSessao) return null;
-            const agora = new Date();
-            const horaAtual = agora.getHours() + agora.getMinutes() / 60;
-            const diff = (proximaSessao.timeStart - horaAtual) * 60;
-            if (diff < 0) {
-                const fimSessao = proximaSessao.timeStart + proximaSessao.duracao/60;
-                if (horaAtual < fimSessao) return 'Em andamento';
-                return 'Sessão encerrada';
-            }
-            if (diff > 60) {
-                const horas = Math.floor(diff / 60);
-                const mins = Math.round(diff % 60);
-                return `${horas}h ${mins}min`;
-            }
-            return `${Math.round(diff)} min`;
-        } catch (error) {
-            logger.error('[Dashboard] Erro ao calcular tempo restante:', error);
-            return 'Erro no cálculo';
-        }
-    }, [proximaSessao]);
-
-    const pendenciasDinâmicas = useMemo(() => {
-        const automáticas = [];
-        
-        // 1. Verificar Evoluções faltantes para sessões finalizadas de hoje
-        atendimentosHoje.forEach(a => {
-            if (a.status === 'finalizado') {
-                const temEvolucao = (evolutions || []).some(ev => 
-                    ev.pacienteId === a.pacienteId && 
-                    ev.criadoEm && ev.criadoEm.startsWith(hojeISO)
-                );
-                if (!temEvolucao) {
-                    automáticas.push({
-                        id: `ev-${a.id}`,
-                        text: `Escrever evolução de ${a.paciente}`,
-                        type: 'evolucao',
-                        rota: '/prontuarios/evolucao/novo',
-                        state: { pacienteId: a.pacienteId }
-                    });
-                }
-            }
-        });
-
-        // 2. Contas a Receber Vencidas (Financeiro)
-        try {
-            const vencidas = getContasVencidas();
-            vencidas.filter(v => v.tipo === 'receita').forEach(v => {
-                automáticas.push({
-                    id: `fin-${v.id}`,
-                    text: `Cobrar ${v.descricao || 'Paciente'} (R$ ${Math.abs(v.valor)})`,
-                    type: 'financeiro',
-                    rota: '/financeiro'
-                });
-            });
-        } catch (e) {}
-
-        // 3. Aniversariantes de Hoje
-        (patients || []).forEach(p => {
-            if (p.dataNascimento) {
-                const [, mes, dia] = p.dataNascimento.split('-');
-                const hoje = new Date();
-                if (parseInt(mes) === hoje.getMonth() + 1 && parseInt(dia) === hoje.getDate()) {
-                    automáticas.push({
-                        id: `niver-${p.id}`,
-                        text: `Parabéns para ${p.nome} 🎂`,
-                        type: 'niver'
-                    });
-                }
-            }
-        });
-
-        // 4. Falta TCLE (Se for novo paciente)
-        (patients || []).filter(p => {
-            const criado = new Date(p.criadoEm || Date.now());
-            const diffDias = (new Date() - criado) / (1000 * 60 * 60 * 24);
-            return diffDias <= 7; // Criado nos últimos 7 dias
-        }).forEach(p => {
-            const temTcle = (tcles || []).some(t => t.pacienteId === p.id);
-            if (!temTcle) {
-                automáticas.push({
-                    id: `tcle-${p.id}`,
-                    text: `Emitir TCLE para ${p.nome}`,
-                    type: 'tcle',
-                    rota: '/tcles/novo',
-                    state: { pacienteId: p.id }
-                });
-            }
-        });
-
-        // 5. Alerta de Burnout (Agenda Cheia)
-        if (atendimentosHoje.length >= 6) {
-            automáticas.unshift({
-                id: 'burnout-alert',
-                text: `⚠️ Alerta: Agenda Cheia hoje (${atendimentosHoje.length} sessões). Lembre-se de respirar!`,
-                type: 'alerta'
-            });
-        }
-
-        // 6. Preparação (Warm-up)
-        if (proximaSessao) {
-            automáticas.push({
-                id: `warmup-${proximaSessao.id}`,
-                text: `Revisar notas da sessão de ${proximaSessao.paciente} 📖`,
-                type: 'warmup',
-                rota: `/prontuarios/paciente/${proximaSessao.pacienteId || proximaSessao.paciente}`
-            });
-        }
-
-        // 7. Prevenção de Abandono (Churn)
-        // 7. Prevenção de Abandono (Churn) — PERF-03 FIX: O(n²) → O(n) via Map pré-indexado
-        try {
-            const trintaDiasAtras = new Date();
-            trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
-            const hojeDate = new Date();
-
-            // Pré-indexar appointments por pacienteId para lookup O(1)
-            const appointmentMap = new Map();
-            (appointments || []).forEach(a => {
-                const key = a.pacienteId || a.paciente;
-                if (!appointmentMap.has(key)) appointmentMap.set(key, []);
-                appointmentMap.get(key).push(a);
-            });
-
-            (patients || []).forEach(p => {
-                const consultasPaciente = appointmentMap.get(p.id) || appointmentMap.get(p.nome) || [];
-                const passadas = consultasPaciente.filter(a => new Date(a.data) < hojeDate);
-                const futuras = consultasPaciente.filter(a => new Date(a.data) >= hojeDate);
-
-                if (passadas.length > 0 && futuras.length === 0) {
-                    const maiorData = Math.max(...passadas.map(a => new Date(a.data).getTime()));
-                    if (maiorData && new Date(maiorData) >= trintaDiasAtras) {
-                        automáticas.push({
-                            id: `churn-${p.id}`,
-                            text: `Remarcar ${p.nome} (Sem sessões futuras)`,
-                            type: 'churn',
-                            rota: `/prontuarios/paciente/${p.id}`
-                        });
-                    }
-                }
-            });
-        } catch (e) {}
-
-        return automáticas;
-    }, [atendimentosHoje, evolutions, hojeISO, getContasVencidas, patients, tcles, proximaSessao, appointments]);
-
-    const insightsAgenda = useMemo(() => {
-        const hInicio = agendaSettings?.hInicio || 8;
-        const hFim = agendaSettings?.hFim || 18;
-        const horasDia = hFim - hInicio;
-        const totalVagasSemana = horasDia * 5;
-
-        const hojeDate = new Date();
-        const diaSemana = hojeDate.getDay();
-        const diffSegunda = hojeDate.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1);
-        const segunda = new Date(hojeDate);
-        segunda.setDate(diffSegunda);
-        segunda.setHours(0, 0, 0, 0);
-
-        const sexta = new Date(segunda);
-        sexta.setDate(segunda.getDate() + 4);
-        sexta.setHours(23, 59, 59, 999);
-
-        const ocupados = (appointments || []).filter(a => {
-            if (a.status === 'cancelado' || a.status === 'faltou') return false;
-            const d = new Date(a.data);
-            return d >= segunda && d <= sexta;
-        }).length;
-
-        const vagasSemana = Math.max(0, totalVagasSemana - ocupados);
-        const percentualOcupado = totalVagasSemana > 0 ? Math.round((ocupados / totalVagasSemana) * 100) : 0;
-
-        return {
-            vagasSemana,
-            percentualOcupado,
-            horasExpediente: `${hInicio}h-${hFim}h`
-        };
-    }, [appointments, agendaSettings]);
-
-    const todasPendencias = useMemo(() => {
-        const ordem = { alerta: 1, warmup: 2, niver: 3, evolucao: 4, financeiro: 5, tcle: 6, churn: 7, manual: 8 };
-        return [
-            ...pendenciasDinâmicas.map(p => ({ ...p, completed: completadas[p.id] || false })),
-            ...tarefasManuais.map(p => ({ ...p, completed: completadas[p.id] || false }))
-        ].sort((a, b) => {
-            if (a.completed !== b.completed) return a.completed ? 1 : -1;
-            return (ordem[a.type] || 99) - (ordem[b.type] || 99);
-        });
-    }, [pendenciasDinâmicas, tarefasManuais, completadas]);
 
     const formatarHora = (h) => {
         try {
@@ -788,8 +392,8 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             })()}
                         </h2>
                         <p className="text-slate-600 dark:text-slate-300 font-medium text-lg leading-relaxed max-w-2xl">
-                            {atendimentosHoje.length > 0 
-                                ? `Preparei tudo para suas ${atendimentosHoje.length} sessões de hoje. Já organizei os prontuários e rastreei as pendências financeiras. Foco no atendimento, a burocracia é comigo!`
+                            {agenda.atendimentosHoje.length > 0 
+                                ? `Preparei tudo para suas ${agenda.atendimentosHoje.length} sessões de hoje. Já organizei os prontuários e rastreei as pendências financeiras. Foco no atendimento, a burocracia é comigo!`
                                 : "Enquanto você estava off, eu organizei o sistema. Hoje sua agenda está livre, aproveite para revisar prontuários ou planejar sua semana. Pode relaxar, eu cuido do backup!"
                             }
                         </p>
@@ -812,7 +416,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             </SmartTooltip>
                             <div className="px-4 py-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl border border-white dark:border-slate-700 text-xs font-bold text-slate-500 flex items-center gap-2">
                                 <span className="material-symbols-outlined text-primary text-sm">auto_awesome</span>
-                                {atendimentosHoje.length > 0 ? `${atendimentosHoje.length} sessões preparadas` : "Sistema 100% atualizado"}
+                                {agenda.atendimentosHoje.length > 0 ? `${agenda.atendimentosHoje.length} sessões preparadas` : "Sistema 100% atualizado"}
                             </div>
                         </div>
                     </div>
@@ -829,17 +433,17 @@ Retorne SEMPRE no seguinte formato (Markdown):
                         <div className="flex-1 text-left w-full flex flex-col justify-center">
                             <div className="flex flex-col items-start gap-2 mb-3">
                                 <span className="inline-flex px-3 py-1 bg-orange-100 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 rounded-full text-[10px] font-black uppercase tracking-widest">
-                                    Próxima Sessão • {proximaSessao ? formatarHora(proximaSessao.timeStart) : '--:--'}
+                                    Próxima Sessão • {agenda.proximaSessao ? formatarHora(agenda.proximaSessao.timeStart) : '--:--'}
                                 </span>
-                                <span className="text-slate-400 text-[10px] font-medium uppercase tracking-wide">Tempo restante: <span className="text-slate-900 dark:text-white font-black italic">{tempoRestante || '---'}</span></span>
+                                <span className="text-slate-400 text-[10px] font-medium uppercase tracking-wide">Tempo restante: <span className="text-slate-900 dark:text-white font-black italic">{agenda.tempoRestante || '---'}</span></span>
                             </div>
                             
                             <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-1 uppercase tracking-tight">
-                                {safeRender(proximaSessao?.paciente, 'Nenhum agendamento')}
-                                {proximaSessao?.pacienteId && (
+                                {safeRender(agenda.proximaSessao?.paciente, 'Nenhum agendamento')}
+                                {agenda.proximaSessao?.pacienteId && (
                                     <span className="text-slate-400 font-medium ml-2">
                                         , {(() => {
-                                            const p = patients.find(pat => pat.id === proximaSessao.pacienteId);
+                                            const p = patients.find(pat => pat.id === agenda.proximaSessao.pacienteId);
                                             if (!p?.dataNascimento) return '29';
                                             const birth = new Date(p.dataNascimento);
                                             const age = new Date().getFullYear() - birth.getFullYear();
@@ -849,19 +453,19 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                 )}
                             </h2>
                             <p className="text-slate-500 dark:text-slate-400 font-bold text-base mb-6 capitalize">
-                                {proximaSessao?.tipo || 'Sessão'} • {proximaSessao?.duracao || '50'} min
+                                {agenda.proximaSessao?.tipo || 'Sessão'} • {agenda.proximaSessao?.duracao || '50'} min
                             </p>
 
                             <div className="flex flex-wrap justify-start gap-3">
                                 <button 
-                                    onClick={() => proximaSessao && navigate('/prontuarios/evolucao/novo', { state: { pacienteId: proximaSessao.pacienteId || proximaSessao.paciente } })}
+                                    onClick={() => agenda.proximaSessao && navigate('/prontuarios/evolucao/novo', { state: { pacienteId: agenda.proximaSessao.pacienteId || agenda.proximaSessao.paciente } })}
                                     className="h-10 px-6 bg-orange-500 hover:bg-orange-600 text-white rounded-xl flex items-center gap-2 text-sm font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-95"
                                 >
                                     <span className="material-symbols-outlined text-xl">play_circle</span>
                                     Iniciar Sessão
                                 </button>
                                 <button 
-                                    onClick={() => proximaSessao && navigate(`/linha-do-tempo/${proximaSessao.pacienteId?.replace('#', '') || proximaSessao.paciente}`)}
+                                    onClick={() => agenda.proximaSessao && navigate(`/linha-do-tempo/${agenda.proximaSessao.pacienteId?.replace('#', '') || agenda.proximaSessao.paciente}`)}
                                     className="h-10 px-6 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 rounded-xl flex items-center gap-2 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all active:scale-95"
                                 >
                                     Ver Prontuário
@@ -871,13 +475,13 @@ Retorne SEMPRE no seguinte formato (Markdown):
 
                         {/* PERF-04 FIX: ClockWidget isolado — só ele re-renderiza a cada segundo, não o Dashboard inteiro */}
                         <ClockWidget
-                            dadosClima={dadosClima}
-                            cidade={cidade}
-                            loadingClima={loadingClima}
-                            editandoCidade={editandoCidade}
-                            setEditandoCidade={setEditandoCidade}
-                            onCidadeChange={(nova) => setCidade(nova)}
-                            onAutoLocalizar={handleAutoLocalizar}
+                            dadosClima={weather.dadosClima}
+                            cidade={weather.cidade}
+                            loadingClima={weather.loadingClima}
+                            editandoCidade={weather.editandoCidade}
+                            setEditandoCidade={weather.setEditandoCidade}
+                            onCidadeChange={(nova) => weather.setCidade(nova)}
+                            onAutoLocalizar={weather.handleAutoLocalizar}
                         />
                     </div>
 
@@ -885,18 +489,18 @@ Retorne SEMPRE no seguinte formato (Markdown):
                     <div className="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-slate-900 dark:text-white font-black text-lg uppercase tracking-tight">Agenda de Hoje</h3>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 dark:bg-slate-900/50 px-2 py-1 rounded">{dataHojeFormatada}</span>
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 dark:bg-slate-900/50 px-2 py-1 rounded">{agenda.dataHojeFormatada}</span>
                         </div>
 
                         <div className="space-y-6 flex-1 overflow-y-auto max-h-[300px] pr-2 scrollbar-thin">
-                            {atendimentosHoje.map((a, i) => (
+                            {agenda.atendimentosHoje.map((a, i) => (
                                 <div 
                                     key={i} 
                                     onClick={() => navigate(`/prontuarios/paciente/${a.pacienteId?.replace('#', '') || a.paciente}`)}
                                     className="flex gap-4 relative cursor-pointer group/item"
                                 >
                                     {/* Timeline line */}
-                                    {i !== atendimentosHoje.length - 1 && <div className="absolute left-[7px] top-4 bottom-[-24px] w-0.5 bg-slate-100 dark:bg-slate-700"></div>}
+                                    {i !== agenda.atendimentosHoje.length - 1 && <div className="absolute left-[7px] top-4 bottom-[-24px] w-0.5 bg-slate-100 dark:bg-slate-700"></div>}
                                     
                                     <div className={`size-4 rounded-full border-4 border-white dark:border-slate-800 shrink-0 z-10 mt-1 transition-transform group-hover/item:scale-125 ${a.status === 'finalizado' ? 'bg-orange-500' : 'bg-slate-200 dark:bg-slate-600'}`}></div>
                                     
@@ -918,7 +522,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                     </div>
                                 </div>
                             ))}
-                            {atendimentosHoje.length === 0 && (
+                            {agenda.atendimentosHoje.length === 0 && (
                                 <div className="flex flex-col items-center justify-center py-10 opacity-40">
                                     <span className="material-symbols-outlined text-4xl mb-2">event_busy</span>
                                     <p className="text-xs font-bold uppercase">Nenhuma sessão hoje</p>
@@ -964,7 +568,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-1">
-                {stats.map((stat, index) => (
+                {stats.stats.map((stat, index) => (
                     <button
                         key={index}
                         onClick={() => navigate(stat.rota)}
@@ -992,7 +596,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
                     <h3 className="text-slate-900 dark:text-white font-bold text-[10px] uppercase tracking-widest">Ações Rápidas</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {quickActions.map((action, index) => (
+                    {stats.quickActions.map((action, index) => (
                         <button
                             key={index}
                             onClick={() => {
@@ -1041,7 +645,7 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             <form onSubmit={(e) => {
                                 e.preventDefault();
                                 if (!novaTarefa.trim()) return;
-                                setTarefasManuais([...tarefasManuais, { id: `manual-${Date.now()}`, text: novaTarefa.trim(), type: 'manual' }]);
+                                tasks.addTarefaManual(novaTarefa.trim());
                                 setNovaTarefa('');
                             }} className="flex gap-2">
                                 <input 
@@ -1058,10 +662,10 @@ Retorne SEMPRE no seguinte formato (Markdown):
 
                             {/* Lista de Tarefas */}
                             <div className="space-y-3 max-h-[200px] overflow-y-auto scrollbar-thin pr-1">
-                                {todasPendencias.length > 0 ? todasPendencias.map((task) => (
+                                {tasks.todasPendencias.length > 0 ? tasks.todasPendencias.map((task) => (
                                     <div key={task.id} className="flex items-start gap-2 group">
                                         <button 
-                                            onClick={() => setCompletadas(prev => ({ ...prev, [task.id]: !prev[task.id] }))}
+                                            onClick={() => tasks.toggleTarefa(task.id)}
                                             className="mt-0.5 size-4 rounded border border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer hover:border-primary shrink-0"
                                         >
                                             {task.completed && <span className="material-symbols-outlined text-xs text-primary font-bold">check</span>}
@@ -1080,6 +684,14 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                                 </button>
                                             )}
                                         </div>
+                                        {task.type === 'manual' && (
+                                            <button 
+                                                onClick={() => tasks.removeTarefaManual(task.id)}
+                                                className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 rounded transition-all"
+                                            >
+                                                <span className="material-symbols-outlined text-xs">delete</span>
+                                            </button>
+                                        )}
                                     </div>
                                 )) : (
                                     <div className="flex flex-col items-center justify-center py-6 opacity-30">
@@ -1109,8 +721,8 @@ Retorne SEMPRE no seguinte formato (Markdown):
                         <div className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col gap-3">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-2xl font-black text-slate-900 dark:text-white">{insightsAgenda.vagasSemana} <span className="text-xs text-slate-400 font-medium">vagas</span></p>
-                                    <p className="text-[10px] text-slate-500 uppercase tracking-wide">Expediente: {insightsAgenda.horasExpediente}</p>
+                                    <p className="text-2xl font-black text-slate-900 dark:text-white">{agenda.insightsAgenda.vagasSemana} <span className="text-xs text-slate-400 font-medium">vagas</span></p>
+                                    <p className="text-[10px] text-slate-500 uppercase tracking-wide">Expediente: {agenda.insightsAgenda.horasExpediente}</p>
                                 </div>
                                 <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                     <span className="material-symbols-outlined text-2xl">event_available</span>
@@ -1119,15 +731,15 @@ Retorne SEMPRE no seguinte formato (Markdown):
                             
                             {/* Barra de Progresso */}
                             <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-primary transition-all" style={{ width: `${insightsAgenda.percentualOcupado}%` }} />
+                                <div className="h-full bg-primary transition-all" style={{ width: `${agenda.insightsAgenda.percentualOcupado}%` }} />
                             </div>
-                            <p className="text-[10px] text-slate-400 font-medium">{insightsAgenda.percentualOcupado}% da sua agenda preenchida</p>
+                            <p className="text-[10px] text-slate-400 font-medium">{agenda.insightsAgenda.percentualOcupado}% da sua agenda preenchida</p>
 
-                            {insightsAgenda.vagasSemana > 0 && (
+                            {agenda.insightsAgenda.vagasSemana > 0 && (
                                 <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800 flex items-start gap-2">
                                     <span className="material-symbols-outlined text-primary text-sm mt-0.5">lightbulb</span>
                                     <p className="text-xs text-slate-600 dark:text-slate-300">
-                                        Você tem <span className="font-bold text-primary">{insightsAgenda.vagasSemana} horários</span> livres para encaixe. Que tal mandar um lembrete para sua fila de espera?
+                                        Você tem <span className="font-bold text-primary">{agenda.insightsAgenda.vagasSemana} horários</span> livres para encaixe. Que tal mandar um lembrete para sua fila de espera?
                                     </p>
                                 </div>
                             )}
@@ -1334,8 +946,8 @@ Retorne SEMPRE no seguinte formato (Markdown):
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {todosDocumentosRecentes.length > 0 ? (
-                                        todosDocumentosRecentes.map((doc, i) => (
+                                    {stats.todosDocumentosRecentes.length > 0 ? (
+                                        stats.todosDocumentosRecentes.map((doc, i) => (
                                             <tr 
                                                 key={i} 
                                                 onClick={() => handleNavegacaoDocumento(doc, navigate)} 

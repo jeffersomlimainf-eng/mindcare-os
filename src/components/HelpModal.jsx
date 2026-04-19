@@ -11,7 +11,7 @@ const HelpModal = ({ isOpen, onClose, content, onStartTour }) => {
             icon="auto_awesome" 
             maxWidth="max-w-xl"
         >
-            <div className="p-8 space-y-10">
+            <div className="p-4 md:p-8 space-y-8 md:space-y-10">
                 {/* Cabeçalho Educativo */}
                 <div className="relative p-6 rounded-3xl bg-primary/5 border border-primary/10 overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
@@ -46,8 +46,8 @@ const HelpModal = ({ isOpen, onClose, content, onStartTour }) => {
                     {content.steps?.map((step, i) => (
                         <div key={i} className="flex gap-6 group">
                             <div className="relative flex flex-col items-center">
-                                <div className="size-14 shrink-0 rounded-2xl bg-white dark:bg-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
-                                    <span className="material-symbols-outlined text-3xl font-light">{step.icon}</span>
+                                <div className="size-12 md:size-14 shrink-0 rounded-2xl bg-white dark:bg-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
+                                    <span className="material-symbols-outlined text-2xl md:text-3xl font-light">{step.icon}</span>
                                 </div>
                                 {i !== content.steps.length - 1 && (
                                     <div className="w-0.5 h-full bg-slate-100 dark:bg-slate-800 absolute top-14 mt-1" />

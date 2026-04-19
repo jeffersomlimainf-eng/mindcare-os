@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { showToast } from '../components/Toast';
@@ -370,12 +370,25 @@ const SelfRegister = () => {
                                         <span className="material-symbols-outlined text-primary">description</span>
                                         <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">Termo de Consentimento (TCLE)</h4>
                                     </div>
-                                    <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-700 max-h-[160px] overflow-y-auto text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed scrollbar-thin">
-                                        <p className="font-bold mb-2">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO</p>
-                                        <p className="mb-2">Ao continuar com o cadastro, declaro estar ciente de que o atendimento psicológico seguirá as normas do Conselho Federal de Psicologia (CFP).</p>
-                                        <p className="mb-2"><strong>Sigilo Profissional:</strong> Todas as informações compartilhadas em sessão são estritamente confidenciais, resguardados os casos de risco de vida do paciente ou de terceiros, conforme o Código de Ética Profissional.</p>
-                                        <p className="mb-2"><strong>Atendimento Online:</strong> O atendimento mediado por tecnologias exige conexão estável e local privativo escolhido pelo paciente para garantir a privacidade da sessão.</p>
-                                        <p><strong>Aceite:</strong> Ao marcar a caixa de seleção abaixo, concordo voluntariamente com a prestação de serviços psicológicos na modalidade e horários combinados com o profissional.</p>
+                                    <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-700 max-h-[320px] overflow-y-auto text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed scrollbar-thin">
+                                        <p className="font-bold mb-4 text-center text-slate-700 dark:text-slate-200 text-xs">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE)</p>
+                                        
+                                        <p className="mb-3"><strong>1. Natureza do Atendimento:</strong> Declaro estar ciente de que o atendimento psicológico é realizado por profissional devidamente registrado, seguindo rigorosamente as resoluções do Conselho Federal de Psicologia (CFP) e o Código de Ética Profissional do Psicólogo.</p>
+                                        
+                                        <p className="mb-3"><strong>2. Sigilo e Confidencialidade:</strong> Todas as informações compartilhadas em sessão são confidenciais. O sigilo só poderá ser quebrado em situações de risco iminente à vida do paciente ou de terceiros, ou por determinação judicial, conforme previsto em lei.</p>
+                                        
+                                        <p className="mb-3"><strong>3. Proteção de Dados (LGPD):</strong> Autorizo a coleta e o processamento de meus dados pessoais e de saúde para fins estritamente clínicos e administrativos. Declaro ciência de que os dados são armazenados de forma criptografada e segura, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).</p>
+                                        
+                                        <p className="mb-3"><strong>4. Uso de Tecnologias e IA:</strong> Compreendo que o profissional utiliza o sistema "Meu Sistema Psi" para gestão clínica, o qual pode incluir ferramentas de Inteligência Artificial para auxiliar na estruturação e síntese das evoluções clínicas, garantindo maior precisão nos registros.</p>
+                                        
+                                        <p className="mb-3"><strong>5. Gravação de Áudio e Vídeo:</strong> Autorizo, quando expressamente solicitado pelo profissional e para fins exclusivos de acompanhamento clínico ou supervisão profissional, a gravação de áudio e/ou vídeo das sessões. Tais gravações seguem as mesmas regras de sigilo e serão descartadas após cumprirem sua finalidade clínica.</p>
+                                        
+                                        <p className="mb-3"><strong>6. Atendimento Online:</strong> No caso de sessões remotas, comprometo-me a garantir um ambiente privado e uma conexão estável, visando preservar a qualidade e o sigilo do atendimento.</p>
+                                        
+                                        <p className="mb-3"><strong>7. Direitos do Paciente:</strong> Tenho ciência de que posso, a qualquer momento, solicitar acesso aos meus dados, correções ou revogar este consentimento, ciente das implicações na continuidade do tratamento.</p>
+                                        
+                                        <p className="mt-6 font-bold text-slate-600 dark:text-slate-300">Aceite:</p>
+                                        <p>Ao marcar a caixa de seleção abaixo, concordo voluntariamente com os termos acima e com a prestação de serviços psicológicos na modalidade e horários combinados com o profissional.</p>
                                     </div>
                                 </div>
 

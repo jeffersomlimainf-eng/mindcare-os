@@ -96,5 +96,73 @@ export function parseCurrencyBRL(valor) {
     if (!valor) return 0;
     return parseFloat(String(valor).replace(/\./g, '').replace(',', '.')) || 0;
 }
+/**
+ * Aplica máscara de CPF (000.000.000-00)
+ */
+export function maskCPF(value) {
+    if (!value) return '';
+    return value
+        .replace(/\D/g, '')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+        .replace(/(-\d{2})\d+?$/, '$1');
+}
 
+/**
+ * Aplica máscara de Telefone celular ( (11) 99999-0000 )
+ */
+export function maskPhone(value) {
+    if (!value) return '';
+    let r = value.replace(/\D/g, '');
+    r = r.replace(/^0/, '');
+    if (r.length > 10) {
+        r = r.replace(/^(\d\d)(\d{5})(\d{4}).*/, '($1) $2-$3');
+    } else if (r.length > 5) {
+        r = r.replace(/^(\d\d)(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+    } else if (r.length > 2) {
+        r = r.replace(/^(\d\d)(\d{0,5})/, '($1) $2');
+    } else if (r.length > 0) {
+        r = r.replace(/^(\d*)/, '($1');
+    }
+    return r;
+}
 
+/**
+ * Aplica máscara de CEP (00000-000)
+ */
+export function maskCEP(value) {
+    if (!value) return '';
+    return value
+        .replace(/\D/g, '')
+        .replace(/(\d{5})(\d)/, '$1-$2')
+        .replace(/(-\d{3})\d+?$/, '$1');
+}
+
+/**
+ * Formata um nome para Title Case, ignorando preposições.
+ * Ex: "JOÃO DA SILVA" -> "João da Silva"
+ */
+export function formatNameCase(str) {
+    if (!str) return '';
+    const preposicoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+    return str.toLowerCase().split(' ').map((word, index) => {
+        if (word.length <= 3 && preposicoes.includes(word) && index !== 0) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+}
+
+/**
+ * Calcula a idade a partir de uma data de nascimento.
+ */
+export function calculateAge(birthDate) {
+    if (!birthDate) return null;
+    const today = new Date();
+    const bDay = new Date(birthDate);
+    let age = today.getFullYear() - bDay.getFullYear();
+    const m = today.getMonth() - bDay.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < bDay.getDate())) {
+        age--;
+    }
+    return age;
+}
