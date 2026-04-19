@@ -17,6 +17,10 @@ import { AnamneseProvider } from './contexts/AnamneseContext';
 import { EncaminhamentoProvider } from './contexts/EncaminhamentoContext';
 import { TcleProvider } from './contexts/TcleContext';
 import { logger } from './utils/logger';
+import { registerSW } from 'virtual:pwa-register';
+
+// Registro do Service Worker para PWA
+registerSW({ immediate: true });
 
 /**
  * ErrorBoundary Global para capturar falhas críticas e oferecer recuperação.
