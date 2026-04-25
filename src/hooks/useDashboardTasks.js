@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { formatDateLocal } from '../utils/date';
+import { messages } from '../utils/whatsapp';
+import { logger } from '../utils/logger';
 
 export function useDashboardTasks({
   atendimentosHoje,
@@ -8,7 +10,8 @@ export function useDashboardTasks({
   patients,
   tcles,
   proximaSessao,
-  appointments
+  appointments,
+  user
 }) {
   const [tarefasManuais, setTarefasManuais] = useState(() => {
     try {
@@ -60,14 +63,27 @@ export function useDashboardTasks({
     try {
       const vencidas = getContasVencidas();
       vencidas.filter(v => v.tipo === 'receita').forEach(v => {
+        const p = patients.find(pat => pat.id === (v.patient_id || v.pacienteId));
+        const paymentLink = `${window.location.origin}/cobranca/${v.id}?desc=${encodeURIComponent(v.descricao || 'Sessão')}&valor=${Math.abs(v.valor).toFixed(2)}&venc=${v.dataVencimento || ''}`;
+        
         automaticas.push({
           id: `fin-${v.id}`,
           text: `Cobrar ${v.descricao || 'Paciente'} (R$ ${Math.abs(v.valor)})`,
           type: 'financeiro',
-          rota: '/financeiro'
+          rota: '/financeiro',
+          patientPhone: p?.phone || p?.telefone,
+          waMessage: messages.billing(
+            p?.nome || 'paciente',
+            formatDateLocal(new Date(v.dataVencimento)),
+            Math.abs(v.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+            user?.configuracoes?.chavePix,
+            paymentLink
+          )
         });
       });
-    } catch (e) {}
+    } catch (e) {
+      logger.error('[useDashboardTasks] Erro ao processar contas vencidas:', e);
+    }
 
     // 3. Aniversariantes
     (patients || []).forEach(p => {
@@ -78,7 +94,9 @@ export function useDashboardTasks({
           automaticas.push({
             id: `niver-${p.id}`,
             text: `Parabéns para ${p.nome} 🎂`,
-            type: 'niver'
+            type: 'niver',
+            patientPhone: p.phone || p.telefone,
+            waMessage: `Parabéns, ${p.nome}! \u{1F382} Desejo muita saúde, paz e um ciclo maravilhoso. Feliz aniversário! \u{1F389}`
           });
         }
       }
@@ -146,15 +164,19 @@ export function useDashboardTasks({
               id: `churn-${p.id}`,
               text: `Remarcar ${p.nome} (Sem sessões futuras)`,
               type: 'churn',
-              rota: `/prontuarios/paciente/${p.id}`
+              rota: `/prontuarios/paciente/${p.id}`,
+              patientPhone: p.phone || p.telefone,
+              waMessage: `Olá, ${p.nome}! Tudo bem? Notei que não temos mais sessões agendadas. Gostaria de reservar um novo horário? \u{1F60A} \u{1F98B}`
             });
           }
         }
       });
-    } catch (e) {}
+    } catch (e) {
+      logger.error('[useDashboardTasks] Erro ao processar prevenção de abandono:', e);
+    }
 
     return automaticas;
-  }, [atendimentosHoje, evolutions, hojeISO, getContasVencidas, patients, tcles, proximaSessao, appointments]);
+  }, [atendimentosHoje, evolutions, hojeISO, getContasVencidas, patients, tcles, proximaSessao, appointments, user]);
 
   const todasPendencias = useMemo(() => {
     const ordem = { alerta: 1, warmup: 2, niver: 3, evolucao: 4, financeiro: 5, tcle: 6, churn: 7, manual: 8 };

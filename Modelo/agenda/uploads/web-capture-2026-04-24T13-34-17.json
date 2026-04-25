@@ -1,0 +1,852 @@
+[
+  {
+    "id": "cap_mocybc5u_tgskzg",
+    "selector": "section#inicio",
+    "label": "Quando o acolhimento desenha cada detalh…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:36.210Z",
+    "innerText": "Quando o acolhimento desenha cada detalhe da experiência.\n\nLeve ao olhar, intuitiva e fluida, a Sintropia é o sopro de inspiração que encaixa na sua rotina.\n\nExperimente agora\nVeja em ação",
+    "outerHTML": "<section id=\"inicio\" class=\"section-wrapper hero-section\">\n      <div class=\"custom-hero__content page-width\">\n        <div class=\"custom-hero__title\">\n          <h1>Quando o acolhimento desenha cada detalhe da experiência.</h1>\n        </div>\n        <div class=\"custom-hero__subtitle\">\n          <p>\n            Leve ao olhar, intuitiva e fluida, a Sintropia é o sopro de\n            inspiração que encaixa na sua rotina.\n          </p>\n        </div>\n        <div class=\"custom-hero__buttons-wrapper\">\n          <a href=\"https://sintropia.me/\" target=\"_blank\" class=\"custom-hero__button gradient-flow\" style=\"color: #ffffff\"><span>Experimente agora</span> </a><a href=\"#\" class=\"custom-hero__button deep-shadow\" id=\"btn-veja-em-acao\" style=\"\n                color: #443853;\n\n                background: #f5ebff;\n              \"><span class=\"svg-wrapper\">\n              <img src=\"assets/icons/icon-play.svg\" alt=\"Icone play\" width=\"20\" height=\"20\"> </span><span>Veja em ação</span>\n          </a>\n        </div>\n        <div class=\"wrapper-media-full-img\">\n          <video autoplay=\"\" muted=\"\" loop=\"\" playsinline=\"\" preload=\"auto\" poster=\"./assets/imgs/img1.png\" style=\"width: 100%; height: 100%; object-fit: cover\">\n            <source src=\"./assets/videos/hero_motion.mp4\" type=\"video/mp4\">\n            Seu navegador não suporta vídeo.\n          </video>\n        </div>\n      </div>\n    </section>",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 3181,
+      "height": 995
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "3181.25px",
+      "height": "994.59px",
+      "padding": "131px 0px 0px",
+      "box-sizing": "border-box",
+      "background": "linear-gradient(rgba(249, 233, 255, 0) 0%, rgb(249, 233, 255) 100%) repeat scroll 50% 50% / cover padding-box border-box, rgba(0, 0, 0, 0) url(\"https://sintropia.app/assets/imgs/bg-1.png\") repeat scroll 50% 50% / cover padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "overflow": "hidden",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": ".section-wrapper",
+        "css": ""
+      },
+      {
+        "selector": ".hero-section",
+        "css": "padding-top: calc(var(--header-height, 87px) + 24px); background-size: cover; background-position: center center; position: relative; overflow: hidden;"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "border-bottom: 1px solid rgb(247, 239, 255);",
+        "media": "(max-width: 1000px)"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 24px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 8px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      },
+      {
+        "selector": ".hero-section",
+        "css": "background-image: linear-gradient(rgba(249, 233, 255, 0) 0%, rgb(249, 233, 255) 100%), url(\"assets/imgs/bg-1.png\");"
+      },
+      {
+        "selector": ".hero-section",
+        "css": "background-image: url(\"assets/imgs/bg-1.1.png\");",
+        "media": "(max-width: 1000px)"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybdf9_lxowdf",
+    "selector": "section.section-wrapper",
+    "label": "Sua rotina no consultório está sobrecarr…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:37.845Z",
+    "innerText": "Sua rotina no consultório está sobrecarregada?\n\nDescubra como ganhar mais tempo para seus pacientes (e para você!).\n\nSmart Notes\n\nGrave, transcreva e resuma sua sessão em 3 cliques.\n\nEvolução de prontuário em 1 clique\n\nEm 10 segundos, suas fichas de evolução compiladas em prontuário com a Inteligência Sintropia.\n\nCalendário integrado\n\nGerencie sua agenda de qualquer lugar, Sincronizada com o Google Calendar.\n\nLembretes via Whatsapp\n\nReduza o número de faltas na clínica com o sistema de lembretes automático para seus pacientes.\n\nFinanceiro simplificado\n\nAutomatize e gerencie o seu financeiro direto da sua agenda.",
+    "outerHTML": "<section class=\"section-wrapper routine-section\">\n      <div class=\"custom-hero__content page-width scroll-trigger animate--slide-in\">\n        <div class=\"custom-hero__title\">\n          <p>Sua rotina no consultório está sobrecarregada?</p>\n        </div>\n        <div class=\"custom-hero__subtitle\">\n          <p>\n            Descubra como&nbsp;ganhar mais tempo&nbsp;para seus pacientes (e\n            para você!).\n          </p>\n        </div>\n        <div class=\"wrapper-cards\">\n          <div class=\"grid-cards\">\n            <div class=\"card-routine card-rountine-1\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Smart Notes</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>Grave, transcreva e resuma sua sessão em 3 cliques.</p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card smart-notes\">\n                <video src=\"./assets/videos/card_smart_notes_v2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"154\"></video>\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-2\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Evolução de prontuário em 1 clique</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Em 10 segundos, suas fichas de evolução compiladas em\n                    prontuário com a Inteligência Sintropia.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card\">\n                <video src=\"./assets/videos/prontuario.webm\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"142\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.1.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"141\"\n                  /> -->\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-3\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Calendário integrado</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Gerencie sua agenda de qualquer lugar, Sincronizada com o\n                    Google Calendar.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card calendario\">\n                <video src=\"./assets/videos/card_calendario_v2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"158\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.2.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"123\"\n                  /> -->\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-4\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Lembretes via Whatsapp</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Reduza o número de faltas na clínica com o sistema de\n                    lembretes automático para seus pacientes.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card\" style=\"border-radius: 25px; overflow: hidden;\">\n                <video src=\"./assets/videos/card_lembrete_com_fundo_t2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"169\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.3.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"169\"\n                  /> -->\n              </div>\n            </div>\n          </div>\n\n          <div class=\"card-routine card-routine--right\">\n            <div class=\"wrapper-text\">\n              <div class=\"title-card-routine\">\n                <p>Financeiro simplificado</p>\n              </div>\n\n              <div class=\"subtitle-card-routine\">\n                <p>\n                  Automatize e gerencie o seu financeiro direto da sua agenda.\n                </p>\n              </div>\n            </div>\n\n            <div class=\"wrapper-media-card\">\n              <video src=\"./assets/videos/financeiro.webm\" autoplay=\"\" loop=\"\" muted=\"\" playsinline=\"\" loading=\"lazy\" width=\"384\" height=\"479\"></video>\n              <!-- <img\n                  src=\"./assets/imgs/img2.4.png\"\n                  alt=\"Imagem do card especial\"\n                  width=\"384\"\n                  height=\"479\"\n                /> -->\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>",
+    "rect": {
+      "x": 0,
+      "y": 495,
+      "width": 3181,
+      "height": 1018
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "3181.25px",
+      "height": "1018.14px",
+      "padding": "64px 0px",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(249, 233, 255) 0%, rgba(225, 228, 255, 0.38) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": ".section-wrapper",
+        "css": ""
+      },
+      {
+        "selector": ".routine-section",
+        "css": "padding-block: 4rem; background: linear-gradient(rgb(249, 233, 255) 0%, rgba(225, 228, 255, 0.38) 100%);"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "border-bottom: 1px solid rgb(247, 239, 255);",
+        "media": "(max-width: 1000px)"
+      },
+      {
+        "selector": "&:nth-child(2)",
+        "css": "border: 1px solid rgb(234, 236, 240); background: rgb(255, 255, 255); padding-inline: 37px; box-shadow: rgba(223, 192, 255, 0.26) 0px 0px 4px 0px inset; transition: box-shadow 0.3s;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:first-child)",
+        "css": "margin-left: -10px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 24px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 8px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybf2b_48iwv6",
+    "selector": "section.section-wrapper",
+    "label": "Sua rotina no consultório está sobrecarr…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:39.971Z",
+    "innerText": "Sua rotina no consultório está sobrecarregada?\n\nDescubra como ganhar mais tempo para seus pacientes (e para você!).\n\nSmart Notes\n\nGrave, transcreva e resuma sua sessão em 3 cliques.\n\nEvolução de prontuário em 1 clique\n\nEm 10 segundos, suas fichas de evolução compiladas em prontuário com a Inteligência Sintropia.\n\nCalendário integrado\n\nGerencie sua agenda de qualquer lugar, Sincronizada com o Google Calendar.\n\nLembretes via Whatsapp\n\nReduza o número de faltas na clínica com o sistema de lembretes automático para seus pacientes.\n\nFinanceiro simplificado\n\nAutomatize e gerencie o seu financeiro direto da sua agenda.",
+    "outerHTML": "<section class=\"section-wrapper routine-section\">\n      <div class=\"custom-hero__content page-width scroll-trigger animate--slide-in\">\n        <div class=\"custom-hero__title\">\n          <p>Sua rotina no consultório está sobrecarregada?</p>\n        </div>\n        <div class=\"custom-hero__subtitle\">\n          <p>\n            Descubra como&nbsp;ganhar mais tempo&nbsp;para seus pacientes (e\n            para você!).\n          </p>\n        </div>\n        <div class=\"wrapper-cards\">\n          <div class=\"grid-cards\">\n            <div class=\"card-routine card-rountine-1\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Smart Notes</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>Grave, transcreva e resuma sua sessão em 3 cliques.</p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card smart-notes\">\n                <video src=\"./assets/videos/card_smart_notes_v2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"154\"></video>\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-2\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Evolução de prontuário em 1 clique</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Em 10 segundos, suas fichas de evolução compiladas em\n                    prontuário com a Inteligência Sintropia.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card\">\n                <video src=\"./assets/videos/prontuario.webm\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"142\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.1.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"141\"\n                  /> -->\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-3\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Calendário integrado</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Gerencie sua agenda de qualquer lugar, Sincronizada com o\n                    Google Calendar.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card calendario\">\n                <video src=\"./assets/videos/card_calendario_v2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"158\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.2.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"123\"\n                  /> -->\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-4\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Lembretes via Whatsapp</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Reduza o número de faltas na clínica com o sistema de\n                    lembretes automático para seus pacientes.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card\" style=\"border-radius: 25px; overflow: hidden;\">\n                <video src=\"./assets/videos/card_lembrete_com_fundo_t2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"169\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.3.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"169\"\n                  /> -->\n              </div>\n            </div>\n          </div>\n\n          <div class=\"card-routine card-routine--right\">\n            <div class=\"wrapper-text\">\n              <div class=\"title-card-routine\">\n                <p>Financeiro simplificado</p>\n              </div>\n\n              <div class=\"subtitle-card-routine\">\n                <p>\n                  Automatize e gerencie o seu financeiro direto da sua agenda.\n                </p>\n              </div>\n            </div>\n\n            <div class=\"wrapper-media-card\">\n              <video src=\"./assets/videos/financeiro.webm\" autoplay=\"\" loop=\"\" muted=\"\" playsinline=\"\" loading=\"lazy\" width=\"384\" height=\"479\"></video>\n              <!-- <img\n                  src=\"./assets/imgs/img2.4.png\"\n                  alt=\"Imagem do card especial\"\n                  width=\"384\"\n                  height=\"479\"\n                /> -->\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>",
+    "rect": {
+      "x": 0,
+      "y": -672,
+      "width": 3181,
+      "height": 1018
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "3181.25px",
+      "height": "1018.14px",
+      "padding": "64px 0px",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(249, 233, 255) 0%, rgba(225, 228, 255, 0.38) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": ".section-wrapper",
+        "css": ""
+      },
+      {
+        "selector": ".routine-section",
+        "css": "padding-block: 4rem; background: linear-gradient(rgb(249, 233, 255) 0%, rgba(225, 228, 255, 0.38) 100%);"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "border-bottom: 1px solid rgb(247, 239, 255);",
+        "media": "(max-width: 1000px)"
+      },
+      {
+        "selector": "&:nth-child(2)",
+        "css": "border: 1px solid rgb(234, 236, 240); background: rgb(255, 255, 255); padding-inline: 37px; box-shadow: rgba(223, 192, 255, 0.26) 0px 0px 4px 0px inset; transition: box-shadow 0.3s;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:first-child)",
+        "css": "margin-left: -10px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 24px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 8px;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybggl_rjcgxi",
+    "selector": "section.section-wrapper",
+    "label": "Sua rotina no consultório está sobrecarr…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:41.781Z",
+    "innerText": "Sua rotina no consultório está sobrecarregada?\n\nDescubra como ganhar mais tempo para seus pacientes (e para você!).\n\nSmart Notes\n\nGrave, transcreva e resuma sua sessão em 3 cliques.\n\nEvolução de prontuário em 1 clique\n\nEm 10 segundos, suas fichas de evolução compiladas em prontuário com a Inteligência Sintropia.\n\nCalendário integrado\n\nGerencie sua agenda de qualquer lugar, Sincronizada com o Google Calendar.\n\nLembretes via Whatsapp\n\nReduza o número de faltas na clínica com o sistema de lembretes automático para seus pacientes.\n\nFinanceiro simplificado\n\nAutomatize e gerencie o seu financeiro direto da sua agenda.",
+    "outerHTML": "<section class=\"section-wrapper routine-section\">\n      <div class=\"custom-hero__content page-width scroll-trigger animate--slide-in\">\n        <div class=\"custom-hero__title\">\n          <p>Sua rotina no consultório está sobrecarregada?</p>\n        </div>\n        <div class=\"custom-hero__subtitle\">\n          <p>\n            Descubra como&nbsp;ganhar mais tempo&nbsp;para seus pacientes (e\n            para você!).\n          </p>\n        </div>\n        <div class=\"wrapper-cards\">\n          <div class=\"grid-cards\">\n            <div class=\"card-routine card-rountine-1\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Smart Notes</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>Grave, transcreva e resuma sua sessão em 3 cliques.</p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card smart-notes\">\n                <video src=\"./assets/videos/card_smart_notes_v2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"154\"></video>\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-2\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Evolução de prontuário em 1 clique</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Em 10 segundos, suas fichas de evolução compiladas em\n                    prontuário com a Inteligência Sintropia.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card\">\n                <video src=\"./assets/videos/prontuario.webm\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"142\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.1.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"141\"\n                  /> -->\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-3\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Calendário integrado</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Gerencie sua agenda de qualquer lugar, Sincronizada com o\n                    Google Calendar.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card calendario\">\n                <video src=\"./assets/videos/card_calendario_v2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"158\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.2.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"123\"\n                  /> -->\n              </div>\n            </div>\n\n            <div class=\"card-routine card-rountine-4\">\n              <div class=\"wrapper-text\">\n                <div class=\"title-card-routine\">\n                  <p>Lembretes via Whatsapp</p>\n                </div>\n\n                <div class=\"subtitle-card-routine\">\n                  <p>\n                    Reduza o número de faltas na clínica com o sistema de\n                    lembretes automático para seus pacientes.\n                  </p>\n                </div>\n              </div>\n\n              <div class=\"wrapper-media-card\" style=\"border-radius: 25px; overflow: hidden;\">\n                <video src=\"./assets/videos/card_lembrete_com_fundo_t2.mp4\" autoplay=\"\" loop=\"\" muted=\"\" loading=\"lazy\" playsinline=\"\" width=\"384\" height=\"169\"></video>\n                <!-- <img\n                    src=\"./assets/imgs/img2.3.png\"\n                    alt=\"Imagem do card\"\n                    width=\"384\"\n                    height=\"169\"\n                  /> -->\n              </div>\n            </div>\n          </div>\n\n          <div class=\"card-routine card-routine--right\">\n            <div class=\"wrapper-text\">\n              <div class=\"title-card-routine\">\n                <p>Financeiro simplificado</p>\n              </div>\n\n              <div class=\"subtitle-card-routine\">\n                <p>\n                  Automatize e gerencie o seu financeiro direto da sua agenda.\n                </p>\n              </div>\n            </div>\n\n            <div class=\"wrapper-media-card\">\n              <video src=\"./assets/videos/financeiro.webm\" autoplay=\"\" loop=\"\" muted=\"\" playsinline=\"\" loading=\"lazy\" width=\"384\" height=\"479\"></video>\n              <!-- <img\n                  src=\"./assets/imgs/img2.4.png\"\n                  alt=\"Imagem do card especial\"\n                  width=\"384\"\n                  height=\"479\"\n                /> -->\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>",
+    "rect": {
+      "x": 0,
+      "y": -1672,
+      "width": 3181,
+      "height": 1018
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "3181.25px",
+      "height": "1018.14px",
+      "padding": "64px 0px",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(249, 233, 255) 0%, rgba(225, 228, 255, 0.38) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": ".section-wrapper",
+        "css": ""
+      },
+      {
+        "selector": ".routine-section",
+        "css": "padding-block: 4rem; background: linear-gradient(rgb(249, 233, 255) 0%, rgba(225, 228, 255, 0.38) 100%);"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "border-bottom: 1px solid rgb(247, 239, 255);",
+        "media": "(max-width: 1000px)"
+      },
+      {
+        "selector": "&:nth-child(2)",
+        "css": "border: 1px solid rgb(234, 236, 240); background: rgb(255, 255, 255); padding-inline: 37px; box-shadow: rgba(223, 192, 255, 0.26) 0px 0px 4px 0px inset; transition: box-shadow 0.3s;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:first-child)",
+        "css": "margin-left: -10px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 24px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 8px;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybih6_8ygcnw",
+    "selector": "div.wrapper-card",
+    "label": "FUNCIONALIDADES Financeiro Descomplicado…",
+    "tag": "div",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:44.394Z",
+    "innerText": "FUNCIONALIDADES\n\nFinanceiro Descomplicado.\n\nControle pacotes e sessões avulsas, e automatize lembretes de pagamento, mantendo o financeiro da clínica sempre em dia.\n\nControle de Pagamentos\n\nControle de Pacotes\n\nReceita Saúde\n\nE muito mais\n\nLembretes de Pagamento\n\nFinanceiro Automatizado",
+    "outerHTML": "<div class=\"wrapper-card\">\n            <div class=\"wrapper-left-side\">\n              <div class=\"custom-hero__aux\">\n                <p>funcionalidades</p>\n              </div>\n              <div class=\"custom-hero__title\" style=\"max-width: 350px\">\n                <p>Financeiro Descomplicado.</p>\n              </div>\n              <div class=\"content-motion\">\n                <p>\n                  Controle pacotes e sessões avulsas, e automatize lembretes de pagamento, mantendo o\n                  financeiro da clínica sempre em dia.\n                </p>\n              </div>\n              <div class=\"checks-area\">\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Controle de Pagamentos</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Controle de Pacotes</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Receita Saúde</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>E muito mais</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Lembretes de Pagamento</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Financeiro Automatizado</p>\n                </div>\n              </div>\n            </div>\n            <div class=\"wrapper-right\">\n              <img src=\"assets/imgs/motion-2.webp\" alt=\"Imagem direita mmotion\" width=\"377\" height=\"394\" loading=\"lazy\" fetch_priority=\"low\">\n            </div>\n          </div>",
+    "rect": {
+      "x": 2008,
+      "y": 661,
+      "width": 1984,
+      "height": 561
+    },
+    "computedStyles": {
+      "display": "flex",
+      "width": "1983.98px",
+      "height": "561.426px",
+      "padding": "32px 0px 32px 32px",
+      "border-radius": "15.689px",
+      "box-sizing": "border-box",
+      "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "flex": "0 0 auto",
+      "justify-content": "space-between",
+      "gap": "48px",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "border-bottom: 1px solid rgb(247, 239, 255);",
+        "media": "(max-width: 1000px)"
+      },
+      {
+        "selector": "&:nth-child(2)",
+        "css": "border: 1px solid rgb(234, 236, 240); background: rgb(255, 255, 255); padding-inline: 37px; box-shadow: rgba(223, 192, 255, 0.26) 0px 0px 4px 0px inset; transition: box-shadow 0.3s;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:first-child)",
+        "css": "margin-left: -10px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 24px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 8px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybkhg_mqvi8r",
+    "selector": "section#Planos",
+    "label": "Teste grátis, sem cobrança. Durante 15 d…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:46.996Z",
+    "innerText": "Teste grátis, sem cobrança.\n\nDurante 15 dias, você experimenta os principais recursos da Sintropia.\n\nSem cartão de crédito, sem renovação automática escondida.\n\nAgenda, SmartNotes, Evoluções por IA, Financeiro, Monitoramento e muito mais.\n\nProntuário gerado por IA\n\nSincronizado com Agenda Google\n\nAgente de Marketing IA\n\nPlano com 42% OFF se começar agora.\n\n- 42%OFF garantido.\n\n- 42%OFF garantido.\n\n- 42%OFF garantido.\n\n- 42%OFF garantido.\n\n12x de\n\nR$ 69,90/ano\n\nou R$ 690 à vista\n\nExperimente grátis\n\nTudo que você testou mais\n\nLembretes de Sessão e de Pagamento\n\nSincronizar com Agenda Google\n\nAcesso para assistente",
+    "outerHTML": "<section class=\"hide-mob buy-area\" id=\"Planos\">\n          <div class=\"page-width\">\n            <div class=\"wrapper-content\">\n              <div class=\"left-content\">\n                <div class=\"img-bg\">\n                  <img src=\"assets/imgs/img-flag.svg\" alt=\"Imagem de fundo esquerda\" width=\"202\" height=\"234\" loading=\"lazy\" fetch_priority=\"low\">\n                </div>\n\n                <div class=\"title-content\" style=\"font-size: 40px; font-weight: 700\">\n                  <h2>Teste grátis, sem cobrança.</h2>\n                </div>\n                <div class=\"wrapper-item-content-left\">\n                  <div class=\"wrapper-first-3\">\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>\n                          Durante 15 dias, você experimenta os principais\n                          recursos da Sintropia.\n                        </p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>\n                          Sem cartão de crédito, sem renovação automática\n                          escondida.\n                        </p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>\n                          Agenda, SmartNotes, Evoluções por IA, Financeiro,\n                          Monitoramento e muito mais.\n                        </p>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"divider\">\n                    <svg width=\"2\" height=\"139\" viewBox=\"0 0 2 139\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n                      <path d=\"M0.5 139L0.500023 3.45707e-06\" stroke=\"#EFEFF0\"></path>\n                      <path d=\"M1.5 139L1.50002 3.45707e-06\" stroke=\"#E2D3F1\"></path>\n                    </svg>\n                  </div>\n\n                  <div class=\"wrapper-last\">\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Prontuário gerado por IA</p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Sincronizado com Agenda Google</p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Agente de Marketing IA</p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Plano com 42% OFF se começar agora.</p>\n                      </div>\n                    </div>\n                  </div>\n                </div>\n              </div>\n              <div class=\"right-content\">\n                <div class=\"flag\">\n                  <div class=\"flag-track\">\n                    <p>- 42%OFF garantido.</p>\n                    <p>- 42%OFF garantido.</p>\n                    <p>- 42%OFF garantido.</p>\n                    <p>- 42%OFF garantido.</p>\n                  </div>\n                </div>\n\n                <div class=\"installment-parcel\">\n                  <p>12x de</p>\n                </div>\n\n                <div class=\"price-content\">\n                  <h3>R$ 69,90<strong>/ano</strong></h3>\n                </div>\n\n                <div class=\"a-vista\">\n                  <p>ou R$ 690 à vista</p>\n                </div>\n\n                <div class=\"buy-button\">\n                  <a class=\"buy-button gradient-flow\" href=\"https://sintropia.me/\" target=\"_blank\" title=\"Experimente grátis\">\n                    Experimente grátis\n                  </a>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Tudo que você testou mais</p>\n                  </div>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Lembretes de Sessão e de Pagamento</p>\n                  </div>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Sincronizar com Agenda Google</p>\n                  </div>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Acesso para assistente</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </section>",
+    "rect": {
+      "x": 0,
+      "y": 791,
+      "width": 3182,
+      "height": 475
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "3181.99px",
+      "height": "475.352px",
+      "padding": "48px 0px",
+      "box-sizing": "border-box",
+      "background": "rgb(255, 255, 255) none repeat scroll 50% 50% / cover padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "overflow": "hidden",
+      "z-index": "0",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": "&:last-child",
+        "css": "",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:first-child)",
+        "css": "margin-left: -10px;",
+        "media": "all"
+      },
+      {
+        "selector": "&.hide-mob",
+        "css": "",
+        "media": "all"
+      },
+      {
+        "selector": ".buy-area",
+        "css": "background: center center / cover rgb(255, 255, 255); padding-block: 3rem; position: relative; overflow: hidden; z-index: 0;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybo7v_2wnmfx",
+    "selector": "section.section-wrapper",
+    "label": "FUNCIONALIDADES Funcionalidades pensadas…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:51.835Z",
+    "innerText": "FUNCIONALIDADES\n\nFuncionalidades pensadas para você\n\nFUNCIONALIDADES\n\nMenu do paciente\n\nTudo o que você precisa saber sobre o paciente em um só lugar — da anamnese ao prontuário, com acesso rápido ao histórico completo.\n\nArquivo de Sessões\n\nResumo do Paciente\n\nAnamnese\n\nÁudios Gravados\n\nBiblioteca de Documentos\n\nE muito mais.\n\nProntuários\n\nFUNCIONALIDADES\n\nFinanceiro Descomplicado.\n\nControle pacotes e sessões avulsas, e automatize lembretes de pagamento, mantendo o financeiro da clínica sempre em dia.\n\nControle de Pagamentos\n\nControle de Pacotes\n\nReceita Saúde\n\nE muito mais\n\nLembretes de Pagamento\n\nFinanceiro Automatizado\n\nFUNCIONALIDADES\n\nCalendário integrado\n\nAgenda sincronizada com o Google: você organiza sua rotina com leveza, sem se perder nos horários.\n\nAgende sessão\n\nBloqueie horários\n\nVisualize por dia/semana/mês\n\nDefina horários e lembretes\n\nFUNCIONALIDADES\n\nSmart Notes e Inteligencia Sintropia.\n\nDurante a sessão você se concentra no vínculo. Depois, a Sintropia organiza tudo para você - com Inteligência e Segurança.\n\nGravação de Voz\n\nTranscrever Manuscrito por IA\n\nTranscrição e Resumo por IA\n\nE muito mais\n\nGerar Evolução\n\nFUNCIONALIDADES\n\nLembretes Automáticos\n\nEnvie lembretes e receba confirmações de sessão direto no WhatsApp — menos faltas, agenda mais organizada e faturamento mais previsível.\n\nConfirmações Automáticas\n\nAgenda do Dia\n\nMenos Faltas\n\nMaior Faturamento\n\nTeste grátis, sem cobrança.\n\nDurante 15 dias, você experimenta os principais recursos da Sintropia.\n\nSem cartão de crédito, sem renovação automática escondida.\n\nAgenda, SmartNotes, Evoluções por IA, Financeiro, Monitoramento e muito mais.\n\nProntuário gerado por IA\n\nSincronizado com Agenda Google\n\nAgente de Marketing IA\n\nPlano com 42% OFF se começar agora.\n\n- 42%OFF garantido.\n\n- 42%OFF garantido.\n\n- 42%OFF garantido.\n\n- 42%OFF garantido.\n\n12x de\n\nR$ 69,90/ano\n\nou R$ 690 à vista\n\nExperimente grátis\n\nTudo que você testou mais\n\nLembretes de Sessão e de Pagamento\n\nSincronizar com Agenda Google\n\nAcesso para assistente",
+    "outerHTML": "<section class=\"section-wrapper motion-scroll-section\" style=\"translate: none; rotate: none; scale: none; left: 0px; top: 0.148438px; margin: 0px; max-width: 3182px; width: 3182px; max-height: 1314px; height: 1314px; padding: 48px 0px; box-sizing: border-box; position: fixed; transform: translate(0px, 0px);\">\n        <div class=\"custom-hero__content page-width scroll-trigger animate--slide-in\">\n          <div class=\"custom-hero__aux\">\n            <p>funcionalidades</p>\n          </div>\n          <div class=\"custom-hero__title\">\n            <p>Funcionalidades pensadas para você</p>\n          </div>\n        </div>\n\n        <div class=\"wrapper-cards-motion motion-scroll-track\" style=\"translate: none; rotate: none; scale: none; transform: translate3d(-2396.75px, 0px, 0px);\">\n          <div class=\"wrapper-card\">\n            <div class=\"wrapper-left-side\">\n              <div class=\"custom-hero__aux\">\n                <p>funcionalidades</p>\n              </div>\n              <div class=\"custom-hero__title\">\n                <p>Menu do paciente</p>\n              </div>\n              <div class=\"content-motion\">\n                <p>\n                  Tudo o que você precisa saber sobre o paciente em um só\n                  lugar — da anamnese ao prontuário, com acesso rápido ao\n                  histórico completo.\n                </p>\n              </div>\n              <div class=\"checks-area\">\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Arquivo de Sessões</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Resumo do Paciente</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Anamnese</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Áudios Gravados</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Biblioteca de Documentos</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>E muito mais.</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Prontuários</p>\n                </div>\n              </div>\n            </div>\n            <div class=\"wrapper-right\">\n              <img src=\"assets/imgs/motion-1.webp\" alt=\"Imagem direita mmotion\" width=\"377\" height=\"394\" loading=\"lazy\" fetch_priority=\"low\">\n            </div>\n          </div>\n          <div class=\"wrapper-card\">\n            <div class=\"wrapper-left-side\">\n              <div class=\"custom-hero__aux\">\n                <p>funcionalidades</p>\n              </div>\n              <div class=\"custom-hero__title\" style=\"max-width: 350px\">\n                <p>Financeiro Descomplicado.</p>\n              </div>\n              <div class=\"content-motion\">\n                <p>\n                  Controle pacotes e sessões avulsas, e automatize lembretes de pagamento, mantendo o\n                  financeiro da clínica sempre em dia.\n                </p>\n              </div>\n              <div class=\"checks-area\">\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Controle de Pagamentos</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Controle de Pacotes</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Receita Saúde</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>E muito mais</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Lembretes de Pagamento</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Financeiro Automatizado</p>\n                </div>\n              </div>\n            </div>\n            <div class=\"wrapper-right\">\n              <img src=\"assets/imgs/motion-2.webp\" alt=\"Imagem direita mmotion\" width=\"377\" height=\"394\" loading=\"lazy\" fetch_priority=\"low\">\n            </div>\n          </div>\n          <div class=\"wrapper-card\">\n            <div class=\"wrapper-left-side\">\n              <div class=\"custom-hero__aux\">\n                <p>funcionalidades</p>\n              </div>\n              <div class=\"custom-hero__title\">\n                <p>Calendário integrado</p>\n              </div>\n              <div class=\"content-motion\">\n                <p>\n                  Agenda sincronizada com o Google: você organiza sua rotina\n                  com leveza, sem se perder nos horários.\n                </p>\n              </div>\n              <div class=\"checks-area\" style=\"grid-template-columns: repeat(1, 1fr)\">\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Agende sessão</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Bloqueie horários</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Visualize por dia/semana/mês</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Defina horários e lembretes</p>\n                </div>\n              </div>\n            </div>\n            <div class=\"wrapper-right\">\n              <img src=\"assets/imgs/motion-3.webp\" alt=\"Imagem direita mmotion\" width=\"377\" height=\"394\" loading=\"lazy\" fetch_priority=\"low\">\n            </div>\n          </div>\n          <div class=\"wrapper-card\">\n            <div class=\"wrapper-left-side\">\n              <div class=\"custom-hero__aux\">\n                <p>funcionalidades</p>\n              </div>\n              <div class=\"custom-hero__title\" style=\"max-width: 320px\">\n                <p>Smart Notes e Inteligencia Sintropia.</p>\n              </div>\n              <div class=\"content-motion\">\n                <p>\n                  Durante a sessão você se concentra no vínculo. Depois, a\n                  Sintropia organiza tudo para você - com Inteligência e\n                  Segurança.\n                </p>\n              </div>\n              <div class=\"checks-area\">\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Gravação de Voz</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p style=\"max-width: 150px\">\n                    Transcrever Manuscrito por IA\n                  </p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p style=\"white-space: pre\">Transcrição e Resumo por IA</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>E muito mais</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Gerar Evolução</p>\n                </div>\n              </div>\n            </div>\n            <div class=\"wrapper-right\">\n              <img src=\"assets/imgs/motion-4.webp\" alt=\"Imagem direita mmotion\" width=\"377\" height=\"394\" loading=\"lazy\" fetch_priority=\"low\">\n            </div>\n          </div>\n          <div class=\"wrapper-card\">\n            <div class=\"wrapper-left-side\">\n              <div class=\"custom-hero__aux\">\n                <p>funcionalidades</p>\n              </div>\n              <div class=\"custom-hero__title\" style=\"max-width: 350px\">\n                <p>Lembretes Automáticos</p>\n              </div>\n              <div class=\"content-motion\">\n                <p>\n                  Envie lembretes e receba confirmações de sessão direto no\n                  WhatsApp — menos faltas, agenda mais organizada e\n                  faturamento mais previsível.\n                </p>\n              </div>\n              <div class=\"checks-area\">\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p style=\"white-space: pre\">Confirmações Automáticas</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Agenda do Dia</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Menos Faltas</p>\n                </div>\n                <div class=\"check-element\">\n                  <img src=\"./assets/icons/icon-check-2.svg\" alt=\"Icone check\" width=\"15\" height=\"15\" loading=\"lazy\">\n                  <p>Maior Faturamento</p>\n                </div>\n              </div>\n            </div>\n            <div class=\"wrapper-right\">\n              <img src=\"assets/imgs/motion-5.webp\" alt=\"Imagem direita mmotion\" width=\"377\" height=\"394\" loading=\"lazy\" fetch_priority=\"low\">\n            </div>\n          </div>\n        </div>\n        <section class=\"hide-mob buy-area\" id=\"Planos\">\n          <div class=\"page-width\">\n            <div class=\"wrapper-content\">\n              <div class=\"left-content\">\n                <div class=\"img-bg\">\n                  <img src=\"assets/imgs/img-flag.svg\" alt=\"Imagem de fundo esquerda\" width=\"202\" height=\"234\" loading=\"lazy\" fetch_priority=\"low\">\n                </div>\n\n                <div class=\"title-content\" style=\"font-size: 40px; font-weight: 700\">\n                  <h2>Teste grátis, sem cobrança.</h2>\n                </div>\n                <div class=\"wrapper-item-content-left\">\n                  <div class=\"wrapper-first-3\">\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>\n                          Durante 15 dias, você experimenta os principais\n                          recursos da Sintropia.\n                        </p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>\n                          Sem cartão de crédito, sem renovação automática\n                          escondida.\n                        </p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>\n                          Agenda, SmartNotes, Evoluções por IA, Financeiro,\n                          Monitoramento e muito mais.\n                        </p>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"divider\">\n                    <svg width=\"2\" height=\"139\" viewBox=\"0 0 2 139\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n                      <path d=\"M0.5 139L0.500023 3.45707e-06\" stroke=\"#EFEFF0\"></path>\n                      <path d=\"M1.5 139L1.50002 3.45707e-06\" stroke=\"#E2D3F1\"></path>\n                    </svg>\n                  </div>\n\n                  <div class=\"wrapper-last\">\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Prontuário gerado por IA</p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Sincronizado com Agenda Google</p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Agente de Marketing IA</p>\n                      </div>\n                    </div>\n\n                    <div class=\"item-content\">\n                      <div class=\"icon-content\">\n                        <img src=\"assets/icons/icon-check.svg\" alt=\"icone check\" width=\"18\" height=\"18\" loading=\"lazy\">\n                      </div>\n\n                      <div class=\"content-text\">\n                        <p>Plano com 42% OFF se começar agora.</p>\n                      </div>\n                    </div>\n                  </div>\n                </div>\n              </div>\n              <div class=\"right-content\">\n                <div class=\"flag\">\n                  <div class=\"flag-track\">\n                    <p>- 42%OFF garantido.</p>\n                    <p>- 42%OFF garantido.</p>\n                    <p>- 42%OFF garantido.</p>\n                    <p>- 42%OFF garantido.</p>\n                  </div>\n                </div>\n\n                <div class=\"installment-parcel\">\n                  <p>12x de</p>\n                </div>\n\n                <div class=\"price-content\">\n                  <h3>R$ 69,90<strong>/ano</strong></h3>\n                </div>\n\n                <div class=\"a-vista\">\n                  <p>ou R$ 690 à vista</p>\n                </div>\n\n                <div class=\"buy-button\">\n                  <a class=\"buy-button gradient-flow\" href=\"https://sintropia.me/\" target=\"_blank\" title=\"Experimente grátis\">\n                    Experimente grátis\n                  </a>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Tudo que você testou mais</p>\n                  </div>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Lembretes de Sessão e de Pagamento</p>\n                  </div>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Sincronizar com Agenda Google</p>\n                  </div>\n                </div>\n\n                <div class=\"item-content\">\n                  <div class=\"icon-content\">\n                    <img src=\"assets/icons/icon-check.svg\" alt=\"Ícone\" srcset=\"assets/icons/icon-check.svg 18w\" width=\"18\" height=\"18\" loading=\"lazy\" fetch_priority=\"low\">\n                  </div>\n                  <div class=\"content-text\">\n                    <p>Acesso para assistente</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </section>\n      </section>",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 3182,
+      "height": 1314
+    },
+    "computedStyles": {
+      "display": "flex",
+      "position": "fixed",
+      "top": "0.148438px",
+      "right": "-0.742188px",
+      "bottom": "274.629px",
+      "left": "0px",
+      "width": "3181.99px",
+      "height": "1313.98px",
+      "padding": "48px 0px",
+      "box-sizing": "border-box",
+      "background": "rgb(251, 247, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "flex-direction": "column",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": ".section-wrapper",
+        "css": ""
+      },
+      {
+        "selector": "&:last-child",
+        "css": "",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": ".motion-scroll-section",
+        "css": "background-color: rgb(251, 247, 255); padding-block: 3rem; position: relative; display: flex; flex-direction: column;",
+        "media": "all"
+      },
+      {
+        "selector": ".motion-scroll-section",
+        "css": "",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybrig_lfvvpg",
+    "selector": "p",
+    "label": "Funcionalidades pensadas para você",
+    "tag": "p",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:33:56.104Z",
+    "innerText": "Funcionalidades pensadas para você",
+    "outerHTML": "<p>Funcionalidades pensadas para você</p>",
+    "rect": {
+      "x": 951,
+      "y": 65,
+      "width": 1280,
+      "height": 67
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "1280px",
+      "height": "67.1875px",
+      "border": "0px none rgb(68, 56, 83)",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(68, 56, 83)",
+      "font-family": "\"Roca One bold\"",
+      "font-size": "56px",
+      "font-weight": "600",
+      "line-height": "67.2px",
+      "text-align": "center",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": "&:last-child",
+        "css": "",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybw3a_h7ukuh",
+    "selector": "section#Faq",
+    "label": "PERGUNTAS FREQUENTES Está com dúvidas? A…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:34:02.038Z",
+    "innerText": "PERGUNTAS FREQUENTES\n\nEstá com dúvidas? A gente te ajuda 💜\n\nO que é a Sintropia?\n\nComo tenho acesso à Sintropia?\n\nA Sintropia é adequada para quem está começando na psicologia?\n\nPor onde consigo acessar a Sintropia?\n\nCaso eu necessite de ajuda, como entro em contato?",
+    "outerHTML": "<section class=\"section-wrapper secao-faq\" id=\"Faq\" style=\"background: #fff\">\n      <div class=\"custom-hero__content page-width scroll-trigger animate--slide-in\">\n        <div class=\"custom-hero__aux\">\n          <p>PERGUNTAS FREQUENTES</p>\n        </div>\n        <div class=\"custom-hero__title\">\n          <p>Está com dúvidas? A gente te ajuda 💜</p>\n        </div>\n        <div class=\"wrapper-faq\">\n          <details>\n            <summary>\n              <div class=\"title-faq\">\n                <p>O que é a Sintropia?</p>\n              </div>\n\n              <span class=\"svg-wrapper plus\">\n                <img src=\"./assets/icons/icon-plus.svg\" alt=\"Icone mais ( abrir )\" width=\"20\" height=\"20\">\n              </span>\n              <span class=\"svg-wrapper minus\">\n                <img src=\"./assets/icons/icon-minus.svg\" alt=\"Icone menos ( fechar )\" width=\"20\" height=\"20\">\n              </span>\n            </summary>\n            <div class=\"answer\">\n              <p>\n                A Sintropia é um software 100% desenvolvido para psicólogas, pensado para otimizar todas as etapas do consultório em um único lugar. Nele, você gerencia agendamentos, prontuários, anotações, marketing, finanças e até o monitoramento dos pacientes, de forma integrada e prática.\n              </p>\n            </div>\n          </details>\n\n          <details>\n            <summary>\n              <div class=\"title-faq\">\n                <p>Como tenho acesso à Sintropia?</p>\n              </div>\n\n              <span class=\"svg-wrapper plus\">\n                <img src=\"./assets/icons/icon-plus.svg\" alt=\"Icone mais ( abrir )\" width=\"20\" height=\"20\">\n              </span>\n              <span class=\"svg-wrapper minus\">\n                <img src=\"./assets/icons/icon-minus.svg\" alt=\"Icone menos ( fechar )\" width=\"20\" height=\"20\">\n              </span>\n            </summary>\n            <div class=\"answer\">\n              <p>\n                É simples! Basta fazer o seu cadastro neste link para ter 15 dias de uso gratuito, sem a necessidade de informar cartão de crédito. Assim, você conhece todas as funcionalidades da plataforma sem nenhum compromisso.\n              </p>\n            </div>\n          </details>          \n          <details>\n            <summary>\n              <div class=\"title-faq\">\n                <p>\n                  A Sintropia é adequada para quem está começando na psicologia?\n                </p>\n              </div>\n\n              <span class=\"svg-wrapper plus\">\n                <img src=\"./assets/icons/icon-plus.svg\" alt=\"Icone mais ( abrir )\" width=\"20\" height=\"20\">\n              </span>\n              <span class=\"svg-wrapper minus\">\n                <img src=\"./assets/icons/icon-minus.svg\" alt=\"Icone menos ( fechar )\" width=\"20\" height=\"20\">\n              </span>\n            </summary>\n            <div class=\"answer\">\n              <p>\n                Com certeza! A Sintropia foi criada especialmente para psicólogas em diferentes fases da carreira, oferecendo ferramentas simples e eficazes. Ela ajuda você a manter tudo organizado desde o início, facilitando o crescimento do seu consultório.\n              </p>\n            </div>\n          </details>\n\n          <details>\n            <summary>\n              <div class=\"title-faq\">\n                <p>Por onde consigo acessar a Sintropia?</p>\n              </div>\n\n              <span class=\"svg-wrapper plus\">\n                <img src=\"./assets/icons/icon-plus.svg\" alt=\"Icone mais ( abrir )\" width=\"20\" height=\"20\">\n              </span>\n              <span class=\"svg-wrapper minus\">\n                <img src=\"./assets/icons/icon-minus.svg\" alt=\"Icone menos ( fechar )\" width=\"20\" height=\"20\">\n              </span>\n            </summary>\n            <div class=\"answer\">\n              <p>\n                Você pode acessar a plataforma tanto pelo navegador do computador quanto pelo navegador do seu celular ou tablet.\n              </p>\n            </div>\n          </details>\n\n          <details>\n            <summary>\n              <div class=\"title-faq\">\n                <p>Caso eu necessite de ajuda, como entro em contato?</p>\n              </div>\n\n              <span class=\"svg-wrapper plus\">\n                <img src=\"./assets/icons/icon-plus.svg\" alt=\"Icone mais ( abrir )\" width=\"20\" height=\"20\">\n              </span>\n              <span class=\"svg-wrapper minus\">\n                <img src=\"./assets/icons/icon-minus.svg\" alt=\"Icone menos ( fechar )\" width=\"20\" height=\"20\">\n              </span>\n            </summary>\n            <div class=\"answer\">\n              <p>\n                Em caso de dúvidas ou sugestões, entre em contato com o nosso time de suporte pelo <a href=\"https://api.whatsapp.com/send?phone=5521996889971\" title=\"Nosso whatsapp\">\n              WhatsApp: +55 21 99688-9971\n                </a>. Conte sempre com a gente!\n              </p>\n            </div>\n          </details>\n        </div>\n      </div>\n    </section>",
+    "rect": {
+      "x": 0,
+      "y": 574,
+      "width": 3181,
+      "height": 737
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "3181.25px",
+      "height": "736.914px",
+      "padding": "48px 0px 96px",
+      "box-sizing": "border-box",
+      "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": ".section-wrapper",
+        "css": ""
+      },
+      {
+        "selector": "&:last-child",
+        "css": "",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:first-child)",
+        "css": "margin-left: -10px;",
+        "media": "all"
+      },
+      {
+        "selector": ".secao-faq",
+        "css": "padding-block: 3rem 6rem;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybx0b_tbcfnh",
+    "selector": "section#Depoimentos",
+    "label": "DEPOIMENTOS Seja o próximo psicólogo a o…",
+    "tag": "section",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:34:03.227Z",
+    "innerText": "DEPOIMENTOS\n\nSeja o próximo psicólogo a otimizar sua rotina!\n\nMinha e experiência com a sintropia, está sendo maravilhosa. Eu tinha muita dificuldade de centralizar minhas anotações. Agora com o aplicativo, percebi que não estou procrastinando o registro das sessões.\n\nLeide Daiane\n\n@leide_psan\n\nA Sintropia revolucionou a minha prática clínica! A otimização do tempo com a inteligência dos prontuários foi um divisor de águas. Além disso, ter acesso fácil ao WhatsApp dos pacientes e a agenda integrada ao Google Calendar simplificaram meu dia a dia.\n\nAlessandra Smaczylo\n\n@alessandrasmaczylo\n\nA Sintropia vai na direção de tudo que acredito: foco no essencial. Com ele, otimizo o meu tempo para preencher prontuários e realizar burocracias de agendamentos e de gestão clínica, e posso focar no que mais importa.\n\nMarcela Bohn\n\n@psicologamarcelabohn\n\nA sintropia superou as expectativas. Existem muitas demandas na clínica que o psicólogo precisa abraçar, e o app conseguiu unir todas elas (prontuários, agenda, lembretes, financeiro e muito mais), de uma forma super intuitiva pra simplificar o dia a dia da clínica.\n\nRafa Magarinos\n\n@rafamagarinos.psi\n\nA Sintropia já chegou transformando a minha qualidade de vida no trabalho. O recurso de IA para os prontuários é fantástico e um grande facilitador da nossa prática clínica, assim como as ferramentas para o plano de ação.\n\nMarcela Yuhara\n\n@marcelalamastra\n\nComo Psicóloga, estou sempre procurando por ferramentas que possam facilitar meu trabalho e melhorar a experiência dos meus pacientes. E é exatamente isso que a Sintropia oferece.\n\nMari Baroni\n\n@maribaronii",
+    "outerHTML": "<section class=\"section-wrapper secao-reviews\" id=\"Depoimentos\">\n      <div class=\"custom-hero__content page-width scroll-trigger animate--slide-in\">\n        <div class=\"custom-hero__aux\" style=\"color: #5d4e70\">\n          <p>depoimentos</p>\n        </div>\n        <div class=\"custom-hero__title\">\n          <p>Seja o próximo psicólogo a otimizar sua rotina!</p>\n        </div>\n      </div>\n\n      <div class=\"swiper swiper-initialized swiper-horizontal swiper-backface-hidden\">\n        <div class=\"swiper-wrapper\" id=\"swiper-wrapper-4dd8b67e2d6f0f46\" aria-live=\"off\" style=\"transition-duration: 0ms; transform: translate3d(-3440.36px, 0px, 0px); transition-delay: 0ms;\">\n          \n          \n\n          \n          \n          \n          \n        <div class=\"swiper-slide\" role=\"group\" aria-label=\"5 / 6\" data-swiper-slide-index=\"4\" style=\"width: 1116.79px; margin-right: 30px;\">\n            <div class=\"wrapper-card\">\n              <div class=\"wrapper-media\">\n                <img src=\"assets/imgs/card-5.webp\" alt=\"Card 1 imagem\" width=\"182\" height=\"182\" loading=\"lazy\">\n              </div>\n\n              <div class=\"wrapper-right-content\">\n                <div class=\"wrapper-stars\">\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n                </div>\n\n                <div class=\"wrapper-content\">\n                  <div class=\"text-quote\">\n                    <p>\n                      Minha e experiência com a sintropia, está sendo\n                      maravilhosa. Eu tinha muita dificuldade de centralizar\n                      minhas anotações. Agora com o aplicativo, percebi que\n                      não estou procrastinando o registro das sessões.\n                    </p>\n                  </div>\n\n                  <div clas=\"name-user\" style=\"padding-top: 1rem\">\n                    <p style=\"font-weight: 600; font-size: 14px\">\n                      Leide Daiane\n                    </p>\n                  </div>\n                  <div class=\"arroba\">\n                    <p>@leide_psan</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div><div class=\"swiper-slide\" role=\"group\" aria-label=\"6 / 6\" data-swiper-slide-index=\"5\" style=\"width: 1116.79px; margin-right: 30px;\">\n            <div class=\"wrapper-card\">\n              <div class=\"wrapper-media\">\n                <img src=\"assets/imgs/card-6.webp\" alt=\"Card 1 imagem\" width=\"182\" height=\"182\" loading=\"lazy\">\n              </div>\n\n              <div class=\"wrapper-right-content\">\n                <div class=\"wrapper-stars\">\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n                </div>\n\n                <div class=\"wrapper-content\">\n                  <div class=\"text-quote\">\n                    <p>\n                      A Sintropia revolucionou a minha prática clínica! A\n                      otimização do tempo com a inteligência dos prontuários\n                      foi um divisor de águas. Além disso, ter acesso fácil ao\n                      WhatsApp dos pacientes e a agenda integrada ao Google\n                      Calendar simplificaram meu dia a dia.\n                    </p>\n                  </div>\n\n                  <div clas=\"name-user\" style=\"padding-top: 1rem\">\n                    <p style=\"font-weight: 600; font-size: 14px\">\n                      Alessandra Smaczylo\n                    </p>\n                  </div>\n                  <div class=\"arroba\">\n                    <p>@alessandrasmaczylo</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div><div class=\"swiper-slide swiper-slide-prev\" role=\"group\" aria-label=\"1 / 6\" data-swiper-slide-index=\"0\" style=\"width: 1116.79px; margin-right: 30px;\">\n            <div class=\"wrapper-card\">\n              <div class=\"wrapper-media\">\n                <img src=\"assets/imgs/card-1.webp\" alt=\"Card 1 imagem\" width=\"182\" height=\"182\" loading=\"lazy\">\n              </div>\n\n              <div class=\"wrapper-right-content\">\n                <div class=\"wrapper-stars\">\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n                </div>\n\n                <div class=\"wrapper-content\">\n                  <div class=\"text-quote\">\n                    <p>\n                      A Sintropia vai na direção de tudo que acredito: foco no\n                      essencial. Com ele, otimizo o meu tempo para preencher\n                      prontuários e realizar burocracias de agendamentos e de\n                      gestão clínica, e posso focar no que mais importa.\n                    </p>\n                  </div>\n\n                  <div clas=\"name-user\" style=\"padding-top: 1rem\">\n                    <p style=\"font-weight: 600; font-size: 14px\">\n                     Marcela Bohn\n                    </p>\n                  </div>\n                  <div class=\"arroba\">\n                    <p>@psicologamarcelabohn</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div><div class=\"swiper-slide swiper-slide-active\" role=\"group\" aria-label=\"2 / 6\" data-swiper-slide-index=\"1\" style=\"width: 1116.79px; margin-right: 30px;\">\n            <div class=\"wrapper-card\">\n              <div class=\"wrapper-media\">\n                <img src=\"assets/imgs/card-2.webp\" alt=\"Card 1 imagem\" width=\"182\" height=\"182\" loading=\"lazy\">\n              </div>\n\n              <div class=\"wrapper-right-content\">\n                <div class=\"wrapper-stars\">\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n                </div>\n\n                <div class=\"wrapper-content\">\n                  <div class=\"text-quote\">\n                    <p>\n                      A sintropia superou as expectativas. Existem muitas\n                      demandas na clínica que o psicólogo precisa abraçar, e o\n                      app conseguiu unir todas elas (prontuários, agenda,\n                      lembretes, financeiro e muito mais), de uma forma super\n                      intuitiva pra simplificar o dia a dia da clínica.\n                    </p>\n                  </div>\n\n                  <div clas=\"name-user\" style=\"padding-top: 1rem\">\n                    <p style=\"font-weight: 600; font-size: 14px\">\n                      Rafa Magarinos\n                    </p>\n                  </div>\n                  <div class=\"arroba\">\n                    <p>@rafamagarinos.psi</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div><div class=\"swiper-slide swiper-slide-next\" role=\"group\" aria-label=\"3 / 6\" data-swiper-slide-index=\"2\" style=\"width: 1116.79px; margin-right: 30px;\">\n            <div class=\"wrapper-card\">\n              <div class=\"wrapper-media\">\n                <img src=\"assets/imgs/card-3.webp\" alt=\"Card 1 imagem\" width=\"182\" height=\"182\" loading=\"lazy\">\n              </div>\n\n              <div class=\"wrapper-right-content\">\n                <div class=\"wrapper-stars\">\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n                </div>\n\n                <div class=\"wrapper-content\">\n                  <div class=\"text-quote\">\n                    <p>\n                      A Sintropia já chegou transformando a minha qualidade de\n                      vida no trabalho. O recurso de IA para os prontuários é\n                      fantástico e um grande facilitador da nossa prática\n                      clínica, assim como as ferramentas para o plano de ação.\n                    </p>\n                  </div>\n\n                  <div clas=\"name-user\" style=\"padding-top: 1rem\">\n                    <p style=\"font-weight: 600; font-size: 14px\">\n                      Marcela Yuhara\n                    </p>\n                  </div>\n                  <div class=\"arroba\">\n                    <p>@marcelalamastra</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div><div class=\"swiper-slide\" role=\"group\" aria-label=\"4 / 6\" data-swiper-slide-index=\"3\" style=\"width: 1116.79px; margin-right: 30px;\">\n            <div class=\"wrapper-card\">\n              <div class=\"wrapper-media\">\n                <img src=\"assets/imgs/card-4.webp\" alt=\"Card 1 imagem\" width=\"182\" height=\"182\" loading=\"lazy\">\n              </div>\n\n              <div class=\"wrapper-right-content\">\n                <div class=\"wrapper-stars\">\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n\n                  <span class=\"svg-wrapper\">\n                    <img src=\"./assets/icons/icon-star-review.svg\" alt=\"Icone estrela review\" width=\"20\" height=\"20\">\n                  </span>\n                </div>\n\n                <div class=\"wrapper-content\">\n                  <div class=\"text-quote\">\n                    <p>\n                      Como Psicóloga, estou sempre procurando por ferramentas\n                      que possam facilitar meu trabalho e melhorar a\n                      experiência dos meus pacientes. E é exatamente isso que\n                      a Sintropia oferece.\n                    </p>\n                  </div>\n\n                  <div clas=\"name-user\" style=\"padding-top: 1rem\">\n                    <p style=\"font-weight: 600; font-size: 14px\">\n                      Mari Baroni \n                    </p>\n                  </div>\n                  <div class=\"arroba\">\n                    <p>@maribaronii</p>\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div></div>\n        <div class=\"swiper-pagination swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal\"><span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 1\"></span><span class=\"swiper-pagination-bullet swiper-pagination-bullet-active\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 2\" aria-current=\"true\"></span><span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 3\"></span><span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 4\"></span><span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 5\"></span><span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 6\"></span></div>\n      <span class=\"swiper-notification\" aria-live=\"assertive\" aria-atomic=\"true\"></span></div>\n    </section>",
+    "rect": {
+      "x": 0,
+      "y": 52,
+      "width": 3181,
+      "height": 522
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "3181.25px",
+      "height": "521.953px",
+      "padding": "48px 0px",
+      "box-sizing": "border-box",
+      "background": "rgb(251, 247, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": ".section-wrapper",
+        "css": ""
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "border-bottom: 1px solid rgb(247, 239, 255);",
+        "media": "(max-width: 1000px)"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:first-child)",
+        "css": "margin-left: -10px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 24px;",
+        "media": "all"
+      },
+      {
+        "selector": "&:not(:last-child)",
+        "css": "margin-bottom: 8px;",
+        "media": "all"
+      },
+      {
+        "selector": ".secao-reviews",
+        "css": "padding-block: 3rem; background-color: rgb(251, 247, 255);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  },
+  {
+    "id": "cap_mocybznv_0tegpq",
+    "selector": "div.footer",
+    "label": "Não conseguiu tirar sua dúvida? Toque no…",
+    "tag": "div",
+    "url": "https://sintropia.app/",
+    "title": "Sintropia — Sistema inteligente para profissionais de saúde",
+    "timestamp": "2026-04-24T13:34:06.667Z",
+    "innerText": "Não conseguiu tirar sua dúvida?\n\nToque no botão para falar com nosso suporte\n\nFalar com o suporte\nTopo\nFuncionalidades\nDepoimentos\nFAQ\nTeste grátis\n\nTodos os direitos reservados © 2026 Sintropia",
+    "outerHTML": "<div class=\"footer\">\n      <div class=\"page-width scroll-trigger animate--fade-in\">\n        <div class=\"fale-com-suporte\">\n          <div clas=\"img-wrapper\">\n            <img src=\"assets/imgs/avatar-2.svg\" alt=\"\" width=\"120\" height=\"58\" loading=\"lazy\">\n          </div>\n          <div class=\"wrapper-text\">\n            <div class=\"tile-wrapper\">\n              <h3>Não conseguiu tirar sua dúvida?</h3>\n            </div>\n            <div class=\"content-wrapepr\">\n              <p>Toque no botão para falar com nosso suporte</p>\n            </div>\n          </div>\n          <div>\n            <div class=\"suport-button\">\n              <a href=\"https://wa.me/5521996889971\" target=\"_blank\" title=\"Falar com o suporte\">\n                Falar com o suporte</a>\n            </div>\n          </div>\n        </div>\n      </div>\n      <div class=\"page-width wrapper-footer-blocks\">\n        <div class=\"logo-wrapper\">\n          <div class=\"logo-footer\">\n            <a href=\"/\" title=\"Logo - Home\">\n              <img src=\"./assets/icons/logo.svg\" alt=\"Logo\" width=\"217\" height=\"45\">\n            </a>\n          </div>\n        </div>\n\n        <div class=\"link-list-footer\">\n          <div class=\"title-footer\">\n            <p>Quick links</p>\n          </div>\n          <ul class=\"footer-block__details-content list-unstyled list-linked-footer\">\n            <li>\n              <a href=\"#\" class=\"link link--text list-menu__item list-menu__item--link list-menu__item--active\">\n                Topo\n                <img src=\"./assets/icons/icon-topo.svg\" alt=\"Logo\" width=\"20\" height=\"20\">\n              </a>\n            </li>\n\n            <li>\n              <a href=\"#Funcionalidades\" class=\"link link--text list-menu__item list-menu__item--link\">\n                Funcionalidades\n              </a>\n            </li>\n\n            <li>\n              <a href=\"#Depoimentos\" class=\"link link--text list-menu__item list-menu__item--link\">\n                Depoimentos\n              </a>\n            </li>\n\n            <li>\n              <a href=\"#Faq\" class=\"link link--text list-menu__item list-menu__item--link\">\n                FAQ\n              </a>\n            </li>\n\n            <li>\n              <a href=\"https://sintropia.me/\" target=\"_blank\" class=\"link link--text list-menu__item list-menu__item--link\">\n                Teste grátis\n              </a>\n            </li>\n          </ul>\n        </div>\n\n        <div class=\"socials wrapper\">\n          <ul>\n            <li>\n              <a href=\"\" target=\"_blank\">\n                <img src=\"assets/icons/icon-instagram.svg\" alt=\"icone instagram\" width=\"40\" height=\"40\" loading=\"lazy\">\n              </a>\n            </li>\n          </ul>\n        </div>\n      </div>\n      <div class=\"extra-footer-copy\">\n        <div class=\"page-width wrapper-extra-footer\">\n          <div class=\"left-copy\">\n            <p>Todos os direitos reservados © <span class=\"data-atual\">2026</span> Sintropia</p>\n          </div>\n          <div class=\"right\">\n            <a href=\"https://www.turbopartners.com.br/?utm_source=clients&amp;utm_medium=organic&amp;utm_campaign=footer&amp;utm_content=sintropia\" title=\"Turbo Partners\">\n              <img src=\"assets/imgs/selo-turbo.png\" alt=\"Turbo Partners\" width=\"136\" height=\"45\">\n            </a>\n          </div>\n        </div>\n      </div>\n    </div>",
+    "rect": {
+      "x": 0,
+      "y": 1312,
+      "width": 3181,
+      "height": 276
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "3181.25px",
+      "height": "276.172px",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) linear-gradient(202deg, rgb(249, 233, 255) 14.54%, rgb(221, 255, 248) 96.38%) repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "\"DM Sans\", system-ui, Arial, sans-serif",
+      "font-size": "16px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px; list-style: none;"
+      },
+      {
+        "selector": "&:last-child",
+        "css": "",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "box-shadow: rgba(211, 169, 255, 0.26) 0px 0px 4px 1px inset;",
+        "media": "all"
+      },
+      {
+        "selector": ".footer",
+        "css": "border-top: 1px solid rgb(247, 239, 255); background: linear-gradient(202deg, rgb(249, 233, 255) 14.54%, rgb(221, 255, 248) 96.38%) !important;",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "color: var(--hover-link-color);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "transform: scale(1.03);",
+        "media": "all"
+      },
+      {
+        "selector": "&:hover",
+        "css": "background-position: right center;",
+        "media": "all"
+      }
+    ]
+  }
+]

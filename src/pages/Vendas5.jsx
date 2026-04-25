@@ -8,6 +8,7 @@ import {
     ChevronRight,
     MessageCircle
 } from 'lucide-react';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 const Vendas5 = () => {
     const navigate = useNavigate();
@@ -71,9 +72,7 @@ const Vendas5 = () => {
             {/* Header/Nav */}
             <header className="absolute top-0 w-full z-50 px-6 py-4 flex justify-between items-center max-w-7xl mx-auto left-0 right-0">
                 <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-teal-500/30">
-                        Psi
-                    </div>
+                    <AiAssistantAnimation size="micro" />
                     <span className="font-bold text-xl text-slate-800 tracking-tight">MeuSistema Psi</span>
                 </div>
                 <div className="hidden md:flex gap-4">

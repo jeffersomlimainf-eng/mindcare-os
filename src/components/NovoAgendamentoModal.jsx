@@ -1,4 +1,5 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Modal from './Modal';
 import { showToast } from './Toast';
 import { usePatients } from '../contexts/PatientContext';
@@ -8,7 +9,15 @@ import { useUser } from '../contexts/UserContext';
 import Toggle from './Toggle';
 import { appointmentReminderTemplate } from '../constants/emailTemplates';
 
+import TimeWheelPicker from './ui/TimeWheelPicker';
+import DurationWheelPicker from './ui/DurationWheelPicker';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { appointmentSchema } from '../schemas/appointmentSchema';
+import { formatDateLocal } from '../utils/date';
 import { logger } from '../utils/logger';
+
+
 // HORAS estáticas removidas (agora dinâmicas via contexto)
 
 const DIAS_SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -52,25 +61,91 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
     }, [agendaSettings]);
 
     const hoje = new Date();
+    const { register, handleSubmit, control, setValue, watch, reset, formState: { errors } } = useForm({
+        resolver: zodResolver(appointmentSchema),
+        defaultValues: {
+            pacienteId: '',
+            paciente: '',
+            data: '',
+            hora: '09:00',
+            duracao: 50,
+            tipo: 'presencial',
+            recorrencia: 'unica',
+            qtdReplicar: 4,
+            status: 'confirmado',
+            obs: '',
+            dia: hoje.getDate(),
+            mes: hoje.getMonth(),
+            ano: hoje.getFullYear(),
+            diaSemana: '',
+            reminderEnabled: true
+        }
+    });
+
     const [pacienteBusca, setPacienteBusca] = useState('');
     const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
     const [showSugestoes, setShowSugestoes] = useState(false);
-    const [tipo, setTipo] = useState('presencial');
-    const [hora, setHora] = useState('09:00');
     const [customHora, setCustomHora] = useState('');
-    const [duracao, setDuracao] = useState('50');
     const [customDuracao, setCustomDuracao] = useState('');
-    const [recorrencia, setRecorrencia] = useState('unica');
-    const [qtdReplicar, setQtdReplicar] = useState(4);
-    const [status, setStatus] = useState('confirmado');
-    const [obs, setObs] = useState('');
     const [calAno, setCalAno] = useState(hoje.getFullYear());
     const [calMes, setCalMes] = useState(hoje.getMonth());
     const [diaSel, setDiaSel] = useState(hoje.getDate());
     const [sucesso, setSucesso] = useState(false);
     const [enviandoEmail, setEnviandoEmail] = useState(false);
-    const [lembreteAtivo, setLembreteAtivo] = useState(true);
     const [erroPaciente, setErroPaciente] = useState(false);
+    const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
+    const [isDurationPickerOpen, setIsDurationPickerOpen] = useState(false);
+    const timePickerRef = useRef(null);
+    const durationPickerRef = useRef(null);
+
+    // Fechar ao clicar fora
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (timePickerRef.current && !timePickerRef.current.contains(event.target)) {
+                setIsTimePickerOpen(false);
+            }
+            if (durationPickerRef.current && !durationPickerRef.current.contains(event.target)) {
+                setIsDurationPickerOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+
+
+    // Watchers para lógica condicional na UI
+    const formValues = watch();
+    const { tipo, hora, duracao, recorrencia, status, obs, reminderEnabled: lembreteAtivo } = formValues;
+
+    // Helper para atualizar campos do form que dependem do estado interno da UI (calendário/paciente)
+    useEffect(() => {
+        const d = new Date(calAno, calMes, diaSel);
+        const options = { shouldValidate: true, shouldDirty: true };
+        setValue('dia', diaSel, options);
+        setValue('mes', calMes, options);
+        setValue('ano', calAno, options);
+        setValue('data', formatDateLocal(d), options);
+        setValue('diaSemana', d.toLocaleDateString('pt-BR', { weekday: 'long' }), options);
+    }, [diaSel, calMes, calAno, setValue]);
+
+
+
+
+
+
+    useEffect(() => {
+        const options = { shouldValidate: true, shouldDirty: true };
+        if (pacienteSelecionado) {
+            setValue('pacienteId', pacienteSelecionado.id, options);
+            setValue('paciente', pacienteSelecionado.nome, options);
+        } else {
+            setValue('pacienteId', '', options);
+            setValue('paciente', pacienteBusca, options);
+        }
+    }, [pacienteSelecionado, pacienteBusca, setValue]);
+
+
     const inputRef = useRef(null);
 
     // Sugestões filtradas (usando pacientes reais do contexto)
@@ -86,154 +161,154 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
     useEffect(() => {
         if (!isOpen) {
             setSucesso(false);
+            setErroPaciente(false);
+            setPacienteBusca('');
+            setPacienteSelecionado(null);
+            reset();
             return;
         }
 
         if (consultaEditando) {
-            setPacienteBusca(consultaEditando.paciente || '');
-            
-            // Tentar restaurar o objeto do paciente selecionado se tivermos o ID
-            if (consultaEditando.pacienteId) {
-                const p = patients.find(item => item.id === consultaEditando.pacienteId);
-                if (p) setPacienteSelecionado(p);
-                else setPacienteSelecionado(null);
-            } else {
-                setPacienteSelecionado(null);
-            }
-            
-            setTipo(consultaEditando.tipo || 'presencial');
-
-            // Garantir que timeStart seja válido
             const hInicio = consultaEditando.timeStart || 9;
             const h = Math.floor(hInicio);
             const m = Math.round((hInicio % 1) * 60);
             const horaStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
             
-            if (HORAS_DINAMICAS.includes(horaStr)) {
-                setHora(horaStr);
-                setCustomHora('');
-            } else {
-                setHora('custom');
-                setCustomHora(horaStr);
+            const finalDuracao = parseInt(consultaEditando.duracao) || 50;
+
+
+            const [ano, mes, dia] = (consultaEditando.data || '').split('-').map(Number);
+
+            if (!isNaN(ano)) {
+                setCalAno(ano);
+                setCalMes(mes - 1);
+                setDiaSel(dia);
             }
 
-            const duracaoVal = String(consultaEditando.duracao || 50);
-            if (['30', '50', '60', '90', '120'].includes(duracaoVal)) {
-                setDuracao(duracaoVal);
-                setCustomDuracao('');
-            } else {
-                setDuracao('custom');
-                setCustomDuracao(duracaoVal);
-            }
-            setRecorrencia(consultaEditando.recorrencia || 'unica');
-            setStatus(consultaEditando.status || 'confirmado');
-            setObs(consultaEditando.obs || '');
+            reset({
+                pacienteId: consultaEditando.pacienteId || consultaEditando.patient_id || '',
+                paciente: consultaEditando.paciente || '',
+                tipo: consultaEditando.tipo || 'presencial',
+                duracao: finalDuracao,
+                recorrencia: consultaEditando.recorrencia || 'unica',
+                qtdReplicar: 1,
+                status: consultaEditando.status || 'confirmado',
+                hora: (consultaEditando.hora === 'custom' ? '08:00' : (consultaEditando.hora || horaStr)) || '08:00',
 
-            // Corrigir: Inicializar calendário com a data da consulta
-            if (consultaEditando.data) {
-                const [ano, mes, dia] = consultaEditando.data.split('-').map(Number);
-                if (!isNaN(ano) && !isNaN(mes) && !isNaN(dia)) {
-                    setCalAno(ano);
-                    setCalMes(mes - 1); // JS usa meses 0-11
-                    setDiaSel(dia);
-                }
-            }
+                reminderEnabled: consultaEditando.reminderEnabled !== false,
+                dia: dia,
+                mes: mes - 1,
+                ano: ano,
+                data: consultaEditando.data,
+                obs: consultaEditando.obs || '',
+                diaSemana: new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR', { weekday: 'long' })
+            });
 
-            setLembreteAtivo(consultaEditando.reminderEnabled !== false);
-            setErroPaciente(false);
+
+            setPacienteBusca(consultaEditando.paciente || '');
+            if (consultaEditando.pacienteId) {
+                const p = patients.find(item => item.id === consultaEditando.pacienteId);
+                setPacienteSelecionado(p || null);
+            }
         } else if (pacientePreSelecionado) {
             setPacienteBusca(pacientePreSelecionado.nome);
             setPacienteSelecionado(pacientePreSelecionado);
-            setTipo('presencial');
-            setHora('09:00');
-            setDuracao('50');
-            setRecorrencia('unica');
-            setObs('');
+            
             const dSel = dataPreSelecionada?.data || dataPreSelecionada;
             if (dSel instanceof Date) {
                 setDiaSel(dSel.getDate());
                 setCalMes(dSel.getMonth());
                 setCalAno(dSel.getFullYear());
-                if (dataPreSelecionada?.hora) setHora(dataPreSelecionada.hora);
             }
-        } else {
-            // Reset total para novo agendamento limpo
-            setPacienteBusca('');
-            setPacienteSelecionado(null);
-            setErroPaciente(false);
-            setTipo('presencial');
-            setHora('09:00');
-            setDuracao('50');
-            setRecorrencia('unica');
-            setObs('');
-            const dSel = dataPreSelecionada?.data || dataPreSelecionada;
-            if (dSel instanceof Date) {
-                setDiaSel(dSel.getDate());
-                setCalMes(dSel.getMonth());
-                setCalAno(dSel.getFullYear());
-                if (dataPreSelecionada?.hora) setHora(dataPreSelecionada.hora);
-            }
-            // Inicializar lembrete baseado na conf global
-            setLembreteAtivo(user?.configuracoes?.reminders_enabled !== false);
-        }
-    }, [isOpen, consultaEditando, pacientePreSelecionado, dataPreSelecionada]);
 
-    useEffect(() => {
-        const dSel = dataPreSelecionada?.data || dataPreSelecionada;
-        if (dSel instanceof Date && !consultaEditando && !pacientePreSelecionado) {
-            setDiaSel(dSel.getDate());
-            setCalMes(dSel.getMonth());
-            setCalAno(dSel.getFullYear());
-            if (dataPreSelecionada?.hora) setHora(dataPreSelecionada.hora);
+            reset({
+                pacienteId: pacientePreSelecionado.id,
+                paciente: pacientePreSelecionado.nome,
+                tipo: 'presencial',
+                hora: dataPreSelecionada?.hora || '09:00',
+                duracao: 50,
+                recorrencia: 'unica',
+                qtdReplicar: 4,
+                status: 'confirmado',
+                obs: '',
+                reminderEnabled: user?.configuracoes?.reminders_enabled !== false,
+                dia: dSel instanceof Date ? dSel.getDate() : hoje.getDate(),
+                mes: dSel instanceof Date ? dSel.getMonth() : hoje.getMonth(),
+                ano: dSel instanceof Date ? dSel.getFullYear() : hoje.getFullYear(),
+                data: formatDateLocal(dSel instanceof Date ? dSel : hoje),
+                diaSemana: (dSel instanceof Date ? dSel : hoje).toLocaleDateString('pt-BR', { weekday: 'long' })
+            });
+
+        } else {
+            reset({
+                pacienteId: '',
+                paciente: '',
+                tipo: 'presencial',
+                hora: dataPreSelecionada?.hora || '09:00',
+                duracao: 50,
+                recorrencia: 'unica',
+                qtdReplicar: 4,
+                status: 'confirmado',
+                obs: '',
+                reminderEnabled: user?.configuracoes?.reminders_enabled !== false,
+                dia: hoje.getDate(),
+                mes: hoje.getMonth(),
+                ano: hoje.getFullYear(),
+                data: formatDateLocal(hoje),
+                diaSemana: hoje.toLocaleDateString('pt-BR', { weekday: 'long' })
+            });
+
+            const dSel = dataPreSelecionada?.data || dataPreSelecionada;
+            if (dSel instanceof Date) {
+                setDiaSel(dSel.getDate());
+                setCalMes(dSel.getMonth());
+                setCalAno(dSel.getFullYear());
+            }
         }
-    }, [dataPreSelecionada]);
+    }, [isOpen, consultaEditando, pacientePreSelecionado, dataPreSelecionada, reset]);
 
     const selecionarPaciente = (p) => {
         setPacienteSelecionado(p);
         setPacienteBusca(p.nome);
         setShowSugestoes(false);
+        setErroPaciente(false);
     };
 
-    const handleSalvar = () => {
-        if (!pacienteBusca) {
-            setErroPaciente(true);
-            showToast('Informe o paciente', 'warning');
-            inputRef.current?.focus();
-            return;
-        }
-        const dataSelecionada = new Date(calAno, calMes, diaSel);
-        const dataFormatada = dataSelecionada.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-        const diaSemana = dataSelecionada.toLocaleDateString('pt-BR', { weekday: 'long' });
+    const handleSalvar = handleSubmit((data) => {
+        // Ajustes finos de campos calculados/customizados
+        const finalData = {
+            ...data,
+            // A rodinha de duração já envia o número correto
+            duracao: Number(data.duracao) || 50,
+            qtdReplicar: data.recorrencia !== 'unica' ? data.qtdReplicar : 1
+        };
 
-        onSave && onSave({
-            paciente: pacienteSelecionado?.nome || pacienteBusca,
-            pacienteId: pacienteSelecionado?.id || consultaEditando?.pacienteId || consultaEditando?.patient_id,
-            tipo,
-            hora: hora === 'custom' ? customHora : hora,
-            duracao: duracao === 'custom' ? Math.max(1, parseInt(customDuracao) || 1) : parseInt(duracao),
-            recorrencia,
-            qtdReplicar: recorrencia !== 'unica' ? qtdReplicar : 1,
-            status: consultaEditando ? status : 'confirmado',
-            obs,
-            data: dataFormatada,
-            diaSemana,
-            dia: diaSel,
-            mes: calMes,
-            ano: calAno,
-            reminderEnabled: lembreteAtivo
-        });
+
+
+        onSave && onSave(finalData);
 
         if (!consultaEditando) {
-            showToast(`Consulta agendada para ${dataFormatada} às ${hora === 'custom' ? customHora : hora}!`, 'success');
+            const dataBR = new Date(data.ano, data.mes, data.dia).toLocaleDateString('pt-BR');
+            showToast(`Consulta agendada para ${dataBR} às ${finalData.hora}!`, 'success');
             setSucesso(true);
         } else {
-            // Se veio da fila de espera, remove dela
             if (consultaEditando?.filaId) {
                 removeFromWaitingList(consultaEditando.filaId);
             }
             onClose();
         }
-    };
+    }, (errors) => {
+        logger.warn('[NovoAgendamentoModal] Erros de validação:', errors);
+        if (errors.pacienteId || errors.paciente) {
+            setErroPaciente(true);
+            showToast('Por favor, selecione um paciente na lista.', 'warning');
+        } else {
+            showToast('Verifique os campos obrigatórios.', 'warning');
+        }
+    });
+
+
+
 
     const cells = buildCalendar(calAno, calMes);
     const diaHoje = hoje.getDate();
@@ -462,272 +537,295 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-                    {/* Calendário */}
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Data</label>
-                        <div className="border border-slate-200 rounded-xl p-4 bg-slate-50">
-                            {/* Nav Mês */}
-                            <div className="flex items-center justify-between mb-3">
-                                <button onClick={mesAnterior} className="p-1.5 rounded-full hover:bg-white transition-colors text-slate-500">
-                                    <span className="material-symbols-outlined text-lg">chevron_left</span>
-                                </button>
-                                <p className="font-bold text-sm text-slate-900">
-                                    {MESES[calMes]} {calAno}
-                                </p>
-                                <button onClick={proximoMes} className="p-1.5 rounded-full hover:bg-white transition-colors text-slate-500">
-                                    <span className="material-symbols-outlined text-lg">chevron_right</span>
-                                </button>
-                            </div>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    {/* Coluna Esquerda: Calendário e Tempo */}
+                    <div className="md:col-span-5 space-y-4">
+                        <div>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Data e Calendário</label>
+                            <div className="border border-slate-200/60 rounded-[2rem] p-4 bg-slate-50/50 dark:bg-slate-800/20 backdrop-blur-sm">
+                                {/* Nav Mês */}
+                                <div className="flex items-center justify-between mb-4">
+                                    <button type="button" onClick={mesAnterior} className="size-8 flex items-center justify-center rounded-full hover:bg-white dark:hover:bg-slate-800 transition-all text-slate-500 shadow-sm border border-transparent hover:border-slate-100">
+                                        <span className="material-symbols-outlined text-lg">chevron_left</span>
+                                    </button>
+                                    <p className="font-black text-xs text-slate-900 dark:text-slate-100 uppercase tracking-widest">
+                                        {MESES[calMes]} {calAno}
+                                    </p>
+                                    <button type="button" onClick={proximoMes} className="size-8 flex items-center justify-center rounded-full hover:bg-white dark:hover:bg-slate-800 transition-all text-slate-500 shadow-sm border border-transparent hover:border-slate-100">
+                                        <span className="material-symbols-outlined text-lg">chevron_right</span>
+                                    </button>
+                                </div>
 
-                            {/* Dias da semana */}
-                            <div className="grid grid-cols-7 text-center mb-1">
-                                {DIAS_SEMANA.map((d, i) => (
-                                    <div key={i} className="text-[10px] font-bold uppercase text-slate-400 py-1">{d}</div>
-                                ))}
-                            </div>
+                                {/* Dias da semana */}
+                                <div className="grid grid-cols-7 text-center mb-2">
+                                    {DIAS_SEMANA.map((d, i) => (
+                                        <div key={i} className="text-[9px] font-black uppercase text-slate-400 py-1">{d}</div>
+                                    ))}
+                                </div>
 
-                            {/* Células do calendário */}
-                            <div className="grid grid-cols-7 gap-0.5">
-                                {cells.map((cell, idx) => {
-                                    const isHoje = cell.currentMonth && cell.dia === diaHoje && calMes === mesHoje && calAno === anoHoje;
-                                    const isSel = cell.currentMonth && cell.dia === diaSel;
-                                    return (
-                                        <button
-                                            key={idx}
-                                            disabled={!cell.currentMonth}
-                                            onClick={() => cell.currentMonth && setDiaSel(cell.dia)}
-                                            className={`
-                        h-9 w-full flex items-center justify-center rounded-full text-sm font-medium transition-all
-                        ${!cell.currentMonth ? 'text-slate-300 cursor-default' : ''}
-                        ${cell.currentMonth && !isSel && !isHoje ? 'text-slate-700 hover:bg-primary/10 cursor-pointer' : ''}
-                        ${isHoje && !isSel ? 'ring-2 ring-primary text-primary font-bold' : ''}
-                        ${isSel ? 'bg-primary text-white font-bold shadow-md shadow-primary/30 scale-110' : ''}
-                      `}
-                                        >
-                                            {cell.dia}
-                                        </button>
-                                    );
-                                })}
+                                {/* Células do calendário */}
+                                <div className="grid grid-cols-7 gap-1">
+                                    {cells.map((cell, idx) => {
+                                        const isHoje = cell.currentMonth && cell.dia === diaHoje && calMes === mesHoje && calAno === anoHoje;
+                                        const isSel = cell.currentMonth && cell.dia === diaSel;
+                                        return (
+                                            <button
+                                                key={idx}
+                                                type="button"
+                                                disabled={!cell.currentMonth}
+                                                onClick={() => cell.currentMonth && setDiaSel(cell.dia)}
+                                                className={`
+                                                    h-8 w-full flex items-center justify-center rounded-xl text-xs font-bold transition-all
+                                                    ${!cell.currentMonth ? 'text-slate-200 dark:text-slate-700 cursor-default' : ''}
+                                                    ${cell.currentMonth && !isSel && !isHoje ? 'text-slate-600 dark:text-slate-400 hover:bg-primary/10 cursor-pointer' : ''}
+                                                    ${isHoje && !isSel ? 'bg-primary/5 text-primary ring-1 ring-inset ring-primary/30' : ''}
+                                                    ${isSel ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105 z-10' : ''}
+                                                `}
+                                            >
+                                                {cell.dia}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </div>
 
                         {/* Hora e Duração */}
-                        <div className="grid grid-cols-2 gap-3 mt-3">
-                            <div className="relative">
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Horário</label>
-                                <div className="relative">
-                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">schedule</span>
-                                    <select
-                                        className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary appearance-none"
-                                        value={hora}
-                                        onChange={e => setHora(e.target.value)}
-                                    >
-                                        {HORAS_DINAMICAS.map(h => <option key={h}>{h}</option>)}
-                                        <option value="custom">Outro...</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Duração</label>
-                                <div className="relative">
-                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">hourglass_empty</span>
-                                    <select
-                                        className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary appearance-none"
-                                        value={duracao}
-                                        onChange={e => setDuracao(e.target.value)}
-                                    >
-                                        <option value="30">30 min</option>
-                                        <option value="50">50 min</option>
-                                        <option value="60">1 hora</option>
-                                        <option value="90">1h 30min</option>
-                                        <option value="120">2 horas</option>
-                                        <option value="custom">Outro...</option>
-                                    </select>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Horário da Sessão</label>
+                                <div className="relative" ref={timePickerRef}>
+                                    <Controller
+                                        name="hora"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setIsTimePickerOpen(!isTimePickerOpen)}
+                                                    className={`flex items-center gap-3 w-full h-12 px-4 rounded-[1.25rem] bg-white dark:bg-slate-900 border-2 transition-all text-left ${isTimePickerOpen ? 'border-primary ring-4 ring-primary/10 shadow-lg' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 shadow-sm'}`}
+                                                >
+                                                    <span className={`material-symbols-outlined text-xl ${isTimePickerOpen ? 'text-primary' : 'text-slate-400'}`}>schedule</span>
+                                                    <span className="text-sm font-black text-slate-900 dark:text-slate-100">
+                                                        {field.value && field.value !== 'custom' ? field.value : '08:00'}
+                                                    </span>
+                                                </button>
+
+                                                {isTimePickerOpen && (
+                                                    <div className="absolute top-full left-0 mt-2 z-[100] animate-in fade-in zoom-in-95 duration-200">
+                                                        <div className="shadow-2xl shadow-primary/20">
+                                                            <TimeWheelPicker 
+                                                                value={field.value} 
+                                                                onChange={field.onChange} 
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </div>
+
+                            </div>
+
+
+
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Duração</label>
+                                <div className="relative" ref={durationPickerRef}>
+                                    <Controller
+                                        name="duracao"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setIsDurationPickerOpen(!isDurationPickerOpen)}
+                                                    className={`flex items-center gap-3 w-full h-12 px-4 rounded-[1.25rem] bg-white dark:bg-slate-900 border-2 transition-all text-left ${isDurationPickerOpen ? 'border-primary ring-4 ring-primary/10 shadow-lg' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 shadow-sm'}`}
+                                                >
+                                                    <span className={`material-symbols-outlined text-xl ${isDurationPickerOpen ? 'text-primary' : 'text-slate-400'}`}>hourglass_empty</span>
+                                                    <span className="text-sm font-black text-slate-900 dark:text-slate-100">
+                                                        {parseInt(field.value) || 50} min
+                                                    </span>
+                                                </button>
+
+                                                {isDurationPickerOpen && (
+                                                    <div className="absolute top-full right-0 mt-2 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                                                        <div className="shadow-2xl shadow-primary/20">
+                                                            <DurationWheelPicker 
+                                                                value={field.value} 
+                                                                onChange={field.onChange} 
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    />
                                 </div>
                             </div>
+
                         </div>
 
-                        {/* Customizados Inputs */}
-                        {(hora === 'custom' || duracao === 'custom') && (
-                            <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col gap-2">
-                                {hora === 'custom' && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs font-bold text-slate-500">Horário Manual:</span>
-                                        <input 
-                                            type="time" 
-                                            value={customHora} 
-                                            onChange={e => setCustomHora(e.target.value)} 
-                                            className="px-2 py-1 text-sm font-bold border border-slate-200 rounded-lg text-primary outline-none focus:ring-2 focus:ring-primary/20"
-                                        />
-                                    </div>
-                                )}
-                                {duracao === 'custom' && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs font-bold text-slate-500">Duração (Minutos):</span>
-                                        <input 
-                                            type="number" 
-                                            min="1" 
-                                            placeholder="Ex: 75" 
-                                            value={customDuracao} 
-                                            onChange={e => setCustomDuracao(e.target.value)} 
-                                            className="w-20 px-2 py-1 text-sm font-bold border border-slate-200 rounded-lg text-primary outline-none focus:ring-2 focus:ring-primary/20"
-                                        />
-                                        <span className="text-[10px] text-slate-400">({Math.floor(parseInt(customDuracao || 0)/60)}h {parseInt(customDuracao || 0)%60}m)</span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+
+
 
                         {/* Data resumo */}
                         {diaSel && (
-                            <div className="mt-3 flex items-center gap-2 p-3 bg-primary/5 border border-primary/20 rounded-xl">
-                                <span className="material-symbols-outlined text-primary text-sm">event</span>
-                                <span className="text-xs font-bold text-primary capitalize">
-                                    {diaSemanaAtual}, {diaSel} de {MESES[calMes]} de {calAno} · {hora === 'custom' ? customHora : hora}
-                                </span>
+                            <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/10 rounded-[1.5rem] transition-all">
+                                <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                    <span className="material-symbols-outlined text-xl">event_available</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[9px] font-black text-primary uppercase tracking-widest opacity-60">Status da Agenda</p>
+                                    <p className="text-xs font-black text-slate-900 dark:text-slate-100 capitalize truncate">
+                                        {diaSemanaAtual}, {diaSel} de {MESES[calMes]} · {hora && hora !== 'custom' ? hora : '08:00'}
+                                    </p>
+
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Tipo + Recorrência */}
-                    <div className="space-y-5">
-                        {/* Tipo de Atendimento */}
+                    {/* Coluna Direita: Recorrência e Detalhes */}
+                    <div className="md:col-span-7 space-y-6">
+                        {/* Modalidade */}
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tipo de Atendimento</label>
-                            <div className="grid grid-cols-2 gap-3">
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Tipo de Atendimento</label>
+                            <div className="p-1.5 bg-slate-100/50 dark:bg-slate-800/50 rounded-[1.75rem] flex relative overflow-hidden">
                                 {[
-                                    { value: 'presencial', label: 'Presencial', icon: 'person', desc: 'No consultório', active: 'border-primary bg-primary text-white shadow-lg shadow-primary/25', hover: 'hover:border-primary/40' },
-                                    { value: 'teleconsulta', label: 'Teleconsulta', icon: 'videocam', desc: 'Videochamada', active: 'border-emerald-500 bg-emerald-500 text-white shadow-lg shadow-emerald-500/25', hover: 'hover:border-emerald-500/40' },
+                                    { value: 'presencial', label: 'Presencial', icon: 'person' },
+                                    { value: 'online', label: 'Teleconsulta', icon: 'videocam' },
                                 ].map(t => (
                                     <button
                                         key={t.value}
-                                        onClick={() => setTipo(t.value)}
-                                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${tipo === t.value
-                                            ? t.active
-                                            : `border-slate-200 bg-white text-slate-500 ${t.hover}`
-                                            }`}
+                                        type="button"
+                                        onClick={() => setValue('tipo', t.value)}
+                                        className="relative flex-1 flex items-center justify-center gap-2 h-11 z-10 transition-colors"
                                     >
-                                        <span className={`material-symbols-outlined text-2xl`}>{t.icon}</span>
-                                        <div className="text-center">
-                                            <p className="text-sm font-bold">{t.label}</p>
-                                            <p className={`text-[10px] ${tipo === t.value ? 'text-white/70' : 'text-slate-400'}`}>{t.desc}</p>
-                                        </div>
+                                        {tipo === t.value && (
+                                            <motion.div 
+                                                layoutId="typeHighlight"
+                                                className="absolute inset-0 bg-white dark:bg-slate-700 rounded-2xl shadow-md border border-slate-200/50 dark:border-slate-600/50"
+                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                            />
+                                        )}
+                                        <span className={`material-symbols-outlined text-lg relative z-20 ${tipo === t.value ? 'text-primary' : 'text-slate-400'}`}>{t.icon}</span>
+                                        <span className={`text-[11px] font-black uppercase tracking-tight relative z-20 ${tipo === t.value ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>{t.label}</span>
                                     </button>
-                                )) /* JSX Closed */}
+                                ))}
                             </div>
+
                         </div>
 
                         {/* Recorrência */}
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Recorrência</label>
-                            <div className="space-y-2">
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Recorrência das Sessões</label>
+                            <div className="grid grid-cols-2 gap-3">
                                 {[
-                                    { value: 'unica', label: 'Sessão Única', desc: 'Agendamento pontual', icon: 'event' },
-                                    { value: 'semanal', label: 'Semanal', desc: `Toda ${diaSemanaAtual}`, icon: 'event_repeat' },
-                                    { value: 'quinzenal', label: 'Quinzenal', desc: 'A cada 15 dias', icon: 'calendar_view_week' },
-                                    { value: 'mensal', label: 'Mensal', desc: `Todo dia ${diaSel}`, icon: 'calendar_month' },
+                                    { value: 'unica', label: 'Sessão Única', desc: 'Pontual', icon: 'event' },
+                                    { value: 'semanal', label: 'Semanal', desc: `7 em 7 dias`, icon: 'event_repeat' },
+                                    { value: 'quinzenal', label: 'Quinzenal', desc: '15 em 15 dias', icon: 'calendar_view_week' },
+                                    { value: 'mensal', label: 'Mensal', desc: `Todo mês`, icon: 'calendar_month' },
                                 ].map(r => (
                                     <label
                                         key={r.value}
-                                        className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${recorrencia === r.value
+                                        className={`flex items-center gap-3 p-2.5 rounded-[1.25rem] border-2 cursor-pointer transition-all ${recorrencia === r.value
                                             ? 'border-primary bg-primary/5'
-                                            : 'border-slate-200 bg-slate-50 hover:border-primary/30'
+                                            : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-200'
                                             }`}
                                     >
-                                        <input className="sr-only" type="radio" name="recorrencia" value={r.value} checked={recorrencia === r.value} onChange={e => setRecorrencia(e.target.value)} />
-                                        <span className={`material-symbols-outlined text-lg ${recorrencia === r.value ? 'text-primary' : 'text-slate-400'}`}>{r.icon}</span>
-                                        <div className="flex-1 min-w-0">
-                                            <p className={`text-sm font-bold ${recorrencia === r.value ? 'text-primary' : 'text-slate-700'}`}>{r.label}</p>
-                                            <p className="text-[11px] text-slate-400 capitalize">{r.desc}</p>
+                                        <input className="sr-only" type="radio" {...register('recorrencia')} value={r.value} />
+                                        <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${recorrencia === r.value ? 'bg-primary text-white' : 'bg-slate-50 dark:bg-slate-800 text-slate-400'}`}>
+                                            <span className="material-symbols-outlined text-base">{r.icon}</span>
                                         </div>
-                                        <div className={`size-4 rounded-full border-2 transition-all shrink-0 ${recorrencia === r.value ? 'border-primary bg-primary' : 'border-slate-300'}`}>
-                                            {recorrencia === r.value && <div className="size-2 bg-white rounded-full m-auto" style={{ marginTop: 2 }} />}
+                                        <div className="flex-1 min-w-0">
+                                            <p className={`text-[10px] font-black uppercase tracking-tight ${recorrencia === r.value ? 'text-primary' : 'text-slate-700 dark:text-slate-300'}`}>{r.label}</p>
+                                            <p className="text-[9px] font-bold text-slate-400 truncate">{r.desc}</p>
+                                        </div>
+                                        <div className={`size-3.5 rounded-full border-2 transition-all shrink-0 ${recorrencia === r.value ? 'border-primary bg-primary' : 'border-slate-300 dark:border-slate-700'}`}>
+                                            {recorrencia === r.value && <div className="size-1.5 bg-white rounded-full m-auto" style={{ marginTop: 2.5 }} />}
                                         </div>
                                     </label>
                                 ))}
                             </div>
+                            
                             {recorrencia !== 'unica' && (
-                                <div className="mt-3 p-3 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-sm text-primary">repeat</span>
-                                        <span className="text-xs font-bold text-slate-700">Replicar esta consulta por:</span>
+                                <div className="mt-3 p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-between animate-in zoom-in-95 duration-300">
+                                    <div className="flex items-center gap-3">
+                                        <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                                            <span className="material-symbols-outlined text-sm">repeat</span>
+                                        </div>
+                                        <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Repetir por quantas {recorrencia === 'semanal' ? 'semanas' : recorrencia === 'quinzenal' ? 'quinzenas' : 'meses'}?</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <input 
                                             type="number" 
                                             min="1" 
                                             max="52" 
-                                            value={qtdReplicar} 
-                                            onChange={e => setQtdReplicar(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
-                                            className="w-16 h-8 text-center bg-white border border-slate-200 rounded-lg text-sm font-bold text-primary outline-none focus:ring-2 focus:ring-primary/20"
+                                            {...register('qtdReplicar', { valueAsNumber: true })}
+                                            className="w-16 h-10 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-black text-primary outline-none focus:ring-4 focus:ring-primary/10 shadow-sm"
                                         />
-                                        <span className="text-xs text-slate-500 font-medium">
-                                            {recorrencia === 'semanal' ? 'semanas' : recorrencia === 'quinzenal' ? 'quinzenas' : 'meses'}
-                                        </span>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        {/* Status (Apenas na edição) */}
-                        {consultaEditando && (
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status do Agendamento</label>
-                                <select
-                                    className="w-full h-11 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm transition-all"
-                                    value={status}
-                                    onChange={e => setStatus(e.target.value)}
-                                >
-                                    <option value="confirmado">Confirmado</option>
-                                    <option value="aguardando">Aguardando</option>
-                                    <option value="em_sessao">Em Sessão</option>
-                                    <option value="concluido">Concluído</option>
-                                    <option value="cancelado">Cancelado</option>
-                                    <option value="faltou">Faltou</option>
-                                </select>
-                            </div>
-                        )}
+                        <div className="grid grid-cols-1 gap-5">
+                            {consultaEditando && (
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Status do Agendamento</label>
+                                    <div className="relative group">
+                                        <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none group-focus-within:text-primary transition-colors">check_circle</span>
+                                        <select
+                                            className="w-full h-12 pl-10 pr-3 rounded-[1.25rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none text-sm font-bold text-slate-900 dark:text-slate-100 transition-all appearance-none"
+                                            {...register('status')}
+                                        >
+                                            <option value="confirmado">Confirmado</option>
+                                            <option value="aguardando">Aguardando</option>
+                                            <option value="em_sessao">Em Sessão</option>
+                                            <option value="concluido">Concluído</option>
+                                            <option value="cancelado">Cancelado</option>
+                                            <option value="faltou">Faltou</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
 
-                        {/* Observações */}
-                        <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Observações</label>
-                            <textarea
-                                className="w-full rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm p-3 resize-none transition-all"
-                                rows={3}
-                                placeholder="Primeira consulta, urgência, mobilidade reduzida..."
-                                value={obs}
-                                onChange={e => setObs(e.target.value)}
-                            />
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Observações Privadas</label>
+                                <textarea
+                                    className="w-full rounded-[1.5rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none text-sm font-medium p-4 resize-none transition-all placeholder:text-slate-300 shadow-sm"
+                                    rows={consultaEditando ? 2 : 3}
+                                    placeholder="Detalhes importantes sobre a sessão..."
+                                    {...register('obs')}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="flex items-center justify-between px-7 py-5 border-t border-slate-100 bg-slate-50 shrink-0">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                            <Toggle value={lembreteAtivo} onChange={setLembreteAtivo} />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lembrete Automático</span>
+            <div className="flex items-center justify-between px-6 py-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-2.5">
+                            <Toggle value={lembreteAtivo} onChange={val => setValue('reminderEnabled', val)} />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Lembretes</span>
                         </div>
                         {lembreteAtivo && (
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 animate-in fade-in zoom-in duration-300">
-                                <span className="material-symbols-outlined text-[10px] font-bold">mail</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest">E-mail Ativado</span>
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full border border-emerald-100 dark:border-emerald-500/20 animate-in fade-in zoom-in duration-300">
+                                <span className="material-symbols-outlined text-[12px] font-bold">mail</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest">Ativo</span>
                             </div>
                         )}
                     </div>
-                    {lembreteAtivo && (
-                        <p className="text-[9px] text-slate-400 font-medium ml-12">
-                            A Psiquê enviará um e-mail de lembrete profissional 24h antes desta sessão.
-                        </p>
-                    )}
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex items-center gap-3">
                     {consultaEditando && (
                         <button 
+                            type="button"
                             onClick={() => {
                                 if (window.confirm('Tem certeza que deseja excluir este agendamento?')) {
                                     deleteAppointment(consultaEditando.id);
@@ -735,23 +833,25 @@ const NovoAgendamentoModal = ({ isOpen, onClose, onSave, dataPreSelecionada, con
                                     onClose();
                                 }
                             }}
-                            className="px-5 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                            className="h-12 px-6 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all"
                         >
                             Excluir
                         </button>
                     )}
-                    <button onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
+                    <button type="button" onClick={onClose} className="h-12 px-6 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 transition-all">
                         Cancelar
                     </button>
                     <button
+                        type="button"
                         onClick={handleSalvar}
-                        className="flex items-center gap-2 px-7 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
+                        className="flex items-center gap-3 h-12 px-8 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.97] hover:-translate-y-0.5"
                     >
-                        <span className="material-symbols-outlined text-base">{consultaEditando ? 'save' : 'check_circle'}</span>
-                        {consultaEditando ? 'Salvar Alterações' : 'Confirmar Agendamento'}
+                        <span className="material-symbols-outlined text-lg">{consultaEditando ? 'save' : 'check_circle'}</span>
+                        {consultaEditando ? 'Salvar Alterações' : 'Confirmar'}
                     </button>
                 </div>
             </div>
+
         </Modal>
     );
 };

@@ -1,26 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 const Login = () => {
     const navigate = useNavigate();
-    const [showPass, setShowPass] = useState(false);
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [view, setView] = useState('login');
     const [recoveryEmail, setRecoveryEmail] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
-
-    const { login, loginWithGoogle, resetPassword, loading } = useUser();
     const [erro, setErro] = useState('');
     const [loadingGoogle, setLoadingGoogle] = useState(false);
 
+    const { login, loginWithGoogle, loginWithToken, resetPassword, loading } = useUser();
+
+    const orbRef = useRef(null);
+
     useEffect(() => {
-        document.title = "Login | Meu Sistema Psi - Acesse sua Clínica";
-        const meta = document.querySelector('meta[name="description"]');
-        if (meta) meta.setAttribute('content', 'Acesse o Meu Sistema Psi e gerencie sua clínica de psicologia com prontuários, agenda e financeiro. Login seguro e rápido.');
-        
-        // Add canonical tag
+        document.title = "Entrar — Meu Sistema PSI";
+
+        // Inject Font Awesome if not already present
+        if (!document.getElementById('fa-cdn')) {
+            const link = document.createElement('link');
+            link.id = 'fa-cdn';
+            link.rel = 'stylesheet';
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css';
+            document.head.appendChild(link);
+        }
+
+        // SEO: Meta Description
+        const metaDesc = document.querySelector('meta[name="description"]');
+        const originalDesc = metaDesc ? metaDesc.getAttribute('content') : '';
+        if (metaDesc) {
+            metaDesc.setAttribute('content', 'Acesse sua conta no Meu Sistema Psi. Prontuário eletrônico seguro, agenda inteligente e gestão financeira para psicólogos em um só lugar. Teste grátis.');
+        }
+
+        // SEO: Canonical
         let canonical = document.querySelector('link[rel="canonical"]');
         if (!canonical) {
             canonical = document.createElement('link');
@@ -28,19 +44,68 @@ const Login = () => {
             document.head.appendChild(canonical);
         }
         canonical.setAttribute('href', 'https://meusistemapsi.com.br/login');
+
+        // SEO: JSON-LD
+        const jsonLd = {
+            "@context": "https://schema.org",
+            "@type": "LoginPage",
+            "name": "Login - Meu Sistema Psi",
+            "description": "Página de acesso ao sistema de gestão para psicólogos.",
+            "url": "https://meusistemapsi.com.br/login",
+            "potentialAction": {
+                "@type": "LoginAction",
+                "target": "https://meusistemapsi.com.br/login"
+            }
+        };
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = 'json-ld-login';
+        script.text = JSON.stringify(jsonLd);
+        document.head.appendChild(script);
+
+        // Pointer parallax on background orb
+        const orb = orbRef.current;
+        const handlePointerMove = (e) => {
+            if (!orb) return;
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+            orb.style.transform = `translate(calc(-50% + ${x * 8}px), calc(-50% + ${y * 8}px))`;
+        };
+        window.addEventListener('pointermove', handlePointerMove);
+
+        return () => {
+            window.removeEventListener('pointermove', handlePointerMove);
+            if (metaDesc) metaDesc.setAttribute('content', originalDesc);
+            const existingScript = document.getElementById('json-ld-login');
+            if (existingScript) existingScript.remove();
+        };
     }, []);
+
+    // One-Click Login
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const token = searchParams.get('token');
+        if (token) {
+            (async () => {
+                setErro('');
+                const res = await loginWithToken(token);
+                if (res.success) {
+                    setMessage({ type: 'success', text: 'Acesso validado! Entrando...' });
+                    setTimeout(() => navigate('/portal'), 1500);
+                } else {
+                    setErro('Link de acesso inválido ou expirado.');
+                }
+            })();
+        }
+    }, [window.location.search]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setErro('');
         setMessage({ type: '', text: '' });
-        
         const res = await login(email, senha);
-        if (res.success) {
-            navigate('/dashboard');
-        } else {
-            setErro(res.message);
-        }
+        if (res.success) navigate('/dashboard');
+        else setErro(res.message);
     };
 
     const handleGoogleLogin = async () => {
@@ -48,16 +113,8 @@ const Login = () => {
         setLoadingGoogle(true);
         try {
             const res = await loginWithGoogle();
-            if (res && !res.success) {
-                if (res.message.includes('provider is not enabled')) {
-                    setErro('O login com Google ainda não foi ativado no servidor. Por favor, use e-mail e senha.');
-                } else {
-                    setErro(res.message);
-                }
-            }
+            if (res && !res.success) setErro(res.message);
         } finally {
-            // No caso de sucesso, o browser redireciona, então o setLoading(false) 
-            // só importa se o usuário voltar ou houver erro.
             setLoadingGoogle(false);
         }
     };
@@ -67,7 +124,7 @@ const Login = () => {
         setErro('');
         const res = await resetPassword(recoveryEmail);
         if (res.success) {
-            setMessage({ type: 'success', text: 'E-mail de recuperação enviado! Verifique sua caixa de entrada.' });
+            setMessage({ type: 'success', text: 'Link de recuperação enviado!' });
             setTimeout(() => setView('login'), 3000);
         } else {
             setErro(res.message);
@@ -75,205 +132,442 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex bg-gradient-to-br from-violet-50 via-purple-50/50 to-fuchsia-50/30 dark:bg-slate-950">
-            {/* Left: Form */}
-            <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-24">
-                <div className="mx-auto w-full max-w-sm">
-                    {/* Logo */}
-                    <div className="flex items-center gap-2 mb-8">
-                        <div className="bg-gradient-to-br from-violet-400 to-purple-400 p-2.5 rounded-xl shadow-md shadow-violet-200/40">
-                            <span className="material-symbols-outlined text-2xl text-white">psychology</span>
-                        </div>
-                        <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Meu Sistema Psi</span>
+        <div className="l2-wrap">
+            {/* VISUAL */}
+            <section className="l2-visual" aria-hidden="true">
+                <div className="l2-orb" ref={orbRef}></div>
+
+                <div className="l2-ring l2-r1">
+                    <div className="l2-rotator">
+                        <svg className="l2-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+                            <defs>
+                                <path id="r1p" d="M 0,-540 A 540,540 0 1,1 -0.01,-540" fill="none"/>
+                            </defs>
+                            <text>
+                                <textPath href="#r1p" startOffset="0">
+                                    DA SESSÃO AO PRONTUÁRIO SEM TOCAR NO TECLADO {'  '}<tspan className="l2-sep">&#xf130;</tspan>{'  '}DA SESSÃO AO PRONTUÁRIO SEM TOCAR NO TECLADO {'  '}<tspan className="l2-sep">&#xf130;</tspan>{'  '}DA SESSÃO AO PRONTUÁRIO SEM TOCAR NO TECLADO {'  '}<tspan className="l2-sep">&#xf130;</tspan>{'  '}
+                                </textPath>
+                            </text>
+                        </svg>
                     </div>
+                </div>
 
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                            {view === 'login' ? 'Login — Bem-vindo de volta!' : 'Recuperar Acesso'}
-                        </h1>
-                        <p className="text-slate-500 dark:text-slate-400 font-medium">
-                            {view === 'login' 
-                                ? 'Acesse sua conta para gerenciar seus atendimentos.' 
-                                : 'Enviaremos um link para você redefinir sua senha.'}
-                        </p>
+                <div className="l2-ring l2-r2 l2-reverse">
+                    <div className="l2-rotator">
+                        <svg className="l2-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+                            <defs>
+                                <path id="r2p" d="M 0,-440 A 440,440 0 1,1 -0.01,-440" fill="none"/>
+                            </defs>
+                            <text>
+                                <textPath href="#r2p" startOffset="0">
+                                    SUPORTE QUE CAMINHA COM VOCÊ {'  '}<tspan className="l2-sep">&#xf70c;</tspan>{'  '}SUPORTE QUE CAMINHA COM VOCÊ {'  '}<tspan className="l2-sep">&#xf70c;</tspan>{'  '}SUPORTE QUE CAMINHA COM VOCÊ {'  '}<tspan className="l2-sep">&#xf70c;</tspan>{'  '}SUPORTE QUE CAMINHA COM VOCÊ {'  '}<tspan className="l2-sep">&#xf70c;</tspan>{'  '}
+                                </textPath>
+                            </text>
+                        </svg>
                     </div>
+                </div>
 
-                    {erro && (
-                        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
-                            <span className="material-symbols-outlined text-red-500">error</span>
-                            <span className="text-sm font-bold text-red-600 dark:text-red-400">{erro}</span>
-                        </div>
-                    )}
+                <div className="l2-ring l2-r3">
+                    <div className="l2-rotator">
+                        <svg className="l2-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+                            <defs>
+                                <path id="r3p" d="M 0,-350 A 350,350 0 1,1 -0.01,-350" fill="none"/>
+                            </defs>
+                            <text>
+                                <textPath href="#r3p" startOffset="0">
+                                    SEGURANÇA QUE INSPIRA CONFIANÇA {'  '}<tspan className="l2-sep">&#xf023;</tspan>{'  '}SEGURANÇA QUE INSPIRA CONFIANÇA {'  '}<tspan className="l2-sep">&#xf023;</tspan>{'  '}SEGURANÇA QUE INSPIRA CONFIANÇA {'  '}<tspan className="l2-sep">&#xf023;</tspan>{'  '}
+                                </textPath>
+                            </text>
+                        </svg>
+                    </div>
+                </div>
 
-                    {message.text && (
-                        <div className={`mb-6 p-4 ${message.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-blue-50 border-blue-200 text-blue-600'} border rounded-xl flex items-center gap-3`}>
-                            <span className="material-symbols-outlined">{message.type === 'success' ? 'check_circle' : 'info'}</span>
-                            <span className="text-sm font-bold">{message.text}</span>
-                        </div>
-                    )}
+                <div className="l2-ring l2-r4 l2-reverse">
+                    <div className="l2-rotator">
+                        <svg className="l2-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+                            <defs>
+                                <path id="r4p" d="M 0,-265 A 265,265 0 1,1 -0.01,-265" fill="none"/>
+                            </defs>
+                            <text>
+                                <textPath href="#r4p" startOffset="0">
+                                    INTUITIVA DE VERDADE {'  '}<tspan className="l2-sep">&#xf5bb;</tspan>{'  '}INTUITIVA DE VERDADE {'  '}<tspan className="l2-sep">&#xf5bb;</tspan>{'  '}INTUITIVA DE VERDADE {'  '}<tspan className="l2-sep">&#xf5bb;</tspan>{'  '}INTUITIVA DE VERDADE {'  '}<tspan className="l2-sep">&#xf5bb;</tspan>{'  '}
+                                </textPath>
+                            </text>
+                        </svg>
+                    </div>
+                </div>
 
-                    {view === 'login' ? (
-                        <form onSubmit={handleLogin} className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-1.5 uppercase tracking-wider opacity-60">E-mail</label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                    className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
-                                    placeholder="seu@email.com"
-                                    required
-                                />
+                <div className="l2-ai-center">
+                    <AiAssistantAnimation size="large" />
+                </div>
+            </section>
+
+            {/* AUTH CARD */}
+            <div className="l2-auth-wrapper">
+                <section className="l2-auth" aria-label="Acesso">
+                    <div className="l2-panel">
+
+                        {/* Brand */}
+                        <div className="l2-brand">
+                            <svg className="l2-brand-icon" viewBox="0 0 200 260" aria-hidden="true">
+                                <defs>
+                                    <linearGradient id="brandGrad2" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0%" stopColor="#ff66c2"/>
+                                        <stop offset="100%" stopColor="#c940a8"/>
+                                    </linearGradient>
+                                </defs>
+                                <g fill="none" stroke="url(#brandGrad2)" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M 170,15 C 85,15 30,70 30,130 C 75,125 115,105 145,80 C 165,60 172,35 170,15 Z"/>
+                                    <path d="M 30,245 C 115,245 170,190 170,130 C 125,135 85,155 55,180 C 35,200 28,225 30,245 Z"/>
+                                </g>
+                            </svg>
+                            <div className="l2-wordmark">
+                                <span>Meu Sistema</span><span className="l2-psi">.PSI</span>
                             </div>
-                            <div>
-                                <label className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-1.5 uppercase tracking-wider opacity-60">Senha</label>
-                                <div className="relative">
+                        </div>
+
+                        {erro && (
+                            <div className="l2-error">{erro}</div>
+                        )}
+                        {message.text && (
+                            <div className={`l2-message l2-message--${message.type}`}>{message.text}</div>
+                        )}
+
+                        {view === 'login' ? (
+                            <form className="l2-row" onSubmit={handleLogin} autoComplete="on" noValidate>
+                                <p className="l2-muted">Faça login na sua conta e otimize sua rotina com Meu Sistema.PSI.</p>
+
+                                <div className="l2-field">
                                     <input
-                                        type={showPass ? 'text' : 'password'}
+                                        className="l2-input"
+                                        type="email"
+                                        placeholder="E-mail"
+                                        required
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                        autoComplete="username"
+                                        inputMode="email"
+                                        autoCapitalize="none"
+                                        spellCheck="false"
+                                    />
+                                </div>
+
+                                <div className="l2-field">
+                                    <input
+                                        className="l2-input"
+                                        type="password"
+                                        placeholder="Senha"
+                                        required
                                         value={senha}
                                         onChange={e => setSenha(e.target.value)}
-                                        className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 pr-12 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
-                                        placeholder="••••••••"
+                                        autoComplete="current-password"
+                                    />
+                                </div>
+
+                                <button type="button" className="l2-naked-btn" onClick={() => setView('recovery')}>
+                                    Recuperar Senha
+                                </button>
+
+                                <button type="submit" className="l2-btn l2-btn--primary" disabled={loading}>
+                                    {loading ? 'Entrando…' : 'Entrar'}
+                                </button>
+
+                                <button type="button" className="l2-btn l2-btn--secondary" onClick={handleGoogleLogin} disabled={loadingGoogle}>
+                                    <span className="l2-btn-icon" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 18 18">
+                                            <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.17-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.71v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.61z"/>
+                                            <path fill="#34A853" d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.91-2.26c-.81.54-1.84.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33A9 9 0 0 0 9 18z"/>
+                                            <path fill="#FBBC05" d="M3.96 10.71A5.41 5.41 0 0 1 3.68 9c0-.59.1-1.17.28-1.71V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l3-2.33z"/>
+                                            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z"/>
+                                        </svg>
+                                    </span>
+                                    <span>{loadingGoogle ? 'Conectando...' : 'Entrar com Google'}</span>
+                                </button>
+                            </form>
+                        ) : (
+                            <form className="l2-row" onSubmit={handleRecovery} noValidate>
+                                <p className="l2-muted">Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
+
+                                <div className="l2-field">
+                                    <input
+                                        className="l2-input"
+                                        type="email"
+                                        placeholder="E-mail cadastrado"
                                         required
+                                        value={recoveryEmail}
+                                        onChange={e => setRecoveryEmail(e.target.value)}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPass(!showPass)}
-                                        className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-violet-500 transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined">{showPass ? 'visibility_off' : 'visibility'}</span>
-                                    </button>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <label className="flex items-center gap-2 cursor-pointer group">
-                                    <input type="checkbox" defaultChecked className="rounded border-slate-300 text-violet-500 focus:ring-violet-500/20" />
-                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">Lembrar de mim</span>
-                                </label>
-                                <button type="button" onClick={() => setView('recovery')} className="text-sm font-bold text-violet-600 hover:text-violet-500 transition-colors">Esqueci minha senha</button>
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="flex w-full justify-center rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3.5 text-sm font-bold leading-6 text-white shadow-xl shadow-purple-100 hover:from-purple-700 hover:to-indigo-700 transition-all active:scale-[0.98] group items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {loading ? (
-                                    <>
-                                        <span className="animate-spin size-4 border-2 border-white border-t-transparent rounded-full font-bold"></span>
-                                        Acessando...
-                                    </>
-                                ) : (
-                                    <>
-                                        Acessar Sistema
-                                        <span className="material-symbols-outlined text-transparent group-hover:text-white group-hover:translate-x-1 transition-all text-sm font-bold">arrow_forward</span>
-                                    </>
-                                )}
+
+                                <button type="submit" className="l2-btn l2-btn--primary" disabled={loading}>
+                                    {loading ? 'Enviando…' : 'Enviar Link de Recuperação'}
+                                </button>
+
+                                <button type="button" className="l2-btn l2-btn--secondary" onClick={() => setView('login')}>
+                                    Voltar para o login
+                                </button>
+                            </form>
+                        )}
+
+                        <div className="l2-content-bottom">
+                            <button type="button" className="l2-btn l2-btn--secondary l2-btn--sm">
+                                <span className="l2-btn-icon" aria-hidden="true"><i className="fa-solid fa-download"></i></span>
+                                <span>Instale nosso app</span>
                             </button>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleRecovery} className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-1.5 uppercase tracking-wider opacity-60">E-mail cadastrado</label>
-                                <input
-                                    type="email"
-                                    value={recoveryEmail}
-                                    onChange={e => setRecoveryEmail(e.target.value)}
-                                    className="block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-medium text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all placeholder:text-slate-400"
-                                    placeholder="seu@email.com"
-                                    required
-                                />
+
+                            <div className="l2-aux">
+                                <span>Primeira vez aqui?</span>
+                                <Link to="/cadastrar" className="l2-aux-link">Cadastre-se Agora!</Link>
                             </div>
-                            <button
-                                type="submit"
-                                className="w-full py-3.5 bg-gradient-to-r from-violet-400 to-purple-400 text-white font-bold rounded-xl shadow-lg shadow-violet-200/40 hover:shadow-violet-300/50 hover:from-violet-500 hover:to-purple-500 transition-all active:scale-[0.99] uppercase tracking-widest text-xs"
-                            >
-                                Enviar Link de Recuperação
-                            </button>
-                            <button type="button" onClick={() => setView('login')} className="w-full text-sm font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">Voltar para o login</button>
-                        </form>
-                    )}
-
-                    <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-slate-200 dark:border-slate-800"></div>
+                            <div className="l2-aux">
+                                <span>Não é psi?</span>
+                                <Link to="/paciente/login" className="l2-aux-link">Sou paciente</Link>
                             </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-gradient-to-br from-violet-50 via-purple-50/50 to-fuchsia-50/30 dark:bg-slate-950 px-4 text-slate-500 font-bold tracking-widest">Ou continue com</span>
-                            </div>
-                        </div>
 
-                        <button
-                            type="button"
-                            onClick={handleGoogleLogin}
-                            disabled={loadingGoogle}
-                            className="mt-6 w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
-                        >
-                            {loadingGoogle ? (
-                                <span className="animate-spin size-5 border-2 border-violet-500 border-t-transparent rounded-full"></span>
-                            ) : (
-                                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                                    <path
-                                        fill="#4285F4"
-                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                    />
-                                    <path
-                                        fill="#34A853"
-                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                    />
-                                    <path
-                                        fill="#FBBC05"
-                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                                    />
-                                    <path
-                                        fill="#EA4335"
-                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                    />
-                                </svg>
-                            )}
-                            {loadingGoogle ? 'Conectando...' : 'Entrar com Google'}
-                        </button>
-                    </div>
-
-                    <p className="mt-8 text-center text-sm text-slate-500 font-medium">
-                        Não tem uma conta?{' '}
-                        <Link to="/cadastrar" className="font-bold text-violet-600 hover:underline transition-all">Cadastre-se</Link>
-                    </p>
-                </div>
-            </div>
-
-            {/* Right: Visual */}
-            <div className="hidden lg:block lg:flex-1 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-300 via-purple-300 to-fuchsia-300" />
-                <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2) 0%, transparent 50%)'}} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
-                    <div className="max-w-md text-center">
-                        <div className="size-24 rounded-3xl bg-white/50 backdrop-blur-sm flex items-center justify-center mx-auto mb-8 shadow-lg shadow-purple-400/20 border border-white/40">
-                            <span className="material-symbols-outlined text-6xl text-purple-700">psychology</span>
-                        </div>
-                        <h2 className="text-3xl font-bold text-purple-900 mb-4 tracking-tight">Cuide da sua carreira com a mesma dedicação que cuida dos seus pacientes</h2>
-                        <p className="text-purple-800/70 text-lg font-medium leading-relaxed">
-                            Prontuários, agenda e financeiro — tudo em um só lugar, feito para você.
-                        </p>
-                        <div className="grid grid-cols-3 gap-4 mt-10">
-                            {[
-                                { icon: 'group', label: 'Pacientes' },
-                                { icon: 'calendar_month', label: 'Agenda' },
-                                { icon: 'description', label: 'Prontuários' },
-                            ].map((f, i) => (
-                                <div key={i} className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/50 shadow-sm transition-all hover:bg-white/60">
-                                    <span className="material-symbols-outlined text-purple-700 text-3xl">{f.icon}</span>
-                                    <p className="text-[10px] font-bold text-purple-800/70 mt-2 uppercase tracking-widest">{f.label}</p>
-                                </div>
-                            ))}
+                            <nav className="l2-legal" aria-label="Documentos legais">
+                                <a href="/legal/">Legal</a>
+                                <span aria-hidden="true">•</span>
+                                <a href="/politica-de-privacidade/">Privacidade</a>
+                                <span aria-hidden="true">•</span>
+                                <a href="/termos-de-servico/">Termos</a>
+                                <span aria-hidden="true">•</span>
+                                <a href="/politica-de-uso/">Uso</a>
+                            </nav>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
+
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+                .l2-wrap {
+                    position: relative; width: 100%; height: 100vh; display: flex;
+                    overflow: hidden; font-family: "Poppins", sans-serif;
+                    color: #2c1f3d;
+                    background:
+                        radial-gradient(1200px 900px at 15% 25%, #ffd3ee 0%, transparent 55%),
+                        radial-gradient(1100px 900px at 85% 15%, #ffb9e3 0%, transparent 55%),
+                        radial-gradient(1400px 1000px at 90% 90%, #b7c2ff 0%, transparent 60%),
+                        radial-gradient(1100px 900px at 10% 90%, #e3b8ff 0%, transparent 60%),
+                        linear-gradient(135deg, #ffc3e9 0%, #e8baff 50%, #b9c8ff 100%);
+                }
+
+                .l2-visual {
+                    position: relative; flex: 1; overflow: hidden;
+                }
+
+                .l2-orb {
+                    position: absolute; left: 50%; top: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 160vmin; height: 160vmin; border-radius: 50%;
+                    -webkit-mask-image: radial-gradient(closest-side, #000 48%, rgba(0,0,0,0.9) 62%, rgba(0,0,0,0.65) 82%, rgba(0,0,0,0) 100%);
+                    mask-image: radial-gradient(closest-side, #000 48%, rgba(0,0,0,0.9) 62%, rgba(0,0,0,0.65) 82%, rgba(0,0,0,0) 100%);
+                    backdrop-filter: blur(2px) saturate(130%);
+                    -webkit-backdrop-filter: blur(2px) saturate(130%);
+                    background: radial-gradient(circle at 50% 50%, rgba(255,200,230,0.45) 0%, rgba(255,200,230,0.18) 40%, rgba(255,255,255,0.06) 70%, transparent 100%);
+                }
+
+                .l2-ring {
+                    position: absolute; left: 50%; top: 50%;
+                    transform: translate(-50%, -50%);
+                    border-radius: 50%;
+                    width: var(--l2-size); height: var(--l2-size);
+                    pointer-events: none;
+                }
+                .l2-ring::before {
+                    content: ''; position: absolute; inset: 0; border-radius: 50%;
+                    background: var(--l2-band);
+                    -webkit-mask-image: radial-gradient(circle, transparent calc(50% - var(--l2-thickness)), #000 calc(50% - var(--l2-thickness) + 0.5px), #000 calc(50% - 0.5px), transparent 50%);
+                    mask-image: radial-gradient(circle, transparent calc(50% - var(--l2-thickness)), #000 calc(50% - var(--l2-thickness) + 0.5px), #000 calc(50% - 0.5px), transparent 50%);
+                    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+                }
+                .l2-ring::after {
+                    content: ''; position: absolute; inset: 0; border-radius: 50%;
+                    border: 1px solid rgba(255,255,255,0.45);
+                    box-shadow: inset 0 0 28px rgba(255,255,255,0.22), 0 0 28px -6px rgba(255,255,255,0.25);
+                }
+
+                .l2-r1 { --l2-size: 128vmin; --l2-thickness: 11vmin; --l2-band: rgba(255,255,255,0.06); --l2-spin: 220s; }
+                .l2-r2 { --l2-size: 104vmin; --l2-thickness: 10vmin; --l2-band: rgba(255,255,255,0.08); --l2-spin: 170s; }
+                .l2-r3 { --l2-size:  82vmin; --l2-thickness:  9vmin; --l2-band: rgba(255,255,255,0.11); --l2-spin: 130s; }
+                .l2-r4 { --l2-size:  62vmin; --l2-thickness:  8vmin; --l2-band: rgba(255,255,255,0.14); --l2-spin:  95s; }
+
+                .l2-rotator {
+                    position: absolute; inset: 0; border-radius: 50%;
+                    animation: l2-ring-spin var(--l2-spin) linear infinite;
+                }
+                .l2-reverse .l2-rotator { animation-direction: reverse; }
+                @keyframes l2-ring-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+                .l2-ring-svg {
+                    position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+                }
+                .l2-ring-svg text {
+                    fill: rgba(255,255,255,0.92);
+                    font-family: "Poppins", sans-serif;
+                    font-weight: 500;
+                    letter-spacing: 0.34em;
+                    text-transform: uppercase;
+                    text-shadow: 0 0 12px rgba(255,255,255,0.35);
+                    opacity: 0;
+                    animation: l2-text-fade 1.6s ease forwards 0.2s;
+                }
+                .l2-r1 .l2-ring-svg text { font-size: 1.85vmin; }
+                .l2-r2 .l2-ring-svg text { font-size: 1.7vmin; }
+                .l2-r3 .l2-ring-svg text { font-size: 1.6vmin; }
+                .l2-r4 .l2-ring-svg text { font-size: 1.45vmin; }
+                .l2-sep {
+                    font-family: "Font Awesome 6 Free", "FontAwesome";
+                    font-weight: 900;
+                    fill: rgba(255,255,255,0.85);
+                    font-size: 1.25em;
+                    letter-spacing: 0;
+                }
+                @keyframes l2-text-fade { to { opacity: 1; } }
+
+                .l2-ai-center {
+                    position: absolute; left: 50%; top: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 3;
+                    display: flex; align-items: center; justify-content: center;
+                }
+
+                .l2-auth-wrapper {
+                    position: absolute;
+                    right: clamp(20px, 4vw, 80px);
+                    top: 50%; transform: translateY(-50%);
+                    z-index: 5;
+                    width: min(420px, 90vw);
+                }
+                .l2-auth {
+                    position: relative; width: 100%;
+                    padding: clamp(24px, 3vw, 32px) clamp(22px, 3vw, 30px);
+                    border-radius: 36px;
+                    border: 1px solid rgba(255,255,255,0.55);
+                    backdrop-filter: blur(18px) saturate(140%);
+                    -webkit-backdrop-filter: blur(18px) saturate(140%);
+                    background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.7),
+                        inset 0 -1px 0 rgba(255,255,255,0.25),
+                        0 20px 50px -18px rgba(140,60,160,0.35),
+                        0 6px 18px -10px rgba(90,30,120,0.18);
+                    animation: l2-card-float 8s ease-in-out infinite;
+                }
+                @keyframes l2-card-float {
+                    0%,100% { transform: translateY(0); }
+                    50%     { transform: translateY(-4px); }
+                }
+
+                .l2-panel { display: flex; flex-direction: column; flex: 1; }
+
+                .l2-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+                .l2-brand-icon { width: 36px; height: 36px; flex: 0 0 36px; }
+                .l2-wordmark {
+                    font-size: 28px; font-weight: 700; color: #1a1530;
+                    letter-spacing: -0.01em; line-height: 1;
+                    display: flex; align-items: baseline; gap: 2px;
+                }
+                .l2-psi { font-size: 14px; font-weight: 500; color: #1a1530; letter-spacing: 0; }
+
+                .l2-muted { color: rgba(40,25,55,0.78); font-size: 13px; line-height: 1.5; margin-bottom: 14px; font-weight: 400; }
+                .l2-row { display: flex; flex-direction: column; gap: 10px; }
+                .l2-field { position: relative; }
+                .l2-input {
+                    width: 100%; height: 44px; padding: 0 18px;
+                    font-size: 13.5px; color: #1a1530;
+                    background: rgba(255,255,255,0.55);
+                    border: 1px solid rgba(255,255,255,0.7);
+                    border-radius: 14px; outline: none;
+                    font-family: inherit;
+                    transition: border-color .2s, background .2s, box-shadow .2s;
+                }
+                .l2-input::placeholder { color: rgba(40,25,55,0.55); font-weight: 400; }
+                .l2-input:hover { background: rgba(255,255,255,0.7); }
+                .l2-input:focus {
+                    border-color: rgba(188,116,255,0.75);
+                    background: rgba(255,255,255,0.85);
+                    box-shadow: 0 0 0 3px rgba(188,116,255,0.22);
+                }
+
+                .l2-naked-btn {
+                    background: none; border: 0; padding: 4px 0;
+                    color: rgba(40,25,55,0.72); font-size: 12.5px;
+                    align-self: flex-end; font-family: inherit; cursor: pointer;
+                }
+                .l2-naked-btn:hover { color: #1a1530; }
+
+                .l2-btn {
+                    appearance: none; border: 0;
+                    width: 100%; height: 44px; padding: 0 18px;
+                    border-radius: 14px; font-family: inherit; font-size: 14px; font-weight: 500;
+                    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+                    transition: transform .15s ease, box-shadow .2s ease; cursor: pointer;
+                }
+                .l2-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+                .l2-btn--primary {
+                    color: #fff;
+                    background: linear-gradient(180deg, #b18bff 0%, #8659e8 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.4),
+                        inset 0 -1px 0 rgba(0,0,0,0.08),
+                        0 10px 26px -10px rgba(134,89,232,0.7),
+                        0 2px 4px rgba(0,0,0,0.08);
+                }
+                .l2-btn--primary:hover:not(:disabled) { transform: translateY(-1px); }
+                .l2-btn--secondary {
+                    background: rgba(255,255,255,0.65); color: #1a1530;
+                    border: 1px solid rgba(255,255,255,0.8);
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 12px -6px rgba(90,30,120,0.18);
+                }
+                .l2-btn--secondary:hover:not(:disabled) { background: rgba(255,255,255,0.8); }
+                .l2-btn--sm { height: 40px; font-size: 13px; }
+                .l2-btn-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
+
+                .l2-content-bottom { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+
+                .l2-aux {
+                    display: flex; justify-content: center; align-items: baseline;
+                    gap: 6px; font-size: 13px; color: rgba(40,25,55,0.75);
+                }
+                .l2-aux-link {
+                    color: #8659e8; font-size: 13px; font-weight: 600; text-decoration: none;
+                }
+                .l2-aux-link:hover { color: #6a3dd0; text-decoration: underline; }
+
+                .l2-legal {
+                    display: flex; justify-content: center; align-items: center;
+                    gap: 8px; padding: 8px 14px; margin-top: 6px;
+                    border-radius: 99px;
+                    background: rgba(255,255,255,0.4);
+                    border: 1px solid rgba(255,255,255,0.55);
+                    font-size: 11px; color: rgba(40,25,55,0.62);
+                }
+                .l2-legal a { color: inherit; text-decoration: none; font-weight: 500; }
+                .l2-legal a:hover { color: #1a1530; }
+
+                .l2-error {
+                    padding: 10px 14px; border-radius: 12px; margin-bottom: 10px;
+                    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+                    color: #c0392b; font-size: 13px;
+                }
+                .l2-message {
+                    padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px;
+                }
+                .l2-message--success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #16a34a; }
+
+                @media (max-width: 800px) {
+                    .l2-auth-wrapper {
+                        position: static; transform: none; width: 100%;
+                        padding: 24px 16px; display: flex; align-items: flex-end; min-height: 100vh;
+                    }
+                    .l2-auth { border-radius: 28px; }
+                    .l2-visual { position: absolute; inset: 0; opacity: 0.9; }
+                }
+            `}</style>
         </div>
     );
 };
 
 export default Login;
-
-

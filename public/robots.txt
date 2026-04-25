@@ -2,9 +2,14 @@
 User-agent: *
 Allow: /
 Allow: /vendas5
+Allow: /vendas10
 Allow: /crp
 Allow: /blog
 Allow: /melhor-sistema-para-psicologos
+
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /vendas10
 
 # Evitar indexação de áreas administrativas e privadas
 Disallow: /dashboard

@@ -18,6 +18,12 @@
     <priority>1.00</priority>
   </url>
   <url>
+    <loc>https://meusistemapsi.com.br/vendas10</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://meusistemapsi.com.br/crp</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
@@ -31,7 +37,7 @@
   </url>
   <url>
     <loc>https://meusistemapsi.com.br/blog</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-04-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.90</priority>
   </url>
@@ -57,6 +63,12 @@
   </url>
 
   <!-- Artigos do Blog (20) -->
+  <url>
+    <loc>https://meusistemapsi.com.br/blog/como-reduzir-faltas-no-consultorio-com-agenda-automatica</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
   <url>
     <loc>https://meusistemapsi.com.br/blog/como-identificar-sinais-de-ansiedade</loc>
     <lastmod>2026-03-30</lastmod>

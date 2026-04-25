@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { usePatients } from '../contexts/PatientContext';
 import { useEvolutions } from '../contexts/EvolutionContext';
 import { useAnamneses } from '../contexts/AnamneseContext';
@@ -6,11 +6,15 @@ import { useLaudos } from '../contexts/LaudoContext';
 import { useDeclaracoes } from '../contexts/DeclaracaoContext';
 import { useAtestados } from '../contexts/AtestadoContext';
 import { useEncaminhamentos } from '../contexts/EncaminhamentoContext';
+import { useAppointments } from '../contexts/AppointmentContext';
+import { useFinance } from '../contexts/FinanceContext';
+import { useTcles } from '../contexts/TcleContext';
 import { useUser } from '../contexts/UserContext';
 import { checkAIAccess, trackAIConsumption } from '../utils/authMiddleware';
 import { supabase } from '../lib/supabase';
-
 import { logger } from '../utils/logger';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
+
 // AI_API_KEY removida do frontend por segurança (migrada para Edge Function)
 
 const AIClinica = () => {
@@ -21,6 +25,9 @@ const AIClinica = () => {
     const { declaracoes } = useDeclaracoes();
     const { atestados } = useAtestados();
     const { encaminhamentos } = useEncaminhamentos();
+    const { appointments } = useAppointments();
+    const { transactions, stats } = useFinance();
+    const { tcles } = useTcles();
     const { user, updateUser } = useUser();
     const aiAccess = checkAIAccess(user);
     const isPlanBasic = !aiAccess.allowed;
@@ -37,6 +44,35 @@ const AIClinica = () => {
 
     // Consolidar a base de dados para o System Prompt (Otimizado para poupar tokens/evitar limites)
     const fullDatabaseContext = useMemo(() => {
+        const hoje = new Date().toISOString().split('T')[0];
+        const limitePassado = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+        const limiteFuturo = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
+
+        // Agenda resumida para o contexto global
+        const agendaResumo = appointments
+            .filter(a => a.data >= limitePassado && a.data <= limiteFuturo)
+            .map(a => ({
+                data: a.data,
+                hora: a.horaInicio,
+                paciente: a.paciente || a.patient_name,
+                status: a.status
+            }));
+
+        // Financeiro resumido
+        const financeiroResumo = {
+            balanco_mensal: stats,
+            proximos_vencimentos: transactions
+                .filter(t => t.status === 'Pendente' && t.dataVencimento >= hoje)
+                .sort((a, b) => new Date(a.dataVencimento) - new Date(b.dataVencimento))
+                .slice(0, 5)
+                .map(t => ({
+                    descricao: t.descricao,
+                    valor: t.valor,
+                    vencimento: t.dataVencimento,
+                    tipo: t.tipo
+                }))
+        };
+
         if (pacienteSelecionado) {
             const normalizeId = (id) => String(id || '').replace('#', '');
             const cId = normalizeId(pacienteSelecionado.id);
@@ -51,42 +87,58 @@ const AIClinica = () => {
                     plano: pacienteSelecionado.plano,
                     status: pacienteSelecionado.status
                 },
+                agenda_paciente: appointments.filter(a => normalizeId(a.pacienteId) === cId || a.paciente === pacienteSelecionado.nome).slice(-5),
                 evolucoes: evolutions.filter(e => normalizeId(e.pacienteId) === cId),
                 anamneses: anamneses.filter(a => normalizeId(a.pacienteId) === cId),
                 laudos: laudos.filter(l => normalizeId(l.pacienteId) === cId),
                 declaracoes: declaracoes.filter(d => normalizeId(d.pacienteId) === cId),
                 atestados: atestados.filter(a => normalizeId(a.pacienteId) === cId),
-                encaminhamentos: encaminhamentos.filter(e => normalizeId(e.pacienteId) === cId)
+                encaminhamentos: encaminhamentos.filter(e => normalizeId(e.pacienteId) === cId),
+                tcles: tcles?.filter(t => normalizeId(t.pacienteId) === cId) || [],
+                contexto_geral: {
+                    agenda_recente: agendaResumo,
+                    financeiro: financeiroResumo
+                }
             });
         }
         
-        // Se nenhum paciente selecionado, envia apenas um resumo básico
+        // Se nenhum paciente selecionado, envia a visão geral da clínica
         return JSON.stringify({
-            aviso_sistema: "Para análise profunda de prontuário, peça ao psicólogo para selecionar um paciente na interface.",
+            agenda_clinica: agendaResumo,
+            financeiro_clinica: financeiroResumo,
             pacientes_resumo: patients.map(p => ({
                 id: p.id,
                 nome: p.nome,
                 status: p.status
             }))
         });
-    }, [patients, evolutions, anamneses, laudos, declaracoes, atestados, encaminhamentos, pacienteSelecionado]);
+    }, [patients, evolutions, anamneses, laudos, declaracoes, atestados, encaminhamentos, appointments, transactions, stats, tcles, pacienteSelecionado]);
 
     const systemPrompt = useMemo(() => {
         const nomePsicologo = user?.nome || 'Psicólogo(a)';
+        const dataHora = new Date().toLocaleString('pt-BR', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+
         return `Você é a "Psiquê", a inteligência artificial parceira clínica do(a) Dr(a). ${nomePsicologo}.
 Sua persona é a de um colega de trabalho sênior, experiente, ético e colaborativo. Você não apenas analisa dados, mas conversa livremente com o psicólogo como um igual.
 
 CONTEXTO DO SISTEMA:
 - Psicólogo(a) Logado(a): Dr(a). ${nomePsicologo}
-- Data e Hora Atual do Sistema: ${new Date().toLocaleString('pt-BR')}
+- Data e Hora Atual: ${dataHora}
 
 REGRAS DE OURO:
-1. Você tem acesso TOTAL à base de dados da clínica em tempo real (veja os dados abaixo).
-2. PACIENTE ATUALMENTE SELECIONADO NA TELA: ${pacienteSelecionado ? `${pacienteSelecionado.nome} (ID: ${pacienteSelecionado.id})` : 'NENHUM (Conversa Geral)'}.
-3. Se houver um paciente selecionado (como indicado acima), foque prioritariamente nos dados dele, mas saiba sobre tudo.
-4. Use um tom profissional, mas amigável e parceiro (em Português do Brasil). Enderece o psicólogo pelo nome quando adequado.
-5. Ajude o psicólogo a identificar padrões, sugerir hipóteses diagnósticas (sempre citando que são hipóteses para revisão dele) e organizar ideias.
-6. Se perguntado sobre algo que não está nos dados, responda com base no seu conhecimento geral de psicologia, mas sempre contextualizando com a prática clínica.
+1. Você tem acesso TOTAL à base de dados da clínica: Agenda, Financeiro, Prontuários e Documentos.
+2. Se o psicólogo perguntar "quem eu atendo hoje" ou "qual minha agenda", consulte os dados de 'agenda_clinica' ou 'agenda_recente'.
+3. Se perguntado sobre faturamento ou contas, consulte 'financeiro_clinica'.
+4. PACIENTE ATUALMENTE SELECIONADO NA TELA: ${pacienteSelecionado ? `${pacienteSelecionado.nome} (ID: ${pacienteSelecionado.id})` : 'NENHUM (Conversa Geral)'}.
+5. Use um tom profissional, mas amigável e parceiro (em Português do Brasil). Enderece o psicólogo pelo nome quando adequado.
+6. Ajude o psicólogo a identificar padrões, sugerir hipóteses diagnósticas e organizar a rotina da clínica.
 7. Mantenha as respostas concisas mas profundas.
 
 DADOS DA CLÍNICA (BASE DE CONHECIMENTO):
@@ -241,9 +293,7 @@ ${fullDatabaseContext}
                 {/* Header do Chat */}
                 <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-800/50 backdrop-blur-md sticky top-0 z-10">
                     <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
-                            <img src="/avatar_psique.png" alt="Psiquê" className="w-full h-full object-cover" />
-                        </div>
+                        <AiAssistantAnimation size="xs" />
                         <div>
                             <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">Psiquê AI</h2>
                             <div className="flex items-center gap-1.5">
@@ -264,8 +314,8 @@ ${fullDatabaseContext}
                     {mensagens.map((msg, i) => (
                         <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {msg.role !== 'user' && (
-                                <div className="size-8 rounded-lg bg-primary/5 flex items-center justify-center mr-2 mt-1 shrink-0 overflow-hidden border border-primary/10">
-                                    <img src="/avatar_psique.png" alt="Psiquê" className="w-full h-full object-cover" />
+                                <div className="shrink-0 mr-2 mt-1">
+                                    <AiAssistantAnimation size="micro" />
                                 </div>
                             )}
                             <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
@@ -293,7 +343,6 @@ ${fullDatabaseContext}
                         <input 
                             type="text"
                             value={input}
-                            disabled={isLoading}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder={pacienteSelecionado ? `Falar sobre ${pacienteSelecionado.nome.split(' ')[0]}...` : "Pergunte algo para seu colega clínico..."}
                             className="w-full h-14 pl-5 pr-14 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium shadow-sm"

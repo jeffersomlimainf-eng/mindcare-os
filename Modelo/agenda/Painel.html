@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel · Meu Sistema.PSI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --ink:#1a1428; --ink-soft:#4b3b5f; --muted:#8b7a9e;
+  --line:rgba(26,20,40,0.08); --line-soft:rgba(26,20,40,0.05);
+  --paper:#fff; --cream:#fbf7ff; --lilac:#f3e6ff;
+  --pink-soft:#ffd7f0; --pink:#ff66c2; --pink-deep:#c940a8;
+  --violet:#8659e8; --violet-2:#b18bff; --violet-night:#2e1e47;
+  --mint-deep:#1f8a4d; --amber-deep:#b68515;
+  --bg: linear-gradient(180deg, #fff9fc 0%, #f6edff 100%);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;font-family:"Poppins",system-ui,sans-serif;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);overflow:hidden;}
+button,input{font-family:inherit;}
+a{color:inherit;text-decoration:none;}
+
+.app{display:grid;grid-template-columns:240px 1fr;height:100vh;}
+
+.side{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 14px;gap:4px;overflow-y:auto;}
+.side-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;border-bottom:1px solid var(--line-soft);margin-bottom:14px;}
+.side-brand-icon{width:28px;height:32px;flex-shrink:0;}
+.side-brand-name{font-weight:700;font-size:14.5px;line-height:1.2;}
+.side-brand-name small{display:block;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:0.04em;margin-top:2px;}
+.side-section-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:14px 10px 6px;}
+.side-link{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;font-size:13px;color:var(--ink-soft);cursor:pointer;}
+.side-link i{width:16px;font-size:14px;color:var(--muted);}
+.side-link:hover{background:var(--cream);color:var(--ink);}
+.side-link.active{background:linear-gradient(135deg,rgba(255,102,194,0.12),rgba(134,89,232,0.12));color:var(--ink);font-weight:600;}
+.side-link.active i{color:var(--pink-deep);}
+.side-user{margin-top:auto;padding:12px;border-top:1px solid var(--line-soft);display:flex;align-items:center;gap:10px;}
+.side-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--pink-soft),#e8d8ff);display:flex;align-items:center;justify-content:center;color:var(--pink-deep);font-weight:700;font-size:12px;}
+.side-user-name{font-size:13px;font-weight:600;line-height:1.2;}
+.side-user-role{font-size:11px;color:var(--muted);}
+
+.main{display:flex;flex-direction:column;height:100vh;overflow-y:auto;}
+
+.top{display:flex;align-items:center;gap:16px;padding:14px 32px;background:rgba(255,255,255,0.7);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;}
+.top-status{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;background:rgba(255,255,255,0.7);border:1px solid var(--line);}
+.status-pill i{color:var(--violet);}
+.status-pill.ok i{color:var(--mint-deep);}
+.top-spacer{flex:1;}
+.top-toggle{display:flex;background:var(--cream);border-radius:10px;padding:3px;}
+.top-toggle button{padding:7px 14px;border:0;background:transparent;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;color:var(--ink-soft);}
+.top-toggle button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.top-icon-btn{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,0.8);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);cursor:pointer;}
+
+/* HERO ─────────────── */
+.hero{padding:36px 32px 24px;display:grid;grid-template-columns:1fr 200px;gap:32px;align-items:center;}
+.hero-kicker{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink-deep);font-weight:600;}
+.hero h1{font-family:"Fraunces",serif;font-weight:300;font-size:42px;line-height:1.15;letter-spacing:-0.015em;margin:8px 0 12px;color:var(--ink);max-width:720px;}
+.hero h1 em{font-style:italic;color:var(--pink-deep);font-weight:400;}
+.hero p{font-size:14.5px;color:var(--ink-soft);margin:0;max-width:600px;line-height:1.6;}
+.hero-cta{margin-top:18px;display:flex;gap:10px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;letter-spacing:0.02em;cursor:pointer;border:0;}
+.btn-primary{background:linear-gradient(180deg,#b18bff 0%,#8659e8 100%);color:#fff;box-shadow:0 10px 24px -10px rgba(134,89,232,0.55);}
+.btn-primary:hover{transform:translateY(-1px);}
+.btn-ghost{background:rgba(255,255,255,0.8);border:1px solid var(--line);color:var(--ink-soft);}
+
+/* Psiqui orb */
+.orb-wrap{display:flex;justify-content:center;align-items:center;}
+.orb{width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#ffd7f0 30%,#ff66c2 65%,#8659e8 100%);position:relative;box-shadow:0 30px 70px -20px rgba(255,102,194,0.45),inset -8px -16px 30px rgba(134,89,232,0.4),inset 8px 8px 20px rgba(255,255,255,0.5);animation:breathe 4s ease-in-out infinite;}
+.orb::before{content:'';position:absolute;inset:18px;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,0.55),transparent 55%);}
+.orb::after{content:'';position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(255,102,194,0.25),transparent 60%);z-index:-1;animation:halo 4s ease-in-out infinite;}
+@keyframes breathe{50%{transform:scale(1.04);}}
+@keyframes halo{50%{transform:scale(1.1);opacity:0.6;}}
+
+/* QUOTE BAND ────────── */
+.quote-band{padding:8px 32px 32px;text-align:center;border-bottom:1px solid var(--line-soft);}
+.quote-band::before{content:'';display:block;width:40px;height:1px;background:var(--pink-deep);margin:0 auto 18px;opacity:0.5;}
+.quote-band q{font-family:"Fraunces",serif;font-style:italic;font-weight:300;font-size:22px;line-height:1.45;color:var(--ink);max-width:760px;display:inline-block;letter-spacing:-0.01em;quotes:"" "";}
+.quote-band cite{display:block;margin-top:14px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:600;font-style:normal;}
+
+/* CONTENT GRID ──────── */
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;padding:28px 32px 32px;}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px 24px;box-shadow:0 2px 10px rgba(90,30,120,0.04);}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.card-hd h3{font-family:"Fraunces",serif;font-weight:400;font-size:18px;letter-spacing:-0.01em;margin:0;}
+.card-hd h3 em{font-style:italic;color:var(--pink-deep);font-weight:300;}
+.card-hd a{font-size:12px;color:var(--violet);font-weight:600;}
+.card-kicker{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+
+/* Next session — empty state */
+.next-empty{text-align:center;padding:30px 12px 18px;}
+.leaf-svg{width:60px;height:60px;margin:0 auto 14px;opacity:0.7;}
+.next-empty .line-1{font-family:"Fraunces",serif;font-style:italic;font-size:22px;color:var(--ink);line-height:1.3;letter-spacing:-0.01em;margin-bottom:10px;}
+.next-empty .line-2{font-size:13.5px;color:var(--ink-soft);max-width:380px;margin:0 auto 18px;line-height:1.6;}
+.next-empty-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+
+/* Next session — busy */
+.next-busy{display:none;}
+.next-busy .top-line{display:flex;align-items:center;gap:14px;}
+.next-busy .timer{
+  font-family:"Fraunces",serif;font-size:48px;font-weight:300;
+  letter-spacing:-0.025em;line-height:1;color:var(--pink-deep);
+}
+.next-busy .timer small{font-size:14px;color:var(--muted);font-family:"Poppins";font-weight:500;letter-spacing:0;margin-left:6px;}
+.next-busy .pat-wrap{flex:1;}
+.next-busy .pat-name{font-family:"Fraunces",serif;font-size:22px;letter-spacing:-0.01em;margin:0;}
+.next-busy .pat-meta{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+.next-busy .pat-tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;}
+.tag{font-size:10.5px;padding:3px 9px;border-radius:99px;background:var(--cream);color:var(--ink-soft);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;}
+.next-busy .actions{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;}
+
+/* Today timeline */
+.timeline{position:relative;padding:6px 0 0;}
+.timeline-row{display:grid;grid-template-columns:54px 1fr;gap:14px;padding:8px 0;border-bottom:1px dashed var(--line-soft);font-size:12.5px;}
+.timeline-row:last-child{border-bottom:0;}
+.timeline-time{color:var(--muted);font-weight:600;font-size:11px;letter-spacing:0.04em;padding-top:2px;}
+.timeline-slot{color:var(--muted);font-style:italic;font-family:"Fraunces",serif;font-size:13px;}
+.timeline-slot.has{font-style:normal;font-family:"Poppins";color:var(--ink);font-weight:500;display:flex;align-items:center;gap:8px;}
+.timeline-dot{width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 3px rgba(255,102,194,0.2);flex-shrink:0;}
+.timeline-empty-band{font-family:"Fraunces",serif;font-style:italic;font-size:18px;color:var(--ink);text-align:center;padding:30px 8px 20px;letter-spacing:-0.01em;}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:24px 32px;background:rgba(255,255,255,0.5);border:1px solid var(--line);border-radius:22px;margin:0 32px 28px;}
+.kpi-cell{padding:0 20px;border-right:1px solid var(--line-soft);}
+.kpi-cell:last-child{border-right:0;}
+.kpi-val{font-family:"Fraunces",serif;font-size:36px;font-weight:400;letter-spacing:-0.025em;line-height:1;color:var(--ink);}
+.kpi-val.ok{color:var(--mint-deep);}
+.kpi-val.warn{color:var(--amber-deep);}
+.kpi-val.tone{color:var(--pink-deep);}
+.kpi-lbl{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:8px;}
+.kpi-sub{font-size:11.5px;color:var(--ink-soft);margin-top:4px;}
+
+/* Week capacity bar */
+.cap-bar{display:flex;gap:4px;height:42px;margin-top:14px;}
+.cap-day{flex:1;background:var(--cream);border-radius:8px;position:relative;overflow:hidden;display:flex;align-items:flex-end;}
+.cap-fill{width:100%;background:linear-gradient(180deg,rgba(255,102,194,0.6),rgba(134,89,232,0.7));border-radius:0 0 8px 8px;}
+.cap-day-label{position:absolute;top:6px;left:0;right:0;text-align:center;font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:0.06em;}
+.cap-foot{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:12px;}
+.cap-foot a{color:var(--pink-deep);font-weight:600;}
+
+/* Quick actions */
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.qa{display:flex;align-items:center;gap:12px;padding:14px;background:var(--cream);border-radius:14px;cursor:pointer;border:1px solid transparent;}
+.qa:hover{background:#fff;border-color:rgba(255,102,194,0.2);}
+.qa-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0;}
+.qa-icon.a{background:linear-gradient(135deg,#ff66c2,#c940a8);}
+.qa-icon.b{background:linear-gradient(135deg,#b18bff,#8659e8);}
+.qa-icon.c{background:linear-gradient(135deg,#f6c66b,#e89933);}
+.qa-icon.d{background:linear-gradient(135deg,#ffaad6,#ff66c2);}
+.qa-text b{display:block;font-size:13px;color:var(--ink);font-weight:600;}
+.qa-text small{display:block;font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* Attention tabs */
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line-soft);}
+.tab{padding:8px 4px;margin-right:14px;font-size:13px;color:var(--ink-soft);font-weight:500;cursor:pointer;border-bottom:2px solid transparent;}
+.tab.on{color:var(--ink);border-color:var(--pink-deep);font-weight:600;}
+.tab .badge{font-size:10px;padding:1px 6px;border-radius:99px;background:rgba(255,102,194,0.15);color:var(--pink-deep);font-weight:700;margin-left:4px;}
+
+.list-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-soft);font-size:13px;}
+.list-row:last-child{border-bottom:0;}
+.list-icon{width:28px;height:28px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--violet);font-size:12px;flex-shrink:0;}
+.list-icon.warn{color:var(--amber-deep);background:rgba(246,198,107,0.15);}
+.list-body{flex:1;min-width:0;}
+.list-title{font-weight:600;color:var(--ink);line-height:1.2;}
+.list-meta{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.list-action{color:var(--violet);font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;}
+
+/* Reflection card (dark) */
+.reflect{background:linear-gradient(165deg,#1a1428 0%,var(--violet-night) 100%);color:#fff;border:0;position:relative;overflow:hidden;}
+.reflect::before{content:'';position:absolute;right:-50px;top:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,102,194,0.35),transparent 70%);filter:blur(4px);}
+.reflect h3, .reflect h3 em{color:#fff;}
+.reflect h3 em{color:#ffb8e0;}
+.reflect-quote{font-family:"Fraunces",serif;font-style:italic;font-size:17px;line-height:1.55;color:rgba(255,255,255,0.92);position:relative;letter-spacing:-0.005em;margin:8px 0 14px;}
+.reflect-author{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#ffb8e0;font-weight:600;}
+.reflect-actions{display:flex;gap:8px;margin-top:18px;}
+.reflect-btn{padding:8px 14px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.06);color:#fff;border-radius:10px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.reflect-btn.fill{background:linear-gradient(135deg,#ff66c2,#c940a8);border-color:transparent;font-weight:600;}
+
+/* Scratchpad floating */
+.scratch{position:fixed;bottom:24px;right:24px;z-index:50;}
+.scratch-btn{width:50px;height:50px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:0 14px 30px -10px rgba(90,30,120,0.25);color:var(--violet);cursor:pointer;font-size:18px;}
+.scratch-pop{position:absolute;bottom:60px;right:0;width:300px;background:#fff;border-radius:18px;box-shadow:0 30px 70px -20px rgba(90,30,120,0.35);border:1px solid var(--line);padding:16px;display:none;}
+.scratch-pop.open{display:block;}
+.scratch-pop h4{margin:0 0 10px;font-family:"Fraunces",serif;font-weight:400;font-size:16px;}
+.scratch-pop textarea{width:100%;min-height:100px;border:1px solid var(--line-soft);border-radius:10px;padding:10px;font-family:inherit;font-size:13px;resize:vertical;background:var(--cream);outline:0;}
+
+/* Mobile demo button + frame */
+.mobile-btn{position:fixed;bottom:24px;left:260px;z-index:50;padding:10px 14px;background:linear-gradient(180deg,#b18bff,#8659e8);color:#fff;border:0;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px;box-shadow:0 14px 30px -10px rgba(134,89,232,0.55);}
+.mobile-frame{position:fixed;left:260px;bottom:80px;width:280px;height:580px;border-radius:44px;background:linear-gradient(160deg,#2a1e3e,#1a1428);padding:10px;box-shadow:0 40px 100px -28px rgba(90,30,120,0.5);z-index:48;display:none;}
+.mobile-frame.open{display:block;}
+.phone-screen{width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--bg);position:relative;padding:34px 14px 14px;display:flex;flex-direction:column;gap:12px;}
+.phone-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:64px;height:18px;background:#1a1428;border-radius:0 0 12px 12px;}
+.ph-h{font-size:9.5px;color:var(--pink-deep);letter-spacing:0.12em;text-transform:uppercase;font-weight:700;}
+.ph-greet{font-family:"Fraunces",serif;font-size:18px;letter-spacing:-0.01em;line-height:1.2;}
+.ph-greet em{font-style:italic;color:var(--pink-deep);}
+.ph-orb{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#ffd7f0 30%,#ff66c2 65%,#8659e8 100%);box-shadow:0 14px 28px -8px rgba(255,102,194,0.45);position:absolute;top:32px;right:18px;}
+.ph-quick{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.ph-stat{background:#fff;padding:10px;border-radius:12px;border:1px solid var(--line-soft);}
+.ph-stat b{font-family:"Fraunces",serif;font-size:18px;letter-spacing:-0.02em;display:block;}
+.ph-stat small{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;}
+.ph-quote{background:linear-gradient(135deg,#1a1428,var(--violet-night));color:#fff;padding:14px;border-radius:14px;font-family:"Fraunces",serif;font-style:italic;font-size:13px;line-height:1.5;}
+.ph-quote-au{font-size:9px;color:#ffb8e0;font-style:normal;font-family:"Poppins";letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-top:6px;}
+.ph-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;}
+.ph-item{background:#fff;padding:10px 12px;border-radius:12px;font-size:11.5px;border:1px solid var(--line-soft);display:flex;gap:10px;align-items:center;}
+.ph-item-ico{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--pink-soft),#e8d8ff);color:var(--pink-deep);display:flex;align-items:center;justify-content:center;font-size:11px;}
+.ph-item b{font-weight:600;}
+.ph-item small{display:block;color:var(--muted);font-size:10px;}
+.ph-fab{position:absolute;bottom:18px;right:18px;width:44px;height:44px;border-radius:14px;background:linear-gradient(180deg,#b18bff,#8659e8);color:#fff;border:0;cursor:pointer;font-size:16px;box-shadow:0 12px 26px -10px rgba(134,89,232,0.6);}
+
+@media (max-width:1100px){.hero{grid-template-columns:1fr;}.orb-wrap{display:none;}.grid{grid-template-columns:1fr;}.kpi-strip{grid-template-columns:repeat(2,1fr);}.kpi-cell{padding:10px;border:0;}.mobile-btn,.mobile-frame{display:none !important;}}
+@media (max-width:800px){.app{grid-template-columns:1fr;}.side{display:none;}.hero h1{font-size:28px;}.kpi-strip{margin:0 16px 20px;padding:14px;}.grid,.hero,.quote-band{padding-left:16px;padding-right:16px;}.top{padding:12px 16px;}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="side">
+    <div class="side-brand">
+      <svg class="side-brand-icon" viewBox="0 0 200 260">
+        <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff66c2"/><stop offset="100%" stop-color="#c940a8"/></linearGradient></defs>
+        <g fill="none" stroke="url(#bg)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 170,15 C 85,15 30,70 30,130 C 75,125 115,105 145,80 C 165,60 172,35 170,15 Z"/>
+          <path d="M 30,245 C 115,245 170,190 170,130 C 125,135 85,155 55,180 C 35,200 28,225 30,245 Z"/>
+        </g>
+      </svg>
+      <div class="side-brand-name">Meu Sistema<small>.PSI · Portal Clínico</small></div>
+    </div>
+    <div class="side-link active"><i class="fa-solid fa-gauge"></i> Painel</div>
+    <div class="side-link"><i class="fa-regular fa-calendar"></i> Agenda</div>
+    <div class="side-section-label">Clínico</div>
+    <div class="side-link"><i class="fa-solid fa-user-group"></i> Pacientes</div>
+    <div class="side-link"><i class="fa-regular fa-folder-open"></i> Prontuários</div>
+    <div class="side-link"><i class="fa-regular fa-pen-to-square"></i> Evoluções</div>
+    <div class="side-link"><i class="fa-regular fa-file-lines"></i> Laudos</div>
+    <div class="side-link"><i class="fa-regular fa-clipboard"></i> Anamneses</div>
+    <div class="side-section-label">Gestão</div>
+    <div class="side-link"><i class="fa-solid fa-sack-dollar"></i> Financeiro</div>
+    <div class="side-link"><i class="fa-solid fa-chart-line"></i> Relatórios</div>
+    <div class="side-section-label">IA &amp; Config</div>
+    <div class="side-link"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Clínica</div>
+    <div class="side-link"><i class="fa-solid fa-gear"></i> Configurações</div>
+    <div class="side-user">
+      <div class="side-avatar">JL</div>
+      <div style="flex:1;">
+        <div class="side-user-name">Jeferson Lima</div>
+        <div class="side-user-role">CRP 06/00000</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- TOP STATUS BAR -->
+    <header class="top">
+      <div class="top-status">
+        <span class="status-pill"><i class="fa-solid fa-cloud-sun"></i> 22°C · São Paulo</span>
+        <span class="status-pill"><i class="fa-regular fa-clock"></i> <span id="now">21:51</span></span>
+        <span class="status-pill ok"><i class="fa-solid fa-circle-check"></i> Sincronizado</span>
+        <span class="status-pill"><i class="fa-regular fa-calendar-check"></i> Próxima · amanhã 09:00</span>
+      </div>
+      <div class="top-spacer"></div>
+      <div class="top-toggle" id="stateToggle">
+        <button class="on" data-state="calm">Dia calmo</button>
+        <button data-state="busy">Dia cheio</button>
+      </div>
+      <button class="top-icon-btn"><i class="fa-regular fa-bell"></i></button>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <div class="hero-kicker">Sexta · 24 de abril · 21h51</div>
+        <h1 id="heroTitle">Boa noite, <em>Jeferson</em>. Hoje sua agenda <em>respira</em>.</h1>
+        <p id="heroSub">4 sessões amanhã, 80 horários livres essa semana e 2 pendências te esperam — quando estiver pronto.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary"><i class="fa-solid fa-comment-dots"></i> Conversar com a Psiqui</button>
+          <button class="btn btn-ghost"><i class="fa-regular fa-calendar"></i> Ver agenda</button>
+        </div>
+      </div>
+      <div class="orb-wrap"><div class="orb"></div></div>
+    </section>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-strip">
+      <div class="kpi-cell">
+        <div class="kpi-val">2</div>
+        <div class="kpi-lbl">Pacientes ativos</div>
+        <div class="kpi-sub">+1 nesta semana</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-val tone">4</div>
+        <div class="kpi-lbl">Sessões na semana</div>
+        <div class="kpi-sub">2 confirmadas, 2 aguardando</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-val ok">96%</div>
+        <div class="kpi-lbl">Taxa de presença</div>
+        <div class="kpi-sub">+4pp vs. mês anterior</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-val">80</div>
+        <div class="kpi-lbl">Horários livres</div>
+        <div class="kpi-sub">3 nomes na fila de espera</div>
+      </div>
+    </div>
+
+    <!-- GRID 1: Next + Today -->
+    <div class="grid">
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <div class="card-kicker">Sua próxima sessão</div>
+            <h3 id="nextHd">Nada agendado <em>agora</em>.</h3>
+          </div>
+        </div>
+
+        <!-- empty state -->
+        <div class="next-empty" id="nextEmpty">
+          <svg class="leaf-svg" viewBox="0 0 200 260">
+            <defs><linearGradient id="leafg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff66c2" stop-opacity="0.5"/><stop offset="100%" stop-color="#8659e8" stop-opacity="0.4"/></linearGradient></defs>
+            <g fill="none" stroke="url(#leafg)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 170,15 C 85,15 30,70 30,130 C 75,125 115,105 145,80 C 165,60 172,35 170,15 Z"/>
+              <path d="M 30,245 C 115,245 170,190 170,130 C 125,135 85,155 55,180 C 35,200 28,225 30,245 Z"/>
+            </g>
+          </svg>
+          <div class="line-1">Nada agora —<br/>bom momento <em style="color:var(--pink-deep);">pra respirar</em>.</div>
+          <div class="line-2">Seu próximo encontro é amanhã às <b>09:00</b> com <b>Marina B.</b> Aproveite para revisar prontuários ou abrir espaço pra alguém da fila de espera.</div>
+          <div class="next-empty-actions">
+            <button class="btn btn-primary"><i class="fa-regular fa-calendar"></i> Ver agenda completa</button>
+            <button class="btn btn-ghost"><i class="fa-regular fa-clock"></i> Fila de espera</button>
+          </div>
+        </div>
+
+        <!-- busy state -->
+        <div class="next-busy" id="nextBusy">
+          <div class="top-line">
+            <div class="timer">10<small>min</small></div>
+            <div class="pat-wrap">
+              <h4 class="pat-name">Marina Bertoluzzi</h4>
+              <div class="pat-meta"><i class="fa-regular fa-clock"></i> 22:00 — 22:50 · Presencial · Sala 2</div>
+              <div class="pat-tags">
+                <span class="tag">7ª sessão</span>
+                <span class="tag">Ansiedade</span>
+                <span class="tag">TCC</span>
+              </div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary"><i class="fa-solid fa-play"></i> Iniciar sessão</button>
+            <button class="btn btn-ghost"><i class="fa-regular fa-folder-open"></i> Abrir prontuário</button>
+            <button class="btn btn-ghost"><i class="fa-solid fa-microphone-lines"></i> Smart Notes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <div class="card-kicker">Hoje · 24 de abril</div>
+            <h3 id="todayHd">Dia <em>livre</em>.</h3>
+          </div>
+          <a href="#">Ver semana →</a>
+        </div>
+        <div class="timeline" id="todayTimeline">
+          <div class="timeline-empty-band">"Um dia sem sessões<br/>também é cuidado."</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID 2: Capacity + Quick actions -->
+    <div class="grid">
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <div class="card-kicker">Ocupação da semana</div>
+            <h3>Você tem <em>80 horários livres</em>.</h3>
+          </div>
+          <a href="#">Chamar fila →</a>
+        </div>
+        <div class="cap-bar">
+          <div class="cap-day"><span class="cap-day-label">SEG 20</span><div class="cap-fill" style="height:25%"></div></div>
+          <div class="cap-day"><span class="cap-day-label">TER 21</span><div class="cap-fill" style="height:40%"></div></div>
+          <div class="cap-day"><span class="cap-day-label">QUA 22</span><div class="cap-fill" style="height:55%"></div></div>
+          <div class="cap-day"><span class="cap-day-label">QUI 23</span><div class="cap-fill" style="height:35%"></div></div>
+          <div class="cap-day"><span class="cap-day-label">SEX 24</span><div class="cap-fill" style="height:48%"></div></div>
+          <div class="cap-day"><span class="cap-day-label">SÁB 25</span><div class="cap-fill" style="height:15%"></div></div>
+          <div class="cap-day"><span class="cap-day-label">DOM 26</span><div class="cap-fill" style="height:0%"></div></div>
+        </div>
+        <div class="cap-foot">
+          <span>4 sessões agendadas · 84 horários úteis</span>
+          <a href="#">3 pessoas aguardando vaga</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <div class="card-kicker">Ações rápidas</div>
+            <h3>O que você quer <em>fazer</em>?</h3>
+          </div>
+        </div>
+        <div class="qa-grid">
+          <div class="qa">
+            <div class="qa-icon a"><i class="fa-solid fa-user-plus"></i></div>
+            <div class="qa-text"><b>Novo paciente</b><small>Cadastro completo</small></div>
+          </div>
+          <div class="qa">
+            <div class="qa-icon b"><i class="fa-regular fa-calendar-plus"></i></div>
+            <div class="qa-text"><b>Agendar sessão</b><small>Pra você ou paciente</small></div>
+          </div>
+          <div class="qa">
+            <div class="qa-icon c"><i class="fa-regular fa-pen-to-square"></i></div>
+            <div class="qa-text"><b>Nova evolução</b><small>Manual ou Smart Notes</small></div>
+          </div>
+          <div class="qa">
+            <div class="qa-icon d"><i class="fa-solid fa-receipt"></i></div>
+            <div class="qa-text"><b>Emitir recibo</b><small>NFS-e automática</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUOTE BAND -->
+    <section class="quote-band">
+      <q>Há sempre alguma loucura no amor. Mas há sempre também alguma razão na loucura.</q>
+      <cite>Friedrich Nietzsche · Reflexão do dia</cite>
+    </section>
+
+    <!-- GRID 3: Attention + Reflection -->
+    <div class="grid">
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <div class="card-kicker">Sua atenção</div>
+            <h3>O que <em>te espera</em>.</h3>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab on" data-tab="pend">Pendências <span class="badge">2</span></div>
+          <div class="tab" data-tab="rec">Recentes</div>
+          <div class="tab" data-tab="not">Notas</div>
+        </div>
+        <div class="tab-content" id="tab-pend">
+          <div class="list-row">
+            <div class="list-icon warn"><i class="fa-regular fa-pen-to-square"></i></div>
+            <div class="list-body">
+              <div class="list-title">Evolução de Marina B. (22/04) sem assinatura</div>
+              <div class="list-meta">Há 2 dias · sessão concluída</div>
+            </div>
+            <span class="list-action">Assinar</span>
+          </div>
+          <div class="list-row">
+            <div class="list-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+            <div class="list-body">
+              <div class="list-title">Encaminhamento de Lucas M. aguarda envio</div>
+              <div class="list-meta">Pronto desde 23/04</div>
+            </div>
+            <span class="list-action">Enviar</span>
+          </div>
+        </div>
+        <div class="tab-content" id="tab-rec" style="display:none;">
+          <div class="list-row">
+            <div class="list-icon"><i class="fa-regular fa-file-lines"></i></div>
+            <div class="list-body">
+              <div class="list-title">Evolução · Marina Bertoluzzi · Sessão 7</div>
+              <div class="list-meta">Hoje, 14:42</div>
+            </div>
+            <span class="list-action">Abrir</span>
+          </div>
+          <div class="list-row">
+            <div class="list-icon"><i class="fa-regular fa-clipboard"></i></div>
+            <div class="list-body">
+              <div class="list-title">Anamnese · Lucas Martins</div>
+              <div class="list-meta">Ontem, 16:10</div>
+            </div>
+            <span class="list-action">Abrir</span>
+          </div>
+        </div>
+        <div class="tab-content" id="tab-not" style="display:none;">
+          <div class="list-row">
+            <div class="list-icon"><i class="fa-regular fa-note-sticky"></i></div>
+            <div class="list-body">
+              <div class="list-title">Pesquisar técnicas de exposição p/ TOC</div>
+              <div class="list-meta">22/04</div>
+            </div>
+            <span class="list-action">Editar</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card reflect">
+        <div class="card-hd">
+          <div>
+            <div class="card-kicker" style="color:#ffb8e0;">Reflexão do momento</div>
+            <h3>Pausa para <em>cuidar de si</em>.</h3>
+          </div>
+        </div>
+        <div class="reflect-quote">"Ao tratar dos outros, lembre-se de também ouvir o silêncio que habita em você. É ali que as melhores intervenções nascem."</div>
+        <div class="reflect-author">— Maria Bertoluzzi</div>
+        <div class="reflect-actions">
+          <button class="reflect-btn fill"><i class="fa-regular fa-bookmark"></i> Salvar</button>
+          <button class="reflect-btn"><i class="fa-solid fa-shuffle"></i> Outra reflexão</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Mobile demo -->
+<button class="mobile-btn" id="mobileBtn"><i class="fa-solid fa-mobile-screen-button"></i> Ver mobile</button>
+<div class="mobile-frame" id="mobileFrame">
+  <div class="phone-screen">
+    <div class="phone-notch"></div>
+    <div>
+      <div class="ph-h">Sexta · 24 abr · 21h51</div>
+      <div class="ph-greet">Boa noite,<br/><em>Jeferson</em>.</div>
+    </div>
+    <div class="ph-orb"></div>
+    <div class="ph-quick">
+      <div class="ph-stat"><b>4</b><small>Amanhã</small></div>
+      <div class="ph-stat"><b>96%</b><small>Presença</small></div>
+      <div class="ph-stat"><b>2</b><small>Pendências</small></div>
+      <div class="ph-stat"><b>80</b><small>Livres</small></div>
+    </div>
+    <div class="ph-quote">"Ao tratar dos outros, ouça o silêncio que habita em você."<div class="ph-quote-au">— Bertoluzzi</div></div>
+    <div class="ph-list">
+      <div class="ph-item"><div class="ph-item-ico"><i class="fa-regular fa-pen-to-square"></i></div><div><b>Evolução Marina B.</b><small>Aguarda assinatura</small></div></div>
+      <div class="ph-item"><div class="ph-item-ico"><i class="fa-solid fa-arrow-right-arrow-left"></i></div><div><b>Enviar encaminhamento</b><small>Lucas M.</small></div></div>
+      <div class="ph-item"><div class="ph-item-ico"><i class="fa-regular fa-comment-dots"></i></div><div><b>Falar com a Psiqui</b><small>Sua IA clínica</small></div></div>
+    </div>
+    <button class="ph-fab"><i class="fa-solid fa-plus"></i></button>
+  </div>
+</div>
+
+<!-- Scratchpad -->
+<div class="scratch">
+  <div class="scratch-pop" id="scratchPop">
+    <h4>Notas rápidas</h4>
+    <textarea placeholder="Pensamento, lembrete, tarefa…"></textarea>
+    <div style="font-size:10.5px;color:var(--muted);margin-top:8px;letter-spacing:0.06em;">Pressione <b>N</b> para abrir · salvo automaticamente</div>
+  </div>
+  <button class="scratch-btn" id="scratchBtn"><i class="fa-regular fa-note-sticky"></i></button>
+</div>
+
+<script>
+// State toggle
+const calmHero = {
+  title: 'Boa noite, <em>Jeferson</em>. Hoje sua agenda <em>respira</em>.',
+  sub: '4 sessões amanhã, 80 horários livres essa semana e 2 pendências te esperam — quando estiver pronto.',
+  nextHd: 'Nada agendado <em>agora</em>.',
+  todayHd: 'Dia <em>livre</em>.',
+  showBusy: false,
+  todayHtml: '<div class="timeline-empty-band">"Um dia sem sessões<br/>também é cuidado."</div>'
+};
+const busyHero = {
+  title: 'Boa tarde, <em>Jeferson</em>. Sua próxima sessão começa em <em>10 min</em>.',
+  sub: 'Marina te espera às 22:00. Depois dela, mais 3 sessões pela noite e 2 pendências para fechar o dia.',
+  nextHd: 'Marina B. — em <em>10 min</em>.',
+  todayHd: '<em>4 sessões</em> hoje.',
+  showBusy: true,
+  todayHtml: `
+    <div class="timeline-row"><div class="timeline-time">09:00</div><div class="timeline-slot has"><span class="timeline-dot"></span>Marina B. · Presencial · 50 min</div></div>
+    <div class="timeline-row"><div class="timeline-time">10:30</div><div class="timeline-slot has"><span class="timeline-dot" style="background:var(--violet)"></span>Rafael T. · Online · Smart Notes</div></div>
+    <div class="timeline-row"><div class="timeline-time">14:00</div><div class="timeline-slot has"><span class="timeline-dot" style="background:var(--amber-deep)"></span>Clara V. · Presencial · Aguardando</div></div>
+    <div class="timeline-row"><div class="timeline-time">16:00</div><div class="timeline-slot has"><span class="timeline-dot" style="background:var(--mint-deep)"></span>Paulo S. · Avaliação · 60 min</div></div>
+    <div class="timeline-row"><div class="timeline-time">19:00</div><div class="timeline-slot">livre</div></div>
+    <div class="timeline-row"><div class="timeline-time">22:00</div><div class="timeline-slot">livre</div></div>
+  `
+};
+function setState(s) {
+  const data = s === 'busy' ? busyHero : calmHero;
+  document.getElementById('heroTitle').innerHTML = data.title;
+  document.getElementById('heroSub').textContent = data.sub;
+  document.getElementById('nextHd').innerHTML = data.nextHd;
+  document.getElementById('todayHd').innerHTML = data.todayHd;
+  document.getElementById('nextEmpty').style.display = data.showBusy ? 'none' : 'block';
+  document.getElementById('nextBusy').style.display = data.showBusy ? 'block' : 'none';
+  document.getElementById('todayTimeline').innerHTML = data.todayHtml;
+}
+document.querySelectorAll('#stateToggle button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#stateToggle button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    setState(b.dataset.state);
+  };
+});
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    document.getElementById('tab-' + t.dataset.tab).style.display = 'block';
+  };
+});
+
+// Sidebar
+document.querySelectorAll('.side-link').forEach(l => {
+  l.onclick = () => {
+    document.querySelectorAll('.side-link').forEach(x => x.classList.remove('active'));
+    l.classList.add('active');
+  };
+});
+
+// Quick actions
+document.querySelectorAll('.qa').forEach(q => q.onclick = () => q.style.transform = 'scale(0.98)');
+
+// Scratchpad
+const scratchBtn = document.getElementById('scratchBtn');
+const scratchPop = document.getElementById('scratchPop');
+scratchBtn.onclick = () => scratchPop.classList.toggle('open');
+document.addEventListener('keydown', e => {
+  if (e.key.toLowerCase() === 'n' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+    scratchPop.classList.toggle('open');
+  }
+});
+
+// Mobile demo
+const mb = document.getElementById('mobileBtn');
+const mf = document.getElementById('mobileFrame');
+mb.onclick = () => {
+  const open = mf.classList.toggle('open');
+  mb.innerHTML = open ? '<i class="fa-solid fa-xmark"></i> Fechar mobile' : '<i class="fa-solid fa-mobile-screen-button"></i> Ver mobile';
+};
+
+// Live clock
+function tick() {
+  const d = new Date();
+  document.getElementById('now').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick, 30000);
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NovoAgendamentoModal from '../components/NovoAgendamentoModal';
 import AgendaSettingsModal from '../components/AgendaSettingsModal';
@@ -16,6 +16,7 @@ import { HELP_CONTENT } from '../constants/helpContent';
 import FeatureTour from '../components/FeatureTour';
 import useFirstVisit from '../hooks/useFirstVisit';
 import useDismissible from '../hooks/useDismissible';
+import { generateWhatsAppLink, messages } from '../utils/whatsapp';
 
 import { logger } from '../utils/logger';
 // ─── Constantes ──────────────────────────────────────────────
@@ -26,12 +27,44 @@ const SLOT_H = 72; // px por hora
 
 
 const STATUS_CFG = {
-    confirmado: { label: 'Confirmado', bg: 'bg-blue-50/90 dark:bg-blue-950/20', border: 'border-blue-200 dark:border-blue-800', text: 'text-blue-700 dark:text-blue-300', icon: 'check_circle', glow: 'shadow-blue-200/40', accent: 'bg-blue-500', badge: 'bg-blue-500 text-white' },
-    aguardando: { label: 'Aguardando', bg: 'bg-amber-50/90 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-700 dark:text-amber-300', icon: 'schedule', glow: 'shadow-amber-200/40', accent: 'bg-amber-500', badge: 'bg-amber-500 text-white' },
-    em_sessao: { label: 'Em Sessão', bg: 'bg-emerald-50/90 dark:bg-emerald-950/20', border: 'border-emerald-200 dark:border-emerald-800', text: 'text-emerald-700 dark:text-emerald-300', icon: 'play_circle', glow: 'shadow-emerald-200/40', accent: 'bg-emerald-500', badge: 'bg-emerald-500 text-white' },
-    concluido: { label: 'Concluído', bg: 'bg-slate-50/90 dark:bg-slate-900/20', border: 'border-slate-300 dark:border-slate-700', text: 'text-slate-600 dark:text-slate-400', icon: 'task_alt', glow: 'shadow-slate-200/40', accent: 'bg-slate-400', badge: 'bg-slate-100/80 text-slate-600 dark:bg-slate-800 dark:text-slate-300' },
-    cancelado: { label: 'Cancelado', bg: 'bg-red-50/90 dark:bg-red-950/20', border: 'border-red-200 dark:border-red-800', text: 'text-red-700 dark:text-red-400', icon: 'cancel', glow: 'shadow-red-200/40', accent: 'bg-red-500', badge: 'bg-red-500 text-white' },
-    faltou: { label: 'Faltou', bg: 'bg-rose-50/90 dark:bg-rose-950/20', border: 'border-rose-200 dark:border-rose-800', text: 'text-rose-700 dark:text-rose-300', icon: 'error', glow: 'shadow-rose-200/40', accent: 'bg-rose-500', badge: 'bg-rose-500 text-white' },
+    confirmado: {
+        label: 'Confirmado', icon: 'check_circle',
+        // month view / badge (Tailwind)
+        bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', glow: 'shadow-emerald-100', accent: 'bg-emerald-500', badge: 'bg-emerald-100 text-emerald-700',
+        // week/day card (inline)
+        cardBg: 'linear-gradient(135deg,rgba(184,230,204,.48),rgba(184,230,204,.26))', cardBorder: 'rgba(31,138,77,.22)', cardColor: '#184e35',
+        dotColor: '#1f8a4d',
+    },
+    aguardando: {
+        label: 'Aguardando', icon: 'schedule',
+        bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', glow: 'shadow-amber-100', accent: 'bg-amber-500', badge: 'bg-amber-100 text-amber-700',
+        cardBg: 'linear-gradient(135deg,rgba(246,198,107,.38),rgba(246,198,107,.20))', cardBorder: 'rgba(182,133,21,.25)', cardColor: '#6a4a0a',
+        dotColor: '#b68515',
+    },
+    em_sessao: {
+        label: 'Em Sessão', icon: 'play_circle',
+        bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', glow: 'shadow-pink-100', accent: 'bg-pink-500', badge: 'bg-pink-100 text-pink-700',
+        cardBg: 'linear-gradient(135deg,rgba(255,102,194,.28),rgba(134,89,232,.24))', cardBorder: 'rgba(255,102,194,.45)', cardColor: '#c940a8',
+        dotColor: '#ff66c2', pulse: true,
+    },
+    concluido: {
+        label: 'Concluído', icon: 'task_alt',
+        bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-500', glow: 'shadow-slate-100', accent: 'bg-slate-400', badge: 'bg-slate-100 text-slate-500',
+        cardBg: 'rgba(134,89,232,.08)', cardBorder: 'rgba(134,89,232,.18)', cardColor: '#8659e8',
+        dotColor: '#8659e8', strikethrough: true,
+    },
+    cancelado: {
+        label: 'Cancelado', icon: 'cancel',
+        bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', glow: 'shadow-red-100', accent: 'bg-red-500', badge: 'bg-red-100 text-red-700',
+        cardBg: 'rgba(239,68,68,.08)', cardBorder: 'rgba(239,68,68,.25)', cardColor: '#b91c1c',
+        dotColor: '#ef4444',
+    },
+    faltou: {
+        label: 'Faltou', icon: 'error',
+        bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', glow: 'shadow-rose-100', accent: 'bg-rose-500', badge: 'bg-rose-100 text-rose-700',
+        cardBg: 'rgba(244,63,94,.08)', cardBorder: 'rgba(244,63,94,.25)', cardColor: '#be123c',
+        dotColor: '#f43f5e',
+    },
 };
 
 const TYPE_CFG = {
@@ -245,23 +278,43 @@ const Agenda = () => {
             status: dados.status || 'confirmado',
         };
 
+        const qtd = parseInt(dados.qtdReplicar) || 1;
+
         if (consultaEditando) {
+            // 1. Atualiza a consulta atual
             updateAppointment(consultaEditando.id, payload);
             showToast(`Consulta de ${dados.paciente} atualizada!`, 'success');
+
+            // 2. Se mudou para recorrente na edição, cria as PRÓXIMAS (N-1)
+            if (qtd > 1 && dados.recorrencia !== 'unica') {
+                const loteExtra = [];
+                for (let i = 1; i < qtd; i++) { // Começa em 1 pois a 0 é a que acabamos de atualizar
+                    const dLoop = new Date(dados.ano, dados.mes, dados.dia);
+                    if (dados.recorrencia === 'semanal') dLoop.setDate(dLoop.getDate() + (i * 7));
+                    else if (dados.recorrencia === 'quinzenal') dLoop.setDate(dLoop.getDate() + (i * 14));
+                    else if (dados.recorrencia === 'mensal') dLoop.setMonth(dLoop.getMonth() + i);
+
+                    loteExtra.push({
+                        ...payload,
+                        data: formatDateLocal(dLoop)
+                    });
+                }
+                if (loteExtra.length > 0) {
+                    addAppointment(loteExtra, true);
+                    showToast(`Mais ${loteExtra.length} sessões geradas!`, 'success');
+                }
+            }
             
             if (payload.status === 'concluido') {
                 gerarFinanceiroConcluido({ ...payload, id: consultaEditando.id }, dados.pacienteId);
             }
         } else {
-            const qtd = dados.qtdReplicar || 1;
-            
-            if (qtd === 1) {
-                // Caso simples: Inserção única
+            // Criação de Nova Consulta
+            if (qtd <= 1 || dados.recorrencia === 'unica') {
                 addAppointment(payload).then(() => {
                     showToast(`Consulta agendada para ${dados.data}!`, 'success');
                 });
             } else {
-                // Caso avançado: BULK INSERT (Economiza processamento e evita bugs de carregamento parcial)
                 const lote = [];
                 for (let i = 0; i < qtd; i++) {
                     const dLoop = new Date(dados.ano, dados.mes, dados.dia);
@@ -276,7 +329,7 @@ const Agenda = () => {
                 }
 
                 addAppointment(lote)
-                    .then(() => showToast(`${qtd} consultas agendadas com sucesso (Otimizado)!`, 'success'))
+                    .then(() => showToast(`${qtd} consultas agendadas com sucesso!`, 'success'))
                     .catch(err => {
                         logger.error('[Agenda] Erro no agendamento em lote:', err);
                         showToast('Erro ao criar sessões recorrentes.', 'error');
@@ -285,6 +338,7 @@ const Agenda = () => {
         }
         setConsultaEditando(null);
     };
+
 
     const abrirNovaConsulta = (diaOffset, hora = null) => {
         setConsultaEditando(null);
@@ -384,6 +438,13 @@ const Agenda = () => {
     const totalHoje = consultasHoje.length;
     const emSessao = consultasHoje.filter(c => c.status === 'em_sessao');
     const aguardando = consultasHoje.filter(c => c.status === 'aguardando');
+
+    const weekNumber = useMemo(() => {
+        const d = new Date(Date.UTC(diasSemana[0].getFullYear(), diasSemana[0].getMonth(), diasSemana[0].getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }, [diasSemana]);
 
     const celsMini = buildCalMini(calAno, calMes);
     const diaSelecionadoIdx = visao === 'dia' ? 0 : -1;
@@ -501,7 +562,11 @@ const Agenda = () => {
                 {/* Grade */}
                 <main className="flex-1 glass dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm flex flex-col min-h-[500px] xl:min-h-0 overflow-hidden animate-settle">
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 lg:px-6 py-4 border-b border-slate-100 dark:border-slate-800 gap-4">
-                        <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight">{labelTopo()}</h2>
+                        <div style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 400, letterSpacing: '-0.01em', color: '#1a1428', lineHeight: 1.3 }}>
+                            {visao === 'mes' ? labelTopo() : (
+                                <>{labelTopo()} · <em style={{ fontStyle: 'italic', color: '#c940a8', fontWeight: 300 }}>semana {weekNumber}</em></>
+                            )}
+                        </div>
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-2 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
                                 <button onClick={() => {
@@ -536,45 +601,48 @@ const Agenda = () => {
                         </div>
                     </div>
 
-                    {/* Barra de Legenda */}
-                    <div className="flex flex-wrap items-center gap-4 px-4 lg:px-6 py-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20">
-                        <div className="flex items-center gap-4 border-r border-slate-200 dark:border-slate-700 pr-4">
-                            <div className="flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-sm text-slate-400">person</span>
-                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Presencial</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-sm text-emerald-500">videocam</span>
-                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Online</span>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            <button 
-                                onClick={() => setFiltroStatus('todos')}
-                                className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all ${filtroStatus === 'todos' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:border-primary/50'}`}
-                            >
-                                <span className="text-[9px] font-black uppercase tracking-widest">Todos</span>
-                            </button>
-                            {[
-                                { status: 'confirmado', label: 'Confirmado' },
-                                { status: 'aguardando', label: 'Aguardando' },
-                                { status: 'em_sessao', label: 'Em Sessão' },
-                                { status: 'concluido', label: 'Concluído' }
-                            ].map((l, i) => {
-                                const s = STATUS_CFG[l.status];
-                                const isSelected = filtroStatus === l.status;
-                                return (
-                                    <button 
-                                        key={i} 
-                                        onClick={() => setFiltroStatus(isSelected ? 'todos' : l.status)}
-                                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all ${isSelected ? 'bg-white dark:bg-slate-800 shadow-sm border-slate-300 dark:border-slate-600' : 'bg-transparent border-transparent text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-                                    >
-                                        <div className={`size-2 rounded-full ${s.bg.split(' ')[0]} border ${s.border} ${isSelected ? 'animate-pulse' : ''}`} />
-                                        <span className={`text-[9px] font-bold uppercase tracking-widest ${isSelected ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400'}`}>{l.label}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
+                    {/* Chips de filtro */}
+                    <div style={{ display: 'flex', gap: 8, padding: '12px 20px', borderBottom: '1px solid rgba(26,20,40,0.06)', overflowX: 'auto', flexShrink: 0 }}>
+                        {[
+                            { key: 'todos',      label: 'Todos',      dot: 'linear-gradient(135deg,#ff66c2,#8659e8)' },
+                            { key: 'confirmado', label: 'Confirmado', dot: '#1f8a4d' },
+                            { key: 'aguardando', label: 'Aguardando', dot: '#b68515' },
+                            { key: 'em_sessao',  label: 'Em Sessão',  dot: '#ff66c2', pulse: true },
+                            { key: 'concluido',  label: 'Concluído',  dot: '#8659e8' },
+                        ].map(chip => {
+                            const isActive = filtroStatus === chip.key;
+                            const count = chip.key === 'todos'
+                                ? appointments.length
+                                : appointments.filter(a => a.status === chip.key).length;
+                            return (
+                                <button
+                                    key={chip.key}
+                                    onClick={() => setFiltroStatus(isActive && chip.key !== 'todos' ? 'todos' : chip.key)}
+                                    style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: 7,
+                                        padding: '6px 13px', borderRadius: 99, cursor: 'pointer',
+                                        background: isActive ? 'linear-gradient(135deg,rgba(255,102,194,.12),rgba(134,89,232,.12))' : 'rgba(26,20,40,0.03)',
+                                        border: `1px solid ${isActive ? 'rgba(255,102,194,.28)' : 'transparent'}`,
+                                        color: isActive ? '#1a1428' : '#6b7280',
+                                        fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap',
+                                        transition: 'all .15s',
+                                    }}
+                                >
+                                    <span style={{
+                                        width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                                        background: chip.dot, display: 'inline-block',
+                                        animation: chip.pulse && isActive ? 'pulseDot 1.4s infinite' : 'none',
+                                    }} />
+                                    {chip.label}
+                                    <span style={{
+                                        fontSize: 10, padding: '1px 7px', borderRadius: 99, fontWeight: 700,
+                                        background: isActive ? 'rgba(255,255,255,.65)' : 'rgba(26,20,40,.06)',
+                                        color: isActive ? '#c940a8' : '#6b7280',
+                                    }}>{count}</span>
+                                </button>
+                            );
+                        })}
+                        <style>{`@keyframes pulseDot{50%{opacity:.35}}`}</style>
                     </div>
 
                     <div id="tour-calendar" ref={gridRef} className="flex-1 overflow-auto no-scrollbar">
@@ -629,15 +697,45 @@ const Agenda = () => {
                                     {(visao === 'semana' ? diasSemana : [dataBase]).map((d, i) => {
                                         const isHoje = format(d) === format(hoje);
                                         return (
-                                            <div key={i} className={`py-3 text-center border-l border-slate-100 dark:border-slate-800 transition-colors ${isHoje ? 'bg-primary/5 dark:bg-primary/10 border-b-2 border-b-primary' : ''}`}>
-                                                <p className={`text-[10px] font-bold uppercase ${isHoje ? 'text-primary' : 'text-slate-400'}`}>{DIAS_SEMANA[d.getDay() === 0 ? 6 : d.getDay() - 1]}</p>
-                                                <p className={`text-lg font-bold mt-0.5 ${isHoje ? 'text-primary' : 'text-slate-700 dark:text-slate-200'}`}>{d.getDate()}</p>
+                                            <div key={i} style={{
+                                                padding: '12px 8px', textAlign: 'center',
+                                                borderLeft: '1px solid rgba(26,20,40,0.06)',
+                                                borderBottom: isHoje ? 'none' : undefined,
+                                                background: isHoje ? 'linear-gradient(180deg,rgba(255,102,194,0.06) 0%,transparent 100%)' : undefined,
+                                                position: 'relative',
+                                            }}>
+                                                {isHoje && (
+                                                    <span style={{
+                                                        position: 'absolute', bottom: -1, left: '12%', right: '12%',
+                                                        height: 2, background: 'linear-gradient(90deg,#ff66c2,#8659e8)',
+                                                        borderRadius: 2, display: 'block',
+                                                    }} />
+                                                )}
+                                                <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: isHoje ? '#c940a8' : '#9ca3af' }}>
+                                                    {DIAS_SEMANA[d.getDay() === 0 ? 6 : d.getDay() - 1]}
+                                                </p>
+                                                <p style={{ fontSize: 22, fontWeight: 400, letterSpacing: '-0.01em', marginTop: 4, color: isHoje ? '#c940a8' : '#374151' }}>
+                                                    {d.getDate()}
+                                                </p>
                                             </div>
                                         );
                                     })}
                                 </div>
                                 <div className="relative" style={{ minWidth: 'fit-content' }}>
-                                    {mostrarLinha && <div className="absolute left-0 right-0 z-20 border-t-2 border-red-500 pointer-events-none" style={{ top: `${linhaAgoraTop}px` }} />}
+                                    {mostrarLinha && (
+                                        <div style={{
+                                            position: 'absolute', left: 60, right: 0, top: linhaAgoraTop,
+                                            height: 0, borderTop: '2px solid #ff66c2', zIndex: 20, pointerEvents: 'none',
+                                        }}>
+                                            <span style={{
+                                                position: 'absolute', left: -6, top: -6,
+                                                width: 10, height: 10, borderRadius: '50%',
+                                                background: '#ff66c2',
+                                                boxShadow: '0 0 0 4px rgba(255,102,194,0.2)',
+                                                display: 'block',
+                                            }} />
+                                        </div>
+                                    )}
                                     <div className="grid" style={{ gridTemplateColumns: `60px repeat(${visao === 'semana' ? 7 : 1}, 200px)` }}>
                                         <div className="border-r border-slate-100 dark:border-slate-800">
                                             {HORAS.map((h, i) => <div key={i} className="px-2 pt-1 text-[10px] font-bold text-slate-300 text-right" style={{ height: SLOT_H }}>{h}</div>)}
@@ -657,71 +755,111 @@ const Agenda = () => {
                                                         />
                                                     ))}
                                                     {getConsultasDoDia(dia).map((c, idx) => {
-                                                    const sCfg = STATUS_CFG[c.status] || STATUS_CFG.confirmado;
-                                                    const tCfg = TYPE_CFG[c.type?.toLowerCase()] || TYPE_CFG[c.tipo?.toLowerCase()] || TYPE_CFG.presencial;
-                                                    
-                                                    return (
-                                                        <div 
-                                                            key={c.id} 
-                                                            draggable="true"
-                                                            onDragStart={(e) => handleDragStart(e, c.id)}
-                                                            onClick={(e) => { e.stopPropagation(); abrirEdicao(c); }} 
-                                                            className={`absolute left-1.5 right-1.5 rounded-2xl border p-3 border-transparent shadow-sm hover:z-30 cursor-pointer overflow-hidden transition-all hover:scale-[1.02] hover:shadow-md group ${tCfg.bg} ${tCfg.text} ${sCfg.glow}`} 
-                                                            style={{ top: (c.timeStart - H_INICIO) * SLOT_H + 2, height: (c.duracao / 60) * SLOT_H - 4, animationDelay: `${idx * 30}ms` }}
-                                                        >
-                                                            {/* Barra de Status Lateral */}
-                                                            <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${sCfg.accent}`} />
-                                                            
-                                                            {/* Botões de Ação Rápida */}
-                                                            <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-20">
-                                                                {c.status === 'confirmado' && (
-                                                                    <button 
-                                                                        onClick={(e) => { e.stopPropagation(); mudarStatusConsulta(c.id, 'aguardando'); }}
-                                                                        className="size-6 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow-sm text-amber-500 hover:scale-105 hover:shadow-md transition-all font-bold"
-                                                                        title="Chegou / Aguardando"
-                                                                    >
-                                                                        <span className="material-symbols-outlined text-sm">hail</span>
-                                                                    </button>
-                                                                )}
-                                                                {c.status === 'aguardando' && (
-                                                                    <button 
-                                                                        onClick={(e) => { e.stopPropagation(); mudarStatusConsulta(c.id, 'em_sessao'); }}
-                                                                        className="size-6 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow-sm text-emerald-500 hover:scale-105 hover:shadow-md transition-all font-bold"
-                                                                        title="Iniciar Sessão"
-                                                                    >
-                                                                        <span className="material-symbols-outlined text-sm">play_arrow</span>
-                                                                    </button>
-                                                                )}
-                                                                {(c.status === 'em_sessao' || c.status === 'confirmado' || c.status === 'aguardando') && (
-                                                                    <button 
-                                                                        onClick={(e) => { e.stopPropagation(); mudarStatusConsulta(c.id, 'concluido'); }}
-                                                                        className="size-6 flex items-center justify-center bg-white/95 hover:bg-white rounded-lg shadow-sm text-slate-600 hover:text-emerald-500 hover:scale-105 hover:shadow-md transition-all font-bold"
-                                                                        title="Concluir Sessão (Gera Receita)"
-                                                                    >
-                                                                        <span className="material-symbols-outlined text-sm">check</span>
-                                                                    </button>
-                                                                )}
-                                                            </div>
+                                                        const sCfg = STATUS_CFG[c.status] || STATUS_CFG.confirmado;
+                                                        const tCfg = TYPE_CFG[c.type?.toLowerCase()] || TYPE_CFG[c.tipo?.toLowerCase()] || TYPE_CFG.presencial;
+                                                        const isOnline = c.tipo === 'teleconsulta' || c.tipo === 'online' || c.type === 'teleconsulta';
+                                                        const hh = String(Math.floor(c.timeStart)).padStart(2,'0');
+                                                        const mm = String(Math.round((c.timeStart % 1) * 60)).padStart(2,'0');
 
-                                                            <div className="flex justify-between items-start mb-0.5">
-                                                                <p className="text-[11px] font-bold uppercase truncate leading-tight flex-1 flex items-center gap-1">
+                                                        return (
+                                                            <div
+                                                                key={c.id}
+                                                                draggable="true"
+                                                                onDragStart={(e) => handleDragStart(e, c.id)}
+                                                                onClick={(e) => { e.stopPropagation(); abrirEdicao(c); }}
+                                                                className="group"
+                                                                style={{
+                                                                    position: 'absolute', left: 4, right: 4,
+                                                                    top: (c.timeStart - H_INICIO) * SLOT_H + 2,
+                                                                    height: (c.duracao / 60) * SLOT_H - 4,
+                                                                    padding: '5px 8px',
+                                                                    borderRadius: 10,
+                                                                    border: `1px solid ${sCfg.cardBorder}`,
+                                                                    background: sCfg.cardBg,
+                                                                    color: sCfg.cardColor,
+                                                                    overflow: 'hidden',
+                                                                    cursor: 'pointer',
+                                                                    zIndex: 1,
+                                                                    transition: 'transform .15s, box-shadow .15s',
+                                                                }}
+                                                                onMouseEnter={e => { e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow='0 6px 14px -6px rgba(0,0,0,0.14)'; e.currentTarget.style.zIndex=30; }}
+                                                                onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow=''; e.currentTarget.style.zIndex=1; }}
+                                                            >
+                                                                {/* Online badge */}
+                                                                {isOnline && (
+                                                                    <span style={{
+                                                                        position: 'absolute', top: 5, right: 5,
+                                                                        width: 14, height: 14, borderRadius: '50%',
+                                                                        background: 'rgba(59,130,246,0.16)', color: '#3b82f6',
+                                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9,
+                                                                    }}>
+                                                                        <span className="material-symbols-outlined" style={{ fontSize: 10 }}>videocam</span>
+                                                                    </span>
+                                                                )}
+
+                                                                {/* Ações rápidas (hover) */}
+                                                                <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-20" style={{ top: isOnline ? 20 : 4 }}>
+                                                                    {c.status === 'confirmado' && (
+                                                                        <button onClick={(e) => { e.stopPropagation(); mudarStatusConsulta(c.id, 'aguardando'); }}
+                                                                            className="size-5 flex items-center justify-center bg-white/95 rounded-md shadow-sm text-amber-500 hover:scale-110 transition-all" title="Chegou">
+                                                                            <span className="material-symbols-outlined" style={{ fontSize: 12 }}>hail</span>
+                                                                        </button>
+                                                                    )}
+                                                                    {c.status === 'aguardando' && (
+                                                                        <button onClick={(e) => { e.stopPropagation(); mudarStatusConsulta(c.id, 'em_sessao'); }}
+                                                                            className="size-5 flex items-center justify-center bg-white/95 rounded-md shadow-sm text-emerald-500 hover:scale-110 transition-all" title="Iniciar">
+                                                                            <span className="material-symbols-outlined" style={{ fontSize: 12 }}>play_arrow</span>
+                                                                        </button>
+                                                                    )}
+                                                                    {(c.status === 'em_sessao' || c.status === 'confirmado' || c.status === 'aguardando') && (
+                                                                        <button onClick={(e) => { e.stopPropagation(); mudarStatusConsulta(c.id, 'concluido'); }}
+                                                                            className="size-5 flex items-center justify-center bg-white/95 rounded-md shadow-sm text-emerald-600 hover:scale-110 transition-all" title="Concluir (gera receita)">
+                                                                            <span className="material-symbols-outlined" style={{ fontSize: 12 }}>check</span>
+                                                                        </button>
+                                                                    )}
+                                                                    {(() => {
+                                                                        const p = patients.find(pat => pat.id === c.pacienteId);
+                                                                        if (!p?.phone) return null;
+                                                                        const link = generateWhatsAppLink(p.phone, messages.reminder(p.nome, `${hh}:${mm}`));
+                                                                        return (
+                                                                            <a href={link} target="_blank" rel="noopener noreferrer"
+                                                                                onClick={(e) => e.stopPropagation()}
+                                                                                className="size-5 flex items-center justify-center bg-[#25D366] text-white rounded-md shadow-sm hover:scale-110 transition-all" title="WhatsApp">
+                                                                                <svg viewBox="0 0 24 24" style={{ width: 10, height: 10, fill: '#fff' }}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.63 1.438h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                                                                            </a>
+                                                                        );
+                                                                    })()}
+                                                                </div>
+
+                                                                {/* Hora */}
+                                                                <div style={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '0.04em', opacity: 0.8, marginBottom: 1 }}>
+                                                                    {c.status === 'em_sessao' && (
+                                                                        <span style={{ marginRight: 4, animation: 'pulseDot 1.2s infinite' }}>● REC</span>
+                                                                    )}
+                                                                    {hh}:{mm}
+                                                                </div>
+
+                                                                {/* Nome */}
+                                                                <div style={{
+                                                                    fontWeight: 600, fontSize: 11, lineHeight: 1.2,
+                                                                    textDecoration: sCfg.strikethrough ? 'line-through' : 'none',
+                                                                    textDecorationColor: 'rgba(134,89,232,0.4)',
+                                                                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                                                                    display: 'flex', alignItems: 'center', gap: 3,
+                                                                }}>
                                                                     {safeRender(c.paciente)}
                                                                     {debitosPacientes[c.paciente] && (
-                                                                        <span className="material-symbols-outlined text-[12px] text-red-500 animate-pulse" title="Paciênte com débito pendente">payments</span>
+                                                                        <span className="material-symbols-outlined" style={{ fontSize: 11, color: '#ef4444' }} title="Débito pendente">payments</span>
                                                                     )}
-                                                                </p>
-                                                                <span className="material-symbols-outlined text-sm opacity-50">{tCfg.icon}</span>
+                                                                </div>
+
+                                                                {/* Meta */}
+                                                                <div style={{ fontSize: 10, opacity: 0.72, marginTop: 1 }}>
+                                                                    {isOnline ? 'Online' : 'Presencial'} · {c.duracao} min
+                                                                </div>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 mt-1.5">
-                                                                <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-wider ${sCfg.badge} shadow-sm shadow-${sCfg.bg.split('-')[1]}/20`}>
-                                                                    {sCfg.label}
-                                                                </span>
-                                                                <p className="text-[10px] opacity-80 font-bold ml-1">
-                                                                    {String(Math.floor(c.timeStart)).padStart(2, '0')}:{String(Math.round((c.timeStart % 1) * 60)).padStart(2, '0')}
-                                                                </p>
-                                                            </div>
-                                                         </div>
-                                                    )})}
+                                                        );
+                                                    })}
                                                 </div>
                                             );
                                         })}
@@ -734,86 +872,100 @@ const Agenda = () => {
 
                 {/* Sidebar Direita */}
                 <aside className="w-full xl:w-64 shrink-0 flex flex-col gap-4 overflow-visible xl:overflow-y-auto">
-                    <div className="glass dark:bg-slate-800/50 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Recepção</p>
-                        <div className="space-y-3">
-                            {emSessao.map(c => (
-                                <div key={c.id} className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                                    <div className="size-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0">{(c.paciente || c.pacienteNome || '?').split(' ')[0]?.[0]}</div>
-                                    <div className="min-w-0">
-                                        <p className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase truncate">{safeRender(c.paciente)}</p>
-                                        <span className="text-[9px] font-bold text-emerald-600 uppercase">Em Atendimento</span>
+                    {/* Recepção agora */}
+                    <div style={{ background: '#fff', border: '1px solid rgba(26,20,40,0.08)', borderRadius: 20, padding: 18, boxShadow: '0 2px 10px rgba(90,30,120,0.04)' }}>
+                        <p style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8b7a9e', fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#c940a8' }}>schedule</span>
+                            Recepção agora
+                        </p>
+                        {emSessao.length === 0 && aguardando.length === 0 ? (
+                            <>
+                                <div style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 400, letterSpacing: '-0.02em', color: '#1a1428', lineHeight: 1 }}>Livre</div>
+                                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 6 }}>Nenhum paciente aguardando no check-in.</div>
+                            </>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                {emSessao.map(c => (
+                                    <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: 'rgba(31,138,77,0.08)', border: '1px solid rgba(31,138,77,0.15)' }}>
+                                        <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#1f8a4d', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{(c.paciente || '?').split(' ')[0]?.[0]}</div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <p style={{ fontSize: 12, fontWeight: 600, color: '#1a1428', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{safeRender(c.paciente)}</p>
+                                            <span style={{ fontSize: 10, fontWeight: 700, color: '#1f8a4d', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Em Atendimento</span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                            {aguardando.map(c => (
-                                <div key={c.id} className="flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                                    <div className="size-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] font-bold shrink-0">{(c.paciente || c.pacienteNome || '?').split(' ')[0]?.[0]}</div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase truncate">{safeRender(c.paciente)}</p>
-                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Aguardando</span>
+                                ))}
+                                {aguardando.map(c => (
+                                    <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: '#fff', border: '1px solid rgba(26,20,40,0.08)' }}>
+                                        <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'rgba(246,198,107,0.25)', color: '#b68515', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{(c.paciente || '?').split(' ')[0]?.[0]}</div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <p style={{ fontSize: 12, fontWeight: 600, color: '#1a1428', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{safeRender(c.paciente)}</p>
+                                            <span style={{ fontSize: 10, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Aguardando</span>
+                                        </div>
+                                        <button onClick={() => mudarStatusConsulta(c.id, 'em_sessao')} style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: '#1f8a4d', color: '#fff', border: 0, cursor: 'pointer' }}>
+                                            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>play_arrow</span>
+                                        </button>
                                     </div>
-                                    <button onClick={() => mudarStatusConsulta(c.id, 'em_sessao')} className="size-7 flex items-center justify-center rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm"><span className="material-symbols-outlined text-sm">play_arrow</span></button>
-                                </div>
-                            ))}
-                            {emSessao.length === 0 && aguardando.length === 0 && <p className="text-center text-[10px] text-slate-400 font-bold uppercase py-4">Recepção Livre</p>}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    <div id="tour-agenda-stats" className="glass dark:bg-slate-800/50 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Eficiência</p>
-                        <div className="grid grid-cols-3 gap-2 text-center mb-4">
+                    {/* Eficiência do dia */}
+                    <div id="tour-agenda-stats" style={{ background: '#fff', border: '1px solid rgba(26,20,40,0.08)', borderRadius: 20, padding: 18, boxShadow: '0 2px 10px rgba(90,30,120,0.04)' }}>
+                        <p style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8b7a9e', fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#c940a8' }}>bolt</span>
+                            Eficiência do dia
+                        </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                             {[
-                                { val: totalHoje, label: 'Hoje', col: 'text-primary' },
-                                { val: emSessao.length, label: 'Agora', col: 'text-emerald-500' },
-                                { val: waitingList.length, label: 'Fila', col: 'text-amber-500' },
+                                { val: totalHoje, label: 'Hoje', ok: true },
+                                { val: emSessao.length, label: 'Agora' },
+                                { val: waitingList.length, label: 'Fila' },
                             ].map((s, i) => (
-                                <div key={i} className="p-2 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                                    <p className={`text-lg font-bold ${s.col}`}>{s.val}</p>
-                                    <p className="text-[8px] font-bold text-slate-400 uppercase">{s.label}</p>
+                                <div key={i} style={{ textAlign: 'center', padding: '12px 8px', background: 'rgba(251,247,255,1)', borderRadius: 14 }}>
+                                    <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 400, letterSpacing: '-0.02em', lineHeight: 1, color: s.ok ? '#1f8a4d' : '#1a1428' }}>{s.val}</div>
+                                    <div style={{ fontSize: 10, color: '#8b7a9e', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 4, fontWeight: 600 }}>{s.label}</div>
                                 </div>
                             ))}
                         </div>
-                        <div className="h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary transition-all" style={{ width: totalHoje > 0 ? `${(filteredAppointments.filter(c => c.data === dataHojeISO && c.status === 'concluido').length / totalHoje) * 100}%` : '0%' }} />
+                        <div style={{ height: 4, background: 'rgba(26,20,40,0.06)', borderRadius: 99, overflow: 'hidden', marginTop: 14 }}>
+                            <div style={{ height: '100%', background: 'linear-gradient(90deg,#ff66c2,#8659e8)', borderRadius: 99, transition: 'width .4s', width: totalHoje > 0 ? `${(filteredAppointments.filter(c => c.data === dataHojeISO && c.status === 'concluido').length / totalHoje) * 100}%` : '0%' }} />
                         </div>
                     </div>
 
                     {!agendaBannerDismissed && (
-                    <div className="glass dark:bg-slate-800/50 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-primary/5 to-violet-500/5 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-primary/20 transition-all duration-700"></div>
-                        <button onClick={dismissAgendaBanner} className="absolute top-2 right-2 z-20 size-6 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all" title="Dispensar">
-                            <span className="material-symbols-outlined text-sm">close</span>
+                    <div style={{ background: 'linear-gradient(165deg, #1a1428 0%, #2e1e47 100%)', border: '1px solid transparent', borderRadius: 20, padding: 18, boxShadow: '0 2px 10px rgba(90,30,120,0.12)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+                        {/* Pink glow blob */}
+                        <div style={{ position: 'absolute', right: -40, top: -40, width: 140, height: 140, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,102,194,0.4), transparent 70%)', filter: 'blur(4px)', pointerEvents: 'none' }} />
+
+                        <button onClick={dismissAgendaBanner} style={{ position: 'absolute', top: 14, right: 14, width: 22, height: 22, borderRadius: 7, background: 'rgba(255,255,255,0.08)', border: 0, cursor: 'pointer', color: 'rgba(255,255,255,0.6)', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Dispensar">
+                            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
                         </button>
 
-                        <div className="flex items-center gap-2 mb-3 relative z-10">
-                            <div className="size-6 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-primary text-sm animate-pulse">magic_button</span>
-                            </div>
-                            <p className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-[0.15em]">Sincronização Ativa</p>
-                        </div>
-
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium relative z-10">
-                            Seus pacientes recebem <span className="text-primary font-bold">lembretes automáticos</span> via WhatsApp e E-mail assim que são agendados, aumentando sua taxa de presença.
+                        <p style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#ffb8e0', fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#ffb8e0' }}>wifi</span>
+                            Sincronização ativa
                         </p>
 
-                        <div className="flex gap-2 mt-4 relative z-10">
-                            <div className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                                <span className="material-symbols-outlined text-xs">chat</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest">WhatsApp</span>
-                            </div>
-                            <div className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 text-blue-600 dark:text-blue-400">
-                                <span className="material-symbols-outlined text-xs">mail</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest">E-mail</span>
-                            </div>
+                        <p style={{ fontSize: 13, lineHeight: 1.5, color: 'rgba(255,255,255,0.85)', position: 'relative', marginBottom: 14 }}>
+                            Seus pacientes recebem <strong style={{ color: '#ffb8e0', fontWeight: 500 }}>lembretes automáticos</strong> via WhatsApp e e-mail assim que são agendados, aumentando sua taxa de presença.
+                        </p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, position: 'relative' }}>
+                            <button style={{ padding: '9px 12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', borderRadius: 11, fontSize: 11.5, fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, cursor: 'pointer' }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#25d366' }}>chat</span> WhatsApp
+                            </button>
+                            <button style={{ padding: '9px 12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', borderRadius: 11, fontSize: 11.5, fontWeight: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, cursor: 'pointer' }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#b18bff' }}>mail</span> E-mail
+                            </button>
                         </div>
 
-                        <button 
+                        <button
                             onClick={() => navigate('/configuracoes')}
-                            className="w-full mt-4 py-3 text-[10px] font-black uppercase tracking-widest text-white bg-slate-900 dark:bg-primary rounded-xl hover:bg-primary dark:hover:bg-primary/90 transition-all shadow-lg shadow-slate-900/10 dark:shadow-primary/20 flex items-center justify-center gap-2"
+                            style={{ marginTop: 10, width: '100%', padding: 11, background: 'linear-gradient(180deg,rgba(255,255,255,0.14) 0%,rgba(255,255,255,0.06) 100%)', border: '1px solid rgba(255,255,255,0.18)', color: '#fff', borderRadius: 12, fontSize: 12, fontWeight: 600, cursor: 'pointer', letterSpacing: '0.04em', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, position: 'relative' }}
                         >
-                            <span className="material-symbols-outlined text-sm">settings_suggest</span>
-                            Configurar Mensagens
+                            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>settings</span>
+                            Configurar mensagens
                         </button>
                     </div>
                     )}

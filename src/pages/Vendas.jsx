@@ -9,6 +9,7 @@ import heroBg from '../assets/vendas_hero_bg.png';
 import dashboardImg from '../assets/screens/dashboard.png';
 import agendaImg from '../assets/screens/agenda.png';
 import financeiroImg from '../assets/screens/financeiro.png';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 export default function Vendas() {
   const [openFaq, setOpenFaq] = useState(null);
@@ -109,7 +110,7 @@ export default function Vendas() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-purple-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Heart className="w-8 h-8 text-purple-600 fill-purple-100" />
+            <AiAssistantAnimation size="micro" />
             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
               Meu Sistema Psi
             </span>
@@ -463,7 +464,7 @@ export default function Vendas() {
       <footer className="bg-slate-50 border-t border-slate-100 py-12">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
           <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-purple-600 fill-purple-100" />
+            <AiAssistantAnimation size="micro" />
             <span className="font-bold text-slate-800">Meu Sistema Psi</span>
           </div>
           <p className="text-slate-500 text-xs text-center">© 2026 Meu Sistema Psi. Todos os direitos reservados.</p>

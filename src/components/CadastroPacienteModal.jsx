@@ -10,28 +10,40 @@ import { maskCPF, maskPhone, maskCEP, formatNameCase, calculateAge } from '../ut
 const TABS = ['Dados Pessoais', 'Endereço', 'Dados Clínicos'];
 
 
-const Field = ({ label, value, onChange, onBlur, type = 'text', placeholder = '', error = null, success = false, detail = null, name, register }) => (
-    <div className="relative">
-        <div className="flex justify-between items-center mb-1.5">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">{label}</label>
-            {detail && <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{detail}</span>}
-        </div>
+const Field = ({ label, value, onChange, onBlur, type = 'text', placeholder = '', error = null, success = false, detail = null, name, register }) => {
+    const registered = register ? register(name) : {};
+    
+    return (
         <div className="relative">
-            <input
-                {...(register ? register(name) : {})}
-                type={type}
-                className={`w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm text-slate-900 dark:text-slate-100 transition-all ${error ? 'border-rose-300 ring-rose-100' : success ? 'border-emerald-300' : 'border-slate-200 dark:border-slate-700'}`}
-                value={value}
-                placeholder={placeholder}
-                onChange={onChange}
-                onBlur={onBlur}
-            />
-            {success && <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 text-lg">check_circle</span>}
-            {error && <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-rose-500 text-lg">error</span>}
+            <div className="flex justify-between items-center mb-1">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">{label}</label>
+                {detail && <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{detail}</span>}
+            </div>
+            <div className="relative">
+                <input
+                    {...registered}
+                    type={type}
+                    className={`w-full h-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm text-slate-900 dark:text-slate-100 transition-all ${error ? 'border-rose-300 ring-rose-100' : success ? 'border-emerald-300' : 'border-slate-200 dark:border-slate-700'}`}
+                    {...(value !== undefined ? { value } : {})}
+                    placeholder={placeholder}
+                    onChange={(e) => {
+                        // Chama o onChange do register (importante para o react-hook-form)
+                        if (registered.onChange) registered.onChange(e);
+                        // Chama o onChange personalizado (máscaras, etc)
+                        if (onChange) onChange(e);
+                    }}
+                    onBlur={(e) => {
+                        if (registered.onBlur) registered.onBlur(e);
+                        if (onBlur) onBlur(e);
+                    }}
+                />
+                {success && <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 text-lg">check_circle</span>}
+                {error && <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-rose-500 text-lg">error</span>}
+            </div>
+            {error && <p className="mt-1 text-[10px] text-rose-500 font-bold uppercase">{error}</p>}
         </div>
-        {error && <p className="mt-1 text-[10px] text-rose-500 font-bold uppercase">{error}</p>}
-    </div>
-);
+    );
+};
 
 const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => {
     const [tab, setTab] = useState(0);
@@ -131,7 +143,12 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
         setIsSaving(true);
         try {
             if (onSave) {
-                await onSave(data);
+                // Converte precoSessao de string (com vírgula) para número antes de salvar
+                const sanitizedData = {
+                    ...data,
+                    precoSessao: data.precoSessao ? parseFloat(String(data.precoSessao).replace(',', '.')) : 0
+                };
+                await onSave(sanitizedData);
             }
             showToast(paciente ? 'Paciente atualizado com sucesso!' : 'Paciente cadastrado com sucesso!', 'success');
             onClose();
@@ -141,6 +158,26 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
             showToast('Erro ao salvar paciente. Tente novamente.', 'error');
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const onInvalid = (errors) => {
+        const errorPaths = Object.keys(errors);
+        if (errorPaths.length > 0) {
+            const firstError = errorPaths[0];
+            
+            const tab0Fields = ['nome', 'cpf', 'dataNascimento', 'genero', 'telefone', 'email', 'status', 'estadoCivil', 'profissao', 'isMenor', 'dadosResponsavel'];
+            const tab1Fields = ['cep', 'rua', 'numero', 'bairro', 'cidade', 'estado'];
+            
+            if (tab0Fields.some(f => firstError.startsWith(f))) {
+                setTab(0);
+            } else if (tab1Fields.some(f => firstError.startsWith(f))) {
+                setTab(1);
+            } else {
+                setTab(2);
+            }
+            
+            showToast('Verifique os campos obrigatórios ou inválidos.', 'warning');
         }
     };
 
@@ -159,9 +196,9 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                 ))}
             </div>
 
-            <div className="p-4 md:p-8">
+            <div className="p-4 md:p-6">
                 {tab === 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
                             <Field
                                 label="Nome Completo *"
@@ -203,10 +240,10 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                             error={errors.dataNascimento?.message}
                         />
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gênero</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Gênero</label>
                             <select 
                                 {...register('genero')}
-                                className={`w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all font-medium ${errors.genero ? 'border-rose-300' : 'border-slate-200 dark:border-slate-700'}`}
+                                className={`w-full h-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all font-medium ${errors.genero ? 'border-rose-300' : 'border-slate-200 dark:border-slate-700'}`}
                             >
                                 <option value="">Selecionar...</option>
                                 <option>Feminino</option><option>Masculino</option><option>Não-binário</option><option>Prefiro não informar</option>
@@ -214,20 +251,20 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                             {errors.genero && <p className="mt-1 text-[10px] text-rose-500 font-bold uppercase">{errors.genero.message}</p>}
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Status do Paciente</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status do Paciente</label>
                             <select 
                                 {...register('status')}
-                                className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all font-bold"
+                                className="w-full h-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all font-bold"
                             >
                                 <option value="Ativo">Ativo</option>
                                 <option value="Inativo">Inativo</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estado Civil</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Estado Civil</label>
                             <select 
                                 {...register('estadoCivil')}
-                                className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all font-medium"
+                                className="w-full h-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all font-medium"
                             >
                                 <option value="">Selecionar...</option>
                                 <option>Solteiro(a)</option>
@@ -273,7 +310,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                         </div>
 
                         {formValues.isMenor && (
-                            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-5 bg-primary/5 border border-primary/10 rounded-2xl">
+                            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-primary/5 border border-primary/10 rounded-2xl">
                                 <div className="md:col-span-2 flex items-center gap-2 mb-1">
                                     <span className="material-symbols-outlined text-primary text-base">supervisor_account</span>
                                     <h4 className="text-xs font-black uppercase tracking-widest text-primary">Dados do Responsável Legal</h4>
@@ -323,7 +360,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                 )}
 
                 {tab === 1 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Field
                             label="CEP"
                             name="cep"
@@ -362,10 +399,10 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                             error={errors.cidade?.message}
                         />
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Estado</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Estado</label>
                             <select 
                                 {...register('estado')}
-                                className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all"
+                                className="w-full h-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm text-slate-900 dark:text-slate-100 transition-all"
                             >
                                 <option value="">UF</option>
                                 {['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'].map(uf => <option key={uf}>{uf}</option>)}
@@ -375,9 +412,9 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                 )}
 
                 {tab === 2 && (
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Queixa Principal</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Queixa Principal</label>
                             <textarea
                                 {...register('queixa')}
                                 className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm resize-none"
@@ -386,7 +423,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Histórico Clínico Relevante</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Histórico Clínico Relevante</label>
                             <textarea
                                 {...register('historico')}
                                 className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm resize-none"
@@ -394,20 +431,33 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                                 placeholder="Diagnósticos anteriores, medicações, tratamentos..."
                             />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="md:col-span-2">
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Preço da Sessão Combinado (R$)</label>
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm text-primary">R$</span>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Preço da Sessão Combinado (R$)</label>
+                                <div className="relative group">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">R$</span>
                                     <input
                                         type="text"
-                                        className="w-full h-11 pl-12 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm font-bold text-primary transition-all"
+                                        className={`w-full h-14 pl-10 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:ring-4 focus:ring-primary/10 outline-none text-xl font-bold text-slate-700 dark:text-slate-100 transition-all ${errors.precoSessao ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50 focus:border-primary'}`}
                                         placeholder="0,00"
-                                        value={formValues.precoSessao}
+                                        value={watch('precoSessao') || ''}
                                         onChange={e => {
-                                            const val = e.target.value.replace(/\D/g, '');
-                                            const formatted = (Number(val) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                                            setValue('precoSessao', formatted);
+                                            let val = e.target.value.replace(/[^\d,.]/g, '').replace('.', ',');
+                                            const parts = val.split(',');
+                                            if (parts.length > 2) val = parts[0] + ',' + parts.slice(1).join('');
+                                            
+                                            // Atualiza o valor visual (string com vírgula) no estado do formulário
+                                            setValue('precoSessao', val);
+                                        }}
+                                        onBlur={() => {
+                                            // No desfoque, podemos garantir que o valor está limpo
+                                            const val = watch('precoSessao');
+                                            if (val) {
+                                                const numeric = parseFloat(String(val).replace(',', '.'));
+                                                if (!isNaN(numeric)) {
+                                                    setValue('precoSessao', numeric.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                                                }
+                                            }
                                         }}
                                     />
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-40">
@@ -449,10 +499,10 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Como conheceu a clínica? (Indicação)</label>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Como conheceu a clínica? (Indicação)</label>
                                 <input
                                     {...register('referral_source')}
-                                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm"
+                                    className="w-full h-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 outline-none text-sm"
                                     placeholder="Ex: Instagram, Indicação de Amigo, Google..."
                                 />
                             </div>
@@ -462,7 +512,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 shrink-0">
+            <div className="flex items-center justify-between px-4 md:px-8 py-3 md:py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="flex gap-2">
                         {TABS.map((_, i) => (
@@ -506,7 +556,7 @@ const CadastroPacienteModal = ({ isOpen, onClose, onSave, paciente = null }) => 
                         </button>
                     ) : (
                         <button 
-                            onClick={handleSubmit(onSubmit)} 
+                            onClick={handleSubmit(onSubmit, onInvalid)} 
                             disabled={isSaving} 
                             className={`flex items-center gap-2 px-7 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all ${isSaving ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >

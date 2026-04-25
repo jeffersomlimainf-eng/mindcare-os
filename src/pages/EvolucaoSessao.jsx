@@ -133,6 +133,7 @@ const EvolucaoSessao = () => {
     });
 
     const formValues = watch();
+    const { dataHora, numeroSessao, tipoAtendimento, duracaoSessao, humorPaciente, nivelRisco, tecnicas, observacoes } = formValues;
 
     useEffect(() => {
         const now = new Date();
@@ -185,13 +186,17 @@ const EvolucaoSessao = () => {
                 tecnicas: baseTecnicas
             });
         } else {
+            const state = location.state || {};
+            const incomingPacienteId = state.pacienteId || '';
+            const incomingPaciente = patients.find(p => p.id === incomingPacienteId);
+
             reset({
                 dataHora: defaultDate,
-                tipoAtendimento: 'Psicoterapia Individual',
-                duracaoSessao: 50,
+                tipoAtendimento: state.tipoAtendimento || 'Psicoterapia Individual',
+                duracaoSessao: state.duracaoSessao || 50,
                 numeroSessao: '',
-                pacienteId: '',
-                pacienteNome: '',
+                pacienteId: incomingPacienteId,
+                pacienteNome: incomingPaciente?.nome || '',
                 subjetivo: '',
                 objetivo: '',
                 avaliacao: '',
@@ -249,6 +254,18 @@ const EvolucaoSessao = () => {
     };
 
     const { addTransaction } = useFinance();
+
+    const pacienteSelecionado = useMemo(() => {
+        if (!formValues.pacienteId) return null;
+        return patients.find(p => p.id === formValues.pacienteId) || null;
+    }, [formValues.pacienteId, patients]);
+
+    const ultimaEvolucao = useMemo(() => {
+        if (!formValues.pacienteId) return null;
+        return (evolutions || [])
+            .filter(ev => ev.pacienteId === formValues.pacienteId && ev.id !== id && ev.status === 'Finalizado')
+            .sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora))[0];
+    }, [formValues.pacienteId, evolutions, id]);
 
     // Automação: Sugerir próximo número de sessão
     useEffect(() => {
@@ -585,7 +602,7 @@ const EvolucaoSessao = () => {
                                 {section.titulo}
                             </h3>
                             <div className="text-[12px] leading-relaxed text-slate-800 whitespace-pre-wrap">
-                                {soapValues[section.key] || 'Não preenchido.'}
+                                {formValues[section.key] || 'Não preenchido.'}
                             </div>
                         </div>
                         </div>

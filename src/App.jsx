@@ -48,12 +48,20 @@ const Vendas2 = lazy(() => import('./pages/Vendas2'));
 const Vendas3 = lazy(() => import('./pages/Vendas3'));
 const Vendas4 = lazy(() => import('./pages/Vendas4'));
 const Vendas5 = lazy(() => import('./pages/Vendas5'));
+const Vendas6 = lazy(() => import('./pages/Vendas6'));
+const Vendas10 = lazy(() => import('./pages/Vendas10'));
 const CrpInfo = lazy(() => import('./pages/CrpInfo'));
 const Blog = lazy(() => import('./pages/Blog'));
 const Artigo = lazy(() => import('./pages/Artigo'));
 const PorQueNos = lazy(() => import('./pages/PorQueNos'));
 const Precos = lazy(() => import('./pages/Precos'));
 const SuspendedClinic = lazy(() => import('./pages/SuspendedClinic'));
+const PortalPaciente = lazy(() => import('./pages/PortalPaciente'));
+const PatientLayout = lazy(() => import('./layouts/PatientLayout'));
+const PatientLogin = lazy(() => import('./pages/paciente/PatientLogin'));
+const PatientHome = lazy(() => import('./pages/paciente/PatientHome'));
+const PatientEscalas = lazy(() => import('./pages/paciente/PatientEscalas'));
+const PatientPerfil = lazy(() => import('./pages/paciente/PatientPerfil'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const LoadingFallback = () => (
@@ -68,8 +76,6 @@ const LoadingFallback = () => (
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useUser();
 
-    // Se ainda está carregando MAS já temos dados em cache (user.id existe),
-    // renderiza o conteúdo imediatamente — a validação continua em background
     if (loading && !user?.id) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -80,6 +86,10 @@ const ProtectedRoute = ({ children }) => {
 
     if (!user?.id) {
         return <Navigate to="/login" replace />;
+    }
+
+    if (user.role === 'paciente') {
+        return <Navigate to="/paciente/home" replace />;
     }
 
     const isConfigRoute = window.location.pathname.startsWith('/configuracoes');
@@ -98,7 +108,6 @@ const ProtectedRoute = ({ children }) => {
 const PublicRoute = ({ children }) => {
     const { user, loading } = useUser();
 
-    // Só bloqueia rota pública se tiver certeza que há usuário autenticado (não só cache)
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -108,11 +117,28 @@ const PublicRoute = ({ children }) => {
     }
 
     if (user?.id) {
+        if (user.role === 'paciente') return <Navigate to="/paciente/home" replace />;
         return <Navigate to="/dashboard" replace />;
     }
     return children;
 };
 
+
+const PatientRoute = ({ children }) => {
+    const { user, loading } = useUser();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <span className="material-symbols-outlined animate-spin text-primary text-4xl">autorenew</span>
+            </div>
+        );
+    }
+
+    if (!user?.id) return <Navigate to="/paciente/login" replace />;
+    if (user.role !== 'paciente') return <Navigate to="/dashboard" replace />;
+    return children;
+};
 
 const AdminRoute = ({ children }) => {
     const { user, loading } = useUser();
@@ -145,6 +171,8 @@ function App() {
                     <Route path="/vendas3" element={<Vendas3 />} />
                     <Route path="/vendas4" element={<Vendas4 />} />
                     <Route path="/vendas5" element={<Vendas5 />} />
+                    <Route path="/vendas6" element={<Vendas6 />} />
+                    <Route path="/vendas10" element={<Vendas10 />} />
                     <Route path="/crp" element={<CrpInfo />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/blog/:slug" element={<Artigo />} />
@@ -157,6 +185,13 @@ function App() {
                     <Route path="/reset-password" element={<PublicRoute><PasswordReset /></PublicRoute>} />
                     <Route path="/cobranca/:id" element={<VisualizarCobranca />} />
                     <Route path="/pagamento/:id" element={<VisualizarCobranca />} />
+                    <Route path="/portal" element={<ProtectedRoute><PortalPaciente /></ProtectedRoute>} />
+                    <Route path="/paciente/login" element={<PatientLogin />} />
+                    <Route element={<PatientRoute><PatientLayout /></PatientRoute>}>
+                        <Route path="/paciente/home" element={<PatientHome />} />
+                        <Route path="/paciente/escalas" element={<PatientEscalas />} />
+                        <Route path="/paciente/perfil" element={<PatientPerfil />} />
+                    </Route>
                     <Route path="/suspenso" element={<ProtectedRoute><SuspendedClinic /></ProtectedRoute>} />
                     <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                         <Route path="/dashboard" element={<Dashboard />} />
@@ -198,5 +233,3 @@ function App() {
 }
 
 export default App;
-
-

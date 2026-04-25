@@ -19,10 +19,10 @@ export function useDashboardStats({
   [evolutions, laudos, atestados, declaracoes, anamneses, encaminhamentos]);
 
   const stats = useMemo(() => [
-    { title: 'Total de Prontuários', value: totalDocumentos.toLocaleString(), trend: '+12.5%', icon: 'folder_shared', color: 'text-primary', bgColor: 'bg-primary/10', rota: '/prontuarios' },
+    { title: 'Total de Prontuários', value: totalDocumentos.toLocaleString(), trend: 'Geral', icon: 'folder_shared', color: 'text-primary', bgColor: 'bg-primary/10', rota: '/prontuarios' },
     { title: 'Pacientes Ativos', value: (patients || []).length.toString(), trend: 'Total', icon: 'group', color: 'text-amber-500', bgColor: 'bg-amber-500/10', rota: '/pacientes' },
-    { title: 'Laudos Emitidos', value: laudos.length.toString(), trend: '+5.2%', icon: 'history_edu', color: 'text-emerald-500', bgColor: 'bg-emerald-500/10', rota: '/laudos' },
-    { title: 'Declarações', value: declaracoes.length.toString(), trend: '-2.4%', icon: 'assignment_ind', color: 'text-indigo-500', bgColor: 'bg-indigo-500/10', rota: '/declaracoes' },
+    { title: 'Laudos Emitidos', value: laudos.length.toString(), trend: 'Total', icon: 'history_edu', color: 'text-emerald-500', bgColor: 'bg-emerald-500/10', rota: '/laudos' },
+    { title: 'Declarações', value: declaracoes.length.toString(), trend: 'Total', icon: 'assignment_ind', color: 'text-indigo-500', bgColor: 'bg-indigo-500/10', rota: '/declaracoes' },
   ], [totalDocumentos, patients, laudos, declaracoes]);
 
   const quickActions = useMemo(() => [

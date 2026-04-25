@@ -7,11 +7,17 @@ import {
   MessageCircle, Heart, ChevronRight, 
   ArrowRight, Instagram, Linkedin, Facebook 
 } from 'lucide-react';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 import { blogPosts } from '../data/blogData';
 
 export default function Artigo() {
   const { slug } = useParams();
   const post = blogPosts.find(p => p.slug === slug);
+  const absoluteImage = post
+    ? (typeof post.image === 'string' && post.image.startsWith('http')
+        ? post.image
+        : `https://meusistemapsi.com.br${post.image}`)
+    : '';
 
   useEffect(() => {
     if (post) {
@@ -27,8 +33,23 @@ export default function Artigo() {
         meta.setAttribute('content', content);
       };
 
+      const updateOg = (property, content) => {
+        let meta = document.querySelector(`meta[property="${property}"]`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute('property', property);
+          document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', content);
+      };
+
       updateMeta('description', post.seoDescription);
       updateMeta('keywords', post.seoKeywords);
+      updateMeta('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+      updateMeta('twitter:card', 'summary_large_image');
+      updateMeta('twitter:title', `${post.title} | Blog Meu Sistema Psi`);
+      updateMeta('twitter:description', post.seoDescription);
+      updateMeta('twitter:image', absoluteImage);
 
       // Canonical
       let canonical = document.querySelector('link[rel="canonical"]');
@@ -39,14 +60,50 @@ export default function Artigo() {
       }
       canonical.setAttribute('href', `https://meusistemapsi.com.br/blog/${post.slug}`);
 
+      updateOg('og:title', `${post.title} | Blog Meu Sistema Psi`);
+      updateOg('og:description', post.seoDescription);
+      updateOg('og:url', `https://meusistemapsi.com.br/blog/${post.slug}`);
+      updateOg('og:image', absoluteImage);
+      updateOg('og:type', 'article');
+      updateOg('og:locale', 'pt_BR');
+      if (post.publishedDateISO) {
+        updateOg('article:published_time', post.publishedDateISO);
+      }
+
       // Scroll to top
       window.scrollTo(0, 0);
     }
-  }, [post]);
+  }, [absoluteImage, post]);
 
   if (!post) {
     return <Navigate to="/blog" replace />;
   }
+
+  const articleStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.seoDescription,
+    image: [absoluteImage],
+    mainEntityOfPage: `https://meusistemapsi.com.br/blog/${post.slug}`,
+    articleSection: post.category,
+    author: {
+      '@type': 'Organization',
+      name: 'Equipe Meu Sistema Psi'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Meu Sistema Psi',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://meusistemapsi.com.br/favicon.png'
+      }
+    },
+    keywords: post.seoKeywords,
+    inLanguage: 'pt-BR',
+    ...(post.publishedDateISO ? { datePublished: post.publishedDateISO } : {}),
+    ...(post.modifiedDateISO ? { dateModified: post.modifiedDateISO } : {})
+  };
 
   const relatedPosts = blogPosts
     .filter(p => p.slug !== post.slug)
@@ -75,6 +132,9 @@ export default function Artigo() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-purple-100 selection:text-purple-900">
+      <script type="application/ld+json">
+        {JSON.stringify(articleStructuredData)}
+      </script>
       
       {/* Article Header */}
       <header className="pt-32 pb-16 bg-slate-50 border-b border-purple-50">
@@ -180,7 +240,9 @@ export default function Artigo() {
       <section className="py-24 md:py-32 bg-slate-900 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
           <motion.div {...scrollAnimation(fadeUp)}>
-            <Heart className="w-12 h-12 text-purple-400 mx-auto mb-8" />
+            <div className="flex justify-center mb-8">
+              <AiAssistantAnimation size="small" />
+            </div>
             <h2 className="text-5xl md:text-6xl font-serif mb-8 italic">Você não precisa lidar com tudo sozinho.</h2>
             <p className="text-xl text-slate-400 mb-14 font-light leading-relaxed">
               O autoconhecimento é o caminho para uma vida com mais sintropia e equilíbrio. Vamos conversar?

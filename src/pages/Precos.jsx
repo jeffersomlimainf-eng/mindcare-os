@@ -8,6 +8,7 @@ import {
   Layout, Rocket, Calendar
 } from 'lucide-react';
 import { showToast } from '../components/Toast';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 export default function Precos() {
   const shouldReduceMotion = useReducedMotion();
@@ -122,7 +123,7 @@ export default function Precos() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-purple-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <Heart className="w-8 h-8 text-[#1392ec] fill-[#1392ec]/10" />
+            <AiAssistantAnimation size="micro" />
             <span className="text-xl font-bold bg-gradient-to-r from-[#1392ec] to-indigo-600 bg-clip-text text-transparent">
               MeuSistemaPsi
             </span>
@@ -275,7 +276,8 @@ export default function Precos() {
       </main>
 
       {/* Footer Minimalista */}
-      <footer className="py-12 border-t border-slate-100 text-center">
+      <footer className="py-12 border-t border-slate-100 flex flex-col items-center gap-4">
+         <AiAssistantAnimation size="micro" />
          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">© 2026 Meu Sistema Psi — Inteligência Clínica</p>
       </footer>
     </div>

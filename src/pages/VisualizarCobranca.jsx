@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { gerarCadeiaPix } from '../utils/pix';
@@ -96,7 +96,7 @@ const VisualizarCobranca = () => {
                 setDados({
                     ...prim,
                     description: overrideDesc || descAgrupada,
-                    value: overrideVal ? parseFloat(overrideVal) : valueTotal,
+                    value: overrideVal ? parseFloat(overrideVal.replace(',', '.')) : valueTotal,
                     due_date: overrideVenc || maxDate,
                     status: items.some(t => t.status === 'Pendente') ? 'Pendente' : 'Pago',
                     pix_key: profile?.configurations?.chavePix || prim.pix_key,

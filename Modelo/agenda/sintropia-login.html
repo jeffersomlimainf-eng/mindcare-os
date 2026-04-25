@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login Meu Sistema.PSI</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<template id="__bundler_thumbnail" data-bg-color="#f0c0e8">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="thumbBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"  stop-color="#ffc3e9"/>
+        <stop offset="50%" stop-color="#e8baff"/>
+        <stop offset="100%" stop-color="#b9c8ff"/>
+      </linearGradient>
+      <linearGradient id="thumbLeaf" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"  stop-color="#ff66c2"/>
+        <stop offset="100%" stop-color="#c940a8"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="800" fill="url(#thumbBg)"/>
+    <g transform="translate(600 400) scale(2.2) translate(-100 -130)">
+      <g fill="none" stroke="url(#thumbLeaf)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 170,15 C 85,15 30,70 30,130 C 75,125 115,105 145,80 C 165,60 172,35 170,15 Z"/>
+        <path d="M 30,245 C 115,245 170,190 170,130 C 125,135 85,155 55,180 C 35,200 28,225 30,245 Z"/>
+      </g>
+    </g>
+  </svg>
+</template>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+  html, body { height: 100%; width: 100%; overflow: hidden; }
+
+  :root{
+    --pink-1:#f9b6e5;     /* soft pink                    */
+    --pink-2:#ffc8e6;
+    --lavender:#d9c3ff;
+    --peri:#b9c8ff;
+    --mauve:#e9c7ff;
+    --ink:#2c1f3d;        /* deep plum for text on card  */
+    --accent:#ec4fb3;     /* hot pink accent for dot/logo */
+  }
+
+  body{
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 900px at 15% 25%, #ffd3ee 0%, transparent 55%),
+      radial-gradient(1100px 900px at 85% 15%,  #ffb9e3 0%, transparent 55%),
+      radial-gradient(1400px 1000px at 90% 90%, #b7c2ff 0%, transparent 60%),
+      radial-gradient(1100px 900px at 10% 90%,  #e3b8ff 0%, transparent 60%),
+      linear-gradient(135deg, #ffc3e9 0%, #e8baff 50%, #b9c8ff 100%);
+  }
+  button { cursor: pointer; font-family: inherit; }
+
+  .login-25 { position: relative; width: 100%; height: 100%; display: flex; overflow: hidden; }
+
+  /* ── VISUAL ──────────────────────────────────────────────── */
+  .login-25-visual{
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* central orb (soft pink bubble, barely-there) */
+  .login-25-orb{
+    position:absolute;
+    left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    width:160vmin; height:160vmin;
+    border-radius:50%;
+    -webkit-mask-image: radial-gradient(closest-side, #000 48%, rgba(0,0,0,0.9) 62%, rgba(0,0,0,0.65) 82%, rgba(0,0,0,0) 100%);
+            mask-image: radial-gradient(closest-side, #000 48%, rgba(0,0,0,0.9) 62%, rgba(0,0,0,0.65) 82%, rgba(0,0,0,0) 100%);
+    backdrop-filter: blur(2px) saturate(130%);
+    -webkit-backdrop-filter: blur(2px) saturate(130%);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255,200,230,0.45) 0%, rgba(255,200,230,0.18) 40%, rgba(255,255,255,0.06) 70%, transparent 100%);
+  }
+
+  /* Rings: hollow, very subtle inner ring band */
+  .login-25-ring{
+    position:absolute;
+    left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    width: var(--size); height: var(--size);
+    pointer-events: none;
+  }
+  .login-25-ring::before{
+    /* band */
+    content:'';
+    position:absolute; inset:0;
+    border-radius:50%;
+    background: var(--band);
+    -webkit-mask-image: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 0.5px), #000 calc(50% - 0.5px), transparent 50%);
+            mask-image: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 0.5px), #000 calc(50% - 0.5px), transparent 50%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.28);
+  }
+  .login-25-ring::after{
+    /* outer stroke (crisp edge) */
+    content:'';
+    position:absolute; inset:0;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.45);
+    box-shadow:
+      inset 0 0 28px rgba(255,255,255,0.22),
+      0 0 28px -6px rgba(255,255,255,0.25);
+  }
+
+  .login-25-r1 { --size: 128vmin; --thickness: 11vmin; --band: rgba(255,255,255,0.06); --spin: 220s; }
+  .login-25-r2 { --size: 104vmin; --thickness: 10vmin; --band: rgba(255,255,255,0.08); --spin: 170s; }
+  .login-25-r3 { --size:  82vmin; --thickness:  9vmin; --band: rgba(255,255,255,0.11); --spin: 130s; }
+  .login-25-r4 { --size:  62vmin; --thickness:  8vmin; --band: rgba(255,255,255,0.14); --spin:  95s; }
+
+  .login-25-rotator{
+    position:absolute; inset:0;
+    border-radius:50%;
+    animation: ring-spin var(--spin) linear infinite;
+  }
+  .login-25-ring.login-25-reverse .login-25-rotator{ animation-direction: reverse; }
+  @keyframes ring-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+  /* SVG ring text */
+  .login-25-ring-svg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    overflow: visible;
+  }
+  .login-25-ring-svg text{
+    fill: rgba(255,255,255,0.92);
+    font-family:"Poppins", sans-serif;
+    font-weight:500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(255,255,255,0.35);
+  }
+  .login-25-r1 .login-25-ring-svg text { font-size: 1.85vmin; }
+  .login-25-r2 .login-25-ring-svg text { font-size: 1.7vmin; }
+  .login-25-r3 .login-25-ring-svg text { font-size: 1.6vmin; }
+  .login-25-r4 .login-25-ring-svg text { font-size: 1.45vmin; }
+  .login-25-ring-svg .sep-icon {
+    font-family: "Font Awesome 6 Free", "FontAwesome";
+    font-weight: 900;
+    fill: rgba(255,255,255,0.85);
+    font-size: 1.25em;
+    letter-spacing: 0;
+  }
+
+  /* Center bubble (transparent pink, inner sheen) */
+  .login-25-bubble{
+    position:absolute;
+    left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    width:40vmin; height:40vmin;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 35%),
+      radial-gradient(circle at 70% 70%, rgba(255,160,220,0.35) 0%, rgba(255,160,220,0) 50%),
+      radial-gradient(circle at 50% 50%, rgba(255,210,238,0.6) 0%, rgba(255,180,220,0.3) 55%, rgba(255,160,220,0.15) 80%, transparent 100%);
+    border: 1px solid rgba(255,255,255,0.55);
+    box-shadow:
+      inset 0 4px 24px rgba(255,255,255,0.5),
+      inset 0 -14px 32px rgba(255, 150, 210, 0.25),
+      0 30px 80px -20px rgba(236, 79, 179, 0.35);
+    display:flex; align-items:center; justify-content:center;
+    z-index: 3;
+    animation: orb-bob 9s ease-in-out infinite;
+  }
+  @keyframes orb-bob {
+    0%,100% { transform: translate(-50%, -50%) scale(1); }
+    50%     { transform: translate(-50%, -52%) scale(1.015); }
+  }
+  .login-25-logo{
+    position: relative;
+    z-index: 1;
+    max-width: 58%;
+    max-height: 58%;
+    filter: drop-shadow(0 6px 18px rgba(140, 60, 120, 0.18));
+  }
+
+  /* ── AUTH CARD (floating glass panel, right side) ─────────── */
+  .login-25-auth-wrapper{
+    position: absolute;
+    right: clamp(20px, 4vw, 80px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: min(420px, 90vw);
+  }
+  .login-25-auth{
+    position: relative;
+    width: 100%;
+    padding: clamp(24px, 3vw, 32px) clamp(22px, 3vw, 30px);
+    border-radius: 36px;
+    border: 1px solid rgba(255,255,255,0.55);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.7),
+      inset 0 -1px 0 rgba(255,255,255,0.25),
+      0 20px 50px -18px rgba(140, 60, 160, 0.35),
+      0 6px 18px -10px rgba(90, 30, 120, 0.18);
+    display: flex;
+    flex-direction: column;
+    animation: card-float 8s ease-in-out infinite;
+  }
+  @keyframes card-float {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-4px); }
+  }
+
+  @media (max-width: 800px) {
+    .login-25-auth-wrapper{
+      position: static; transform: none;
+      width: 100%;
+      padding: 24px 16px;
+      display:flex; align-items:flex-end; min-height:100vh;
+    }
+    .login-25-auth{ border-radius: 28px; }
+    .login-25-visual { position:absolute; inset:0; opacity:0.9; }
+  }
+
+  .login-25-panel { display: flex; flex-direction: column; flex: 1; }
+
+  /* Brand row (icon + wordmark) */
+  .login-25-brand{
+    display:flex; align-items:center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .login-25-brand-icon{
+    width: 36px; height: 36px;
+    flex: 0 0 36px;
+  }
+  .login-25-wordmark{
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1530;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .login-25-wordmark .psi{
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1530;
+    letter-spacing: 0;
+  }
+
+  .login-25-muted {
+    color: rgba(40, 25, 55, 0.78);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+
+  .login-25-row { display:flex; flex-direction:column; gap: 10px; }
+
+  .login-25-field { position: relative; }
+  .login-25-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 18px;
+    font-size: 13.5px;
+    color: #1a1530;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 14px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color .2s, background .2s, box-shadow .2s;
+  }
+  .login-25-input::placeholder { color: rgba(40, 25, 55, 0.55); font-weight: 400; }
+  .login-25-input:hover { background: rgba(255,255,255,0.7); }
+  .login-25-input:focus {
+    border-color: rgba(188, 116, 255, 0.75);
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 0 0 3px rgba(188, 116, 255, 0.22);
+  }
+
+  .naked-btn {
+    background: none; border: 0; padding: 4px 0;
+    color: rgba(40, 25, 55, 0.72);
+    font-size: 12.5px;
+    align-self: flex-end;
+    font-family: inherit;
+  }
+  .naked-btn:hover { color: #1a1530; }
+
+  .login-25-btn {
+    appearance: none; border: 0;
+    width: 100%;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-family: inherit; font-size: 14px; font-weight: 500;
+    color: #fff;
+    background: linear-gradient(180deg, #b18bff 0%, #8659e8 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.4),
+      inset 0 -1px 0 rgba(0,0,0,0.08),
+      0 10px 26px -10px rgba(134, 89, 232, 0.7),
+      0 2px 4px rgba(0,0,0,0.08);
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    transition: transform .15s ease, box-shadow .2s ease;
+  }
+  .login-25-btn:hover { transform: translateY(-1px); }
+
+  .login-25-btn--secondary {
+    background: rgba(255,255,255,0.65);
+    color: #1a1530;
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.6),
+      0 4px 12px -6px rgba(90, 30, 120, 0.18);
+  }
+  .login-25-btn--secondary:hover { background: rgba(255,255,255,0.8); }
+
+  .login-25-btn__icon {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:18px; height:18px;
+  }
+
+  .login-25-content-bottom {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 14px;
+  }
+
+  .login-25-aux-wrapper {
+    display: flex; justify-content: center; align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(40, 25, 55, 0.75);
+  }
+  .fb-realizar-acao-login {
+    background: none; border: 0; padding: 0;
+    color: #8659e8;
+    font-size: 13px; font-weight: 600;
+    font-family: inherit;
+  }
+  .fb-realizar-acao-login:hover { color: #6a3dd0; text-decoration: underline; }
+
+  .login-25-legal-links {
+    display: flex; justify-content: center; align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    margin-top: 6px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.55);
+    font-size: 11px;
+    color: rgba(40, 25, 55, 0.62);
+  }
+  .login-25-legal-links a { color: inherit; text-decoration: none; font-weight: 500; }
+  .login-25-legal-links a:hover { color: #1a1530; }
+
+  /* Subtle chars animation (typewriter reveal) */
+  .login-25-ring-svg text { opacity: 0; animation: text-fade 1.6s ease forwards; animation-delay: 0.2s; }
+  @keyframes text-fade { to { opacity: 1; } }
+
+  /* Gentle drift for bubble sheen */
+  .login-25-bubble-sheen{
+    position:absolute; inset:4%;
+    border-radius:50%;
+    background: linear-gradient(170deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 40%);
+    pointer-events:none;
+    mix-blend-mode: screen;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-25">
+
+  <!-- VISUAL -->
+  <section class="login-25-visual" aria-hidden="true">
+    <div class="login-25-orb"></div>
+
+    <div class="login-25-ring login-25-r1">
+      <div class="login-25-rotator">
+        <svg class="login-25-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <path id="r1-path" d="M 0,-540 A 540,540 0 1,1 -0.01,-540" fill="none"/>
+          </defs>
+          <text><textPath href="#r1-path" startOffset="0">DA SESSÃO AO PRONTUÁRIO SEM TOCAR NO TECLADO  <tspan class="sep-icon">&#xf130;</tspan>  DA SESSÃO AO PRONTUÁRIO SEM TOCAR NO TECLADO  <tspan class="sep-icon">&#xf130;</tspan>  DA SESSÃO AO PRONTUÁRIO SEM TOCAR NO TECLADO  <tspan class="sep-icon">&#xf130;</tspan>  </textPath></text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="login-25-ring login-25-r2 login-25-reverse">
+      <div class="login-25-rotator">
+        <svg class="login-25-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <path id="r2-path" d="M 0,-440 A 440,440 0 1,1 -0.01,-440" fill="none"/>
+          </defs>
+          <text><textPath href="#r2-path" startOffset="0">SUPORTE QUE CAMINHA COM VOCÊ  <tspan class="sep-icon">&#xf70c;</tspan>  SUPORTE QUE CAMINHA COM VOCÊ  <tspan class="sep-icon">&#xf70c;</tspan>  SUPORTE QUE CAMINHA COM VOCÊ  <tspan class="sep-icon">&#xf70c;</tspan>  SUPORTE QUE CAMINHA COM VOCÊ  <tspan class="sep-icon">&#xf70c;</tspan>  </textPath></text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="login-25-ring login-25-r3">
+      <div class="login-25-rotator">
+        <svg class="login-25-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <path id="r3-path" d="M 0,-350 A 350,350 0 1,1 -0.01,-350" fill="none"/>
+          </defs>
+          <text><textPath href="#r3-path" startOffset="0">SEGURANÇA QUE INSPIRA CONFIANÇA  <tspan class="sep-icon">&#xf023;</tspan>  SEGURANÇA QUE INSPIRA CONFIANÇA  <tspan class="sep-icon">&#xf023;</tspan>  SEGURANÇA QUE INSPIRA CONFIANÇA  <tspan class="sep-icon">&#xf023;</tspan>  </textPath></text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="login-25-ring login-25-r4 login-25-reverse">
+      <div class="login-25-rotator">
+        <svg class="login-25-ring-svg" viewBox="-600 -600 1200 1200" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <path id="r4-path" d="M 0,-265 A 265,265 0 1,1 -0.01,-265" fill="none"/>
+          </defs>
+          <text><textPath href="#r4-path" startOffset="0">INTUITIVA DE VERDADE  <tspan class="sep-icon">&#xf5bb;</tspan>  INTUITIVA DE VERDADE  <tspan class="sep-icon">&#xf5bb;</tspan>  INTUITIVA DE VERDADE  <tspan class="sep-icon">&#xf5bb;</tspan>  INTUITIVA DE VERDADE  <tspan class="sep-icon">&#xf5bb;</tspan>  </textPath></text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="login-25-bubble">
+      <span class="login-25-bubble-sheen" aria-hidden="true"></span>
+      <!-- Stylized "8" — two interlocking leaves, sharp tips at top-right and bottom-left -->
+      <svg class="login-25-logo" viewBox="0 0 200 260" aria-label="Meu Sistema.PSI">
+        <defs>
+          <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"  stop-color="#fff8ef"/>
+            <stop offset="100%" stop-color="#f6e6d8"/>
+          </linearGradient>
+        </defs>
+        <g fill="none" stroke="url(#leafGrad)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Upper-right leaf: tip at top-right, curves down around to meet near center -->
+          <path d="M 170,15
+                   C 85,15 30,70 30,130
+                   C 75,125 115,105 145,80
+                   C 165,60 172,35 170,15 Z"/>
+          <!-- Lower-left leaf: tip at bottom-left, mirrors the upper leaf -->
+          <path d="M 30,245
+                   C 115,245 170,190 170,130
+                   C 125,135 85,155 55,180
+                   C 35,200 28,225 30,245 Z"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- AUTH -->
+  <div class="login-25-auth-wrapper">
+    <section class="login-25-auth" aria-label="Acesso">
+      <div class="login-25-panel">
+
+        <!-- BRAND -->
+        <div class="login-25-brand">
+          <!-- tiny pink version of the leaves logo -->
+          <svg class="login-25-brand-icon" viewBox="0 0 200 260" aria-hidden="true">
+            <defs>
+              <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"  stop-color="#ff66c2"/>
+                <stop offset="100%" stop-color="#c940a8"/>
+              </linearGradient>
+            </defs>
+            <g fill="none" stroke="url(#brandGrad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 170,15 C 85,15 30,70 30,130 C 75,125 115,105 145,80 C 165,60 172,35 170,15 Z"/>
+              <path d="M 30,245 C 115,245 170,190 170,130 C 125,135 85,155 55,180 C 35,200 28,225 30,245 Z"/>
+            </g>
+          </svg>
+          <div class="login-25-wordmark">
+            <span>Meu Sistema</span><span class="psi">.PSI</span>
+          </div>
+        </div>
+
+        <form id="loginForm" class="login-25-row" autocomplete="on" novalidate>
+          <p class="login-25-muted">Faça login na sua conta e otimize sua rotina com Meu Sistema.PSI.</p>
+
+          <div class="login-25-field">
+            <input class="login-25-input" type="text" id="username" name="username"
+                   placeholder="E-mail" required autocomplete="username"
+                   inputmode="email" autocapitalize="none" spellcheck="false" />
+          </div>
+
+          <div class="login-25-field">
+            <input class="login-25-input" type="password" id="password" name="password"
+                   placeholder="Senha" required autocomplete="current-password" />
+          </div>
+
+          <button type="button" id="esqueceu-trocar-senha" class="naked-btn">Recuperar Senha</button>
+
+          <button type="submit" class="login-25-btn entrar">Entrar</button>
+
+          <button type="button" id="googleLogar" class="login-25-btn login-25-btn--secondary">
+            <span class="login-25-btn__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 18 18">
+                <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.17-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.71v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.61z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.91-2.26c-.81.54-1.84.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33A9 9 0 0 0 9 18z"/>
+                <path fill="#FBBC05" d="M3.96 10.71A5.41 5.41 0 0 1 3.68 9c0-.59.1-1.17.28-1.71V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l3-2.33z"/>
+                <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z"/>
+              </svg>
+            </span>
+            <span>Entrar com Google</span>
+          </button>
+        </form>
+
+        <div class="login-25-content-bottom">
+          <button type="button" class="login-25-btn login-25-btn--secondary" style="height:40px; font-size:13px;">
+            <span class="login-25-btn__icon" aria-hidden="true"><i class="fa-solid fa-download"></i></span>
+            <span>Instale nosso app</span>
+          </button>
+
+          <div class="login-25-aux-wrapper">
+            <span>Primeira vez aqui?</span>
+            <button type="button" class="fb-realizar-acao-login">Cadastre-se Agora!</button>
+          </div>
+          <div class="login-25-aux-wrapper">
+            <span>Não é psi?</span>
+            <button type="button" class="fb-realizar-acao-login">Sou paciente</button>
+          </div>
+
+          <nav class="login-25-legal-links" aria-label="Documentos legais">
+            <a href="/legal/">Legal</a>
+            <span aria-hidden="true">•</span>
+            <a href="/politica-de-privacidade/">Privacidade</a>
+            <span aria-hidden="true">•</span>
+            <a href="/termos-de-servico/">Termos</a>
+            <span aria-hidden="true">•</span>
+            <a href="/politica-de-uso/">Uso</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  // Demo submit
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('.entrar');
+    const orig = btn.textContent;
+    btn.textContent = 'Entrando…';
+    btn.style.opacity = '0.75';
+    setTimeout(() => { btn.textContent = orig; btn.style.opacity = '1'; }, 1200);
+  });
+
+  // Soft parallax on pointer move — orb + bubble track pointer slightly
+  const orb = document.querySelector('.login-25-orb');
+  const bubble = document.querySelector('.login-25-bubble');
+  window.addEventListener('pointermove', (e) => {
+    const x = (e.clientX / window.innerWidth  - 0.5) * 2;
+    const y = (e.clientY / window.innerHeight - 0.5) * 2;
+    orb.style.transform = `translate(calc(-50% + ${x*8}px), calc(-50% + ${y*8}px))`;
+    bubble.style.transform = `translate(calc(-50% + ${x*-14}px), calc(-50% + ${y*-14}px)) scale(1.01)`;
+  });
+
+  // "Jiggle" the bubble when hovering a ring
+  document.querySelectorAll('.login-25-ring').forEach(ring => {
+    ring.style.pointerEvents = 'auto';
+    ring.addEventListener('pointerenter', () => {
+      bubble.animate([
+        { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)' },
+        { transform: 'translate(-50%, -51%) rotate(-2deg) scale(1.03)', offset: 0.35 },
+        { transform: 'translate(-50%, -50%) rotate(1deg) scale(0.995)', offset: 0.7 },
+        { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)' },
+      ], { duration: 1400, easing: 'cubic-bezier(.2,.8,.25,1)' });
+    });
+  });
+</script>
+</body>
+</html>

@@ -3,7 +3,11 @@ import { z } from 'zod';
 export const financeSchema = z.object({
     tipo: z.enum(['receita', 'despesa']),
     desc: z.string().min(3, 'A descrição deve ter pelo menos 3 caracteres').max(200, 'Descrição muito longa'),
-    valor: z.number().positive('O valor deve ser maior que zero'),
+    valor: z.preprocess((val) => {
+        if (typeof val === 'number') return val;
+        if (typeof val === 'string') return parseFloat(val.replace(/\./g, '').replace(',', '.')) || 0;
+        return 0;
+    }, z.number().positive('O valor deve ser maior que zero')),
     data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida'),
     dataVencimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data de vencimento inválida'),
     status: z.enum(['recebido', 'pendente', 'pago']),

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFinance } from '../contexts/FinanceContext';
 import { useUser } from '../contexts/UserContext';
@@ -40,7 +40,11 @@ const GerarCobranca = () => {
 
     const paramsObj = new URLSearchParams();
     if (desc) paramsObj.set('desc', desc);
-    if (valor) paramsObj.set('valor', valor);
+    if (valor) {
+        // Garante que o valor na URL use ponto decimal para o parsing correto na página pública
+        const numericValor = valor.replace(',', '.');
+        paramsObj.set('valor', numericValor);
+    }
     if (vencimento) paramsObj.set('venc', vencimento);
     const qs = paramsObj.toString();
 
@@ -330,13 +334,22 @@ const GerarCobranca = () => {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Valor (R$)</label>
-                                    <input
-                                        type="number"
-                                        value={valor}
-                                        onChange={e => setValor(e.target.value)}
-                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm font-bold text-slate-800 dark:text-white"
-                                    />
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Valor</label>
+                                    <div className="relative group">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">R$</span>
+                                        <input
+                                            type="text"
+                                            value={valor}
+                                            onChange={e => {
+                                                let val = e.target.value.replace(/[^\d,.]/g, '').replace('.', ',');
+                                                const parts = val.split(',');
+                                                if (parts.length > 2) val = parts[0] + ',' + parts.slice(1).join('');
+                                                setValor(val);
+                                            }}
+                                            className="w-full h-14 pl-10 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-700/50 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none text-xl font-bold text-slate-800 dark:text-white transition-all"
+                                            placeholder="0,00"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Vencimento</label>

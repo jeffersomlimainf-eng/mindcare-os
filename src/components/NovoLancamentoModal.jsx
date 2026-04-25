@@ -99,8 +99,13 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
 
     const subcategoriasList = SUBCATEGORIAS[formValues.tipo] || [];
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (formData) => {
         const isEdit = !!lancamentoEditando;
+        // Converte valor de string para número para o processamento e salvamento
+        const data = {
+            ...formData,
+            valor: typeof formData.valor === 'string' ? parseFloat(formData.valor.replace(',', '.')) : formData.valor
+        };
         const numParcelas = (!isEdit && repetir) ? Math.max(1, parseInt(data.parcelas, 10) || 1) : 1;
         
         try {
@@ -152,7 +157,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                 <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-emerald-500 text-lg group-focus-within:scale-110 transition-transform">person_search</span>
                     <input
-                        className="w-full h-12 pl-11 pr-4 rounded-2xl bg-emerald-50/30 dark:bg-emerald-900/10 border-2 border-emerald-100 dark:border-emerald-800/30 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none text-sm font-bold transition-all"
+                        className="w-full h-14 pl-12 pr-4 rounded-2xl bg-emerald-50/30 dark:bg-emerald-900/10 border-2 border-emerald-100 dark:border-emerald-800/30 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none text-base font-bold transition-all"
                         placeholder="Pesquisar por nome ou ID..."
                         value={buscaPaciente}
                         onChange={e => {
@@ -198,18 +203,29 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Valor */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Valor da Sessão</label>
                     <div className="relative group">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600 font-black text-sm">R$</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-medium text-sm">R$</span>
                         <input
                             type="text"
-                            className={`w-full h-12 pl-11 pr-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:ring-4 focus:ring-emerald-500/10 outline-none text-base font-black transition-all ${errors.valor ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50 focus:border-emerald-500'}`}
+                            className={`w-full h-14 pl-10 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:ring-4 focus:ring-emerald-500/10 outline-none text-xl font-bold text-slate-700 dark:text-slate-100 transition-all ${errors.valor ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50 focus:border-emerald-500'}`}
                             placeholder="0,00"
-                            value={formatCurrencyBRL((formValues.valor || 0) * 100)}
+                            value={watch('valor') || ''}
                             onChange={e => {
-                                const numeric = parseCurrencyBRL(e.target.value);
-                                setValue('valor', numeric);
+                                let val = e.target.value.replace(/[^\d,.]/g, '').replace('.', ',');
+                                const parts = val.split(',');
+                                if (parts.length > 2) val = parts[0] + ',' + parts.slice(1).join('');
+                                setValue('valor', val);
+                            }}
+                            onBlur={() => {
+                                const val = watch('valor');
+                                if (val) {
+                                    const numeric = parseFloat(String(val).replace(',', '.'));
+                                    if (!isNaN(numeric)) {
+                                        setValue('valor', numeric.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                                    }
+                                }
                             }}
                         />
                     </div>
@@ -222,7 +238,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                     <input
                         type="date"
                         {...register('data')}
-                        className={`w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:ring-4 focus:ring-emerald-500/10 outline-none text-sm font-bold transition-all ${errors.data ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50 focus:border-emerald-500'}`}
+                        className={`w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:ring-4 focus:ring-emerald-500/10 outline-none text-base font-bold transition-all ${errors.data ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50 focus:border-emerald-500'}`}
                         onChange={e => {
                             setValue('data', e.target.value);
                             if (!lancamentoEditando) setValue('dataVencimento', e.target.value);
@@ -237,7 +253,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                     <input
                         type="date"
                         {...register('dataVencimento')}
-                        className={`w-full h-12 px-4 rounded-2xl bg-amber-50/20 dark:bg-amber-900/10 border-2 focus:ring-4 focus:ring-amber-500/10 outline-none text-sm font-bold transition-all ${errors.dataVencimento ? 'border-rose-300' : 'border-amber-100 dark:border-amber-800/30 focus:border-amber-500'}`}
+                        className={`w-full h-14 px-5 rounded-2xl bg-amber-50/20 dark:bg-amber-900/10 border-2 focus:ring-4 focus:ring-amber-500/10 outline-none text-base font-bold transition-all ${errors.dataVencimento ? 'border-rose-300' : 'border-amber-100 dark:border-amber-800/30 focus:border-amber-500'}`}
                     />
                     {errors.dataVencimento && <p className="mt-1 text-[10px] text-rose-500 font-bold uppercase">{errors.dataVencimento.message}</p>}
                 </div>
@@ -247,7 +263,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Serviço Prestado / Descrição</label>
                     <input
                         {...register('desc')}
-                        className={`w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:ring-4 focus:ring-emerald-500/10 outline-none text-sm font-bold transition-all ${errors.desc ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50 focus:border-emerald-500'}`}
+                        className={`w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:ring-4 focus:ring-emerald-500/10 outline-none text-base font-bold transition-all ${errors.desc ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50 focus:border-emerald-500'}`}
                         placeholder="Ex: Sessão de Psicoterapia Individual"
                     />
                     {errors.desc && <p className="mt-1 text-[10px] text-rose-500 font-bold uppercase">{errors.desc.message}</p>}
@@ -300,7 +316,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-rose-500 text-lg">edit_note</span>
                         <input
                             {...register('desc')}
-                            className={`w-full h-12 pl-11 pr-4 rounded-2xl bg-rose-50/20 dark:bg-rose-900/10 border-2 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none text-sm font-bold transition-all ${errors.desc ? 'border-rose-300' : 'border-rose-100 dark:border-rose-800/30'}`}
+                            className={`w-full h-14 pl-12 pr-4 rounded-2xl bg-rose-50/20 dark:bg-rose-900/10 border-2 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none text-base font-bold transition-all ${errors.desc ? 'border-rose-300' : 'border-rose-100 dark:border-rose-800/30'}`}
                             placeholder="Ex: Aluguel do Consultório - Abril"
                         />
                     </div>
@@ -308,18 +324,29 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                 </div>
 
                 {/* Valor */}
-                <div>
+                <div className="md:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Valor</label>
                     <div className="relative group">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-600 font-black text-sm">R$</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-medium text-sm">R$</span>
                         <input
                             type="text"
-                            className={`w-full h-12 pl-11 pr-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none text-base font-black transition-all ${errors.valor ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50'}`}
+                            className={`w-full h-14 pl-10 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none text-xl font-bold text-slate-700 dark:text-slate-100 transition-all ${errors.valor ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50'}`}
                             placeholder="0,00"
-                            value={formatCurrencyBRL((formValues.valor || 0) * 100)}
+                            value={watch('valor') || ''}
                             onChange={e => {
-                                const numeric = parseCurrencyBRL(e.target.value);
-                                setValue('valor', numeric);
+                                let val = e.target.value.replace(/[^\d,.]/g, '').replace('.', ',');
+                                const parts = val.split(',');
+                                if (parts.length > 2) val = parts[0] + ',' + parts.slice(1).join('');
+                                setValue('valor', val);
+                            }}
+                            onBlur={() => {
+                                const val = watch('valor');
+                                if (val) {
+                                    const numeric = parseFloat(String(val).replace(',', '.'));
+                                    if (!isNaN(numeric)) {
+                                        setValue('valor', numeric.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                                    }
+                                }
                             }}
                         />
                     </div>
@@ -332,7 +359,7 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                     <input
                         type="date"
                         {...register('dataVencimento')}
-                        className={`w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none text-sm font-bold transition-all ${errors.dataVencimento ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50'}`}
+                        className={`w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-2 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none text-base font-bold transition-all ${errors.dataVencimento ? 'border-rose-300' : 'border-slate-100 dark:border-slate-700/50'}`}
                         onChange={e => {
                             setValue('dataVencimento', e.target.value);
                             setValue('data', e.target.value);

@@ -15,11 +15,12 @@ import laptopShowcase from '../assets/screens/WhatsApp Image 2026-03-29 at 11.07
 import tabletShowcase from '../assets/screens/WhatsApp Image 2026-03-29 at 11.07.59.jpeg';
 import userTablet from '../assets/screens/WhatsApp Image 2026-03-29 at 11.08.00 (2).jpeg';
 import userPatient from '../assets/screens/WhatsApp Image 2026-03-29 at 11.08.00.jpeg';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 export default function Vendas2() {
   useEffect(() => {
     // Heavy SEO injection
-    document.title = "Software de Gestão para Psicólogos | Prontuário e Agenda | Meu Sistema Psi";
+    document.title = "Sistema para Psicólogos: Prontuário, Agenda e IA | Meu Sistema Psi";
     
     const updateMeta = (name, content) => {
       let meta = document.querySelector(`meta[name="${name}"]`);
@@ -31,8 +32,8 @@ export default function Vendas2() {
       meta.setAttribute('content', content);
     };
 
-    updateMeta('description', 'Mais tempo para a clínica, menos tempo com a burocracia. Software de gestão para psicólogos com prontuário (LGPD), agenda avançada e Bio-Painel. Teste grátis.');
-    updateMeta('keywords', 'software de gestão para psicólogos, prontuário eletrônico seguro, gestão de clínica de psicologia, agenda para psicólogo, sistema psicologia LGPD, prontuário psicológico digital');
+    updateMeta('description', 'O software de gestão definitivo para psicólogos. Prontuário eletrônico seguro (LGPD), agenda inteligente com WhatsApp, gestão financeira clínica e inteligência artificial para prontuários. Tudo o que sua clínica precisa. Teste grátis.');
+    updateMeta('keywords', 'software para psicólogos, sistema para psicólogos, prontuário eletrônico seguro, gestão clínica psicologia, agenda para psicólogos online, lembretes de sessão whatsapp, gestão financeira consultório, ia para psicologia, prontuário seguro lgpd, evolução clínica digital, ficha de anamnese online, atestados e recibos psicólogos');
 
     // Canonical
     let canonical = document.querySelector('link[rel="canonical"]');
@@ -108,7 +109,7 @@ export default function Vendas2() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-purple-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Heart className="w-8 h-8 text-purple-600 fill-purple-100" />
+            <AiAssistantAnimation size="micro" />
             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
               MeuSistemaPsi
             </span>
@@ -491,7 +492,7 @@ export default function Vendas2() {
            <div className="grid md:grid-cols-3 gap-12 mb-12">
               <div>
                  <div className="flex items-center gap-2 mb-6">
-                    <Heart className="w-6 h-6 text-purple-600 fill-purple-100" />
+                    <AiAssistantAnimation size="micro" />
                     <span className="text-lg font-bold text-slate-900">MeuSistemaPsi</span>
                  </div>
                  <p className="text-slate-500 text-sm leading-relaxed">

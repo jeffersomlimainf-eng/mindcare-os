@@ -10,6 +10,7 @@ import TenantSwitcher from '../components/TenantSwitcher';
 import { useUser } from '../contexts/UserContext';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import SmartNotificationsEngine from '../components/SmartNotificationsEngine';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 const titulos = {
     '/dashboard': 'Painel Principal',
@@ -92,7 +93,7 @@ const DashboardLayout = () => {
                 </div>
                 <main className="flex-1 flex flex-col min-w-0 max-w-full print:m-0">
                     {/* Header Global */}
-                    <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 shadow-sm print:hidden">
+                    <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-4 md:px-8 sticky top-0 z-[100] shadow-sm print:hidden">
                         <div className="flex items-center gap-2 md:gap-3">
                             <button 
                                 onClick={() => setIsSidebarOpen(true)}
@@ -169,19 +170,18 @@ const DashboardLayout = () => {
                     </div>
                 </main>
             </div>
-            <div className="fixed bottom-6 right-6 z-[100] group print:hidden">
+            <div className="fixed bottom-6 right-6 z-[150] group print:hidden">
                 <div className="absolute -top-12 right-0 bg-white dark:bg-slate-800 px-4 py-2 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none translate-y-2 group-hover:translate-y-0">
                     <p className="text-[10px] font-black text-primary uppercase tracking-widest whitespace-nowrap">Como posso ajudar?</p>
                 </div>
                 <button 
                     onClick={() => navigate('/ai-clinica')}
-                    className="relative size-14 md:size-16 bg-gradient-to-tr from-primary to-teal-400 rounded-3xl shadow-2xl flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all duration-500 group-hover:rotate-[360deg]"
+                    className="relative flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-500"
                 >
-                    <div className="absolute inset-0 bg-primary rounded-3xl animate-ping opacity-20 group-hover:animate-none"></div>
-                    <span className="material-symbols-outlined text-3xl">psychology</span>
+                    <AiAssistantAnimation size="fab" />
                     
                     {/* Status dot */}
-                    <span className="absolute bottom-1 right-1 size-4 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-sm"></span>
+                    <span className="absolute bottom-1 right-1 z-50 size-4 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-sm"></span>
                 </button>
             </div>
         </>

@@ -7,6 +7,7 @@ import {
   LayoutDashboard, CalendarRange, Wallet, Lock,
   ArrowRight, Sparkles, Star
 } from 'lucide-react';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 export default function PorQueNos() {
   useEffect(() => {
@@ -243,7 +244,9 @@ export default function PorQueNos() {
       <section className="py-24 md:py-40 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div {...scrollAnimation(fadeUp)}>
-            <Heart className="w-12 h-12 text-purple-600 mx-auto mb-10" />
+            <div className="flex justify-center mb-10">
+              <AiAssistantAnimation size="small" />
+            </div>
             <h2 className="text-5xl md:text-6xl font-serif text-slate-900 mb-10 leading-tight">
               Sua clínica merece a <span className="text-purple-600">Sintropia</span> que oferecemos.
             </h2>
@@ -263,7 +266,8 @@ export default function PorQueNos() {
         </div>
       </section>
 
-      <footer className="py-12 bg-slate-900 text-center px-6">
+      <footer className="py-12 bg-slate-900 flex flex-col items-center gap-4 px-6">
+        <AiAssistantAnimation size="micro" />
         <span className="text-slate-600 text-[10px] font-bold uppercase tracking-[0.3em]">
           &copy; 2026 — Meu Sistema Psi. O Futuro da Psicologia Clínica.
         </span>

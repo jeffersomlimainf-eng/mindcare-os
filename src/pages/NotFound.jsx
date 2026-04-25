@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, Home, ArrowRight, Sparkles, Shield, Rocket, HelpCircle } from 'lucide-react';
+import { Home, ArrowRight, Sparkles, Shield, Rocket, HelpCircle } from 'lucide-react';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 import creative404 from '../assets/404_creative.png'; // Vou linkar a imagem gerada
 
 export default function NotFound() {
@@ -97,7 +98,9 @@ export default function NotFound() {
               <p className="text-xs text-slate-500 leading-tight">Criptografia de ponta a ponta para seus prontuários.</p>
             </div>
             <div className="p-5 bg-white/5 backdrop-blur-lg rounded-3xl border border-white/10 hover:bg-white/10 transition-all cursor-default">
-              <Heart className="w-6 h-6 text-pink-400 mb-3" />
+              <div className="flex justify-start mb-3 scale-75 origin-left">
+                <AiAssistantAnimation size="micro" />
+              </div>
               <h3 className="font-bold text-sm mb-1">Foco no Paciente</h3>
               <p className="text-xs text-slate-500 leading-tight">Menos telas, mais conexões humanas profundas.</p>
             </div>
@@ -125,8 +128,8 @@ export default function NotFound() {
       </div>
 
       {/* Corporate Logo Floating */}
-      <div className="absolute bottom-10 left-10 opacity-20 hidden lg:flex items-center gap-2">
-        <Heart className="w-6 h-6" />
+      <div className="absolute bottom-10 left-10 opacity-40 hidden lg:flex items-center gap-2 scale-75">
+        <AiAssistantAnimation size="micro" />
         <span className="font-bold tracking-tighter">MEUSISTEMAPSI</span>
       </div>
     </div>

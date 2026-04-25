@@ -7,6 +7,7 @@ import {
   ChevronRight, Instagram, Linkedin, Facebook,
   Check
 } from 'lucide-react';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 import { blogPosts } from '../data/blogData';
 
 export default function Blog() {
@@ -39,7 +40,41 @@ export default function Blog() {
     }
     canonical.setAttribute('href', 'https://meusistemapsi.com.br/blog');
 
+    // Schema.org Structured Data
+    const schemaData = {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Blog Meu Sistema Psi",
+      "description": "Portal completo de psicologia: Ansiedade, Burnout, TDAH, TCC, Psicanálise e especialidades.",
+      "url": "https://meusistemapsi.com.br/blog",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Meu Sistema Psi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://meusistemapsi.com.br/favicon.png"
+        }
+      },
+      "blogPost": blogPosts.map(post => ({
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "url": `https://meusistemapsi.com.br/blog/${post.slug}`,
+        "datePublished": post.publishedDateISO || post.date
+      }))
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.innerHTML = JSON.stringify(schemaData);
+    script.id = 'blog-schema';
+    document.head.appendChild(script);
+
     window.scrollTo(0, 0);
+
+    return () => {
+      const existingScript = document.getElementById('blog-schema');
+      if (existingScript) existingScript.remove();
+    };
   }, []);
 
   const categories = ['Todos', 'Saúde Mental', 'Bem-estar', 'Abordagens', 'Relacionamentos', 'Especialidades', 'Carreira', 'Sociedade', 'Performance'];
@@ -239,7 +274,9 @@ export default function Blog() {
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-transparent pointer-events-none" />
         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
           <motion.div {...scrollAnimation(fadeUp)}>
-            <Heart className="w-16 h-16 text-purple-500 mx-auto mb-10 animate-pulse" />
+            <div className="flex justify-center mb-10">
+              <AiAssistantAnimation size="large" />
+            </div>
             <h2 className="text-5xl md:text-7xl font-serif mb-10 italic">O cuidado que sua mente merece.</h2>
             <p className="text-xl md:text-2xl text-slate-400 mb-16 font-light leading-relaxed max-w-2xl mx-auto">
               A psicoterapia é um investimento em si mesmo. Ofereça a você o espaço necessário para crescer e florescer.
@@ -263,7 +300,8 @@ export default function Blog() {
             Por que psicólogos precisam de um sistema de gestão?
           </Link>
         </div>
-        <div className="mb-8">
+        <div className="flex flex-col items-center gap-4 mb-8">
+          <AiAssistantAnimation size="micro" />
           <span className="text-2xl font-serif italic text-white">Meu Sistema Psi</span>
         </div>
         <p className="text-slate-600 text-[10px] font-bold uppercase tracking-[0.3em]">

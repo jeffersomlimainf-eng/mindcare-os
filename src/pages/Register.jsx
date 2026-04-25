@@ -1,10 +1,11 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
-import { supabase } from '../lib/supabase';
-
 import { logger } from '../utils/logger';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 const Register = () => {
     const navigate = useNavigate();
     const { signUp, loginWithGoogle } = useUser();
@@ -254,12 +255,16 @@ const Register = () => {
 
             {/* Right: Visual */}
             <div className="hidden lg:block lg:flex-1 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-300 via-purple-300 to-fuchsia-300" />
+                <motion.div 
+                    className="absolute inset-0 bg-gradient-to-br from-violet-300 via-purple-300 to-fuchsia-300" 
+                    animate={{ filter: ["hue-rotate(0deg)", "hue-rotate(360deg)"] }}
+                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                />
                 <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2) 0%, transparent 50%)'}} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
                     <div className="max-w-md text-center">
-                        <div className="size-24 rounded-3xl bg-white/50 backdrop-blur-sm flex items-center justify-center mx-auto mb-8 shadow-lg shadow-purple-400/20 border border-white/40">
-                            <img src="/favicon.png" alt="Meu Sistema Psi" className="w-14 h-14" />
+                        <div className="flex items-center justify-center mx-auto mb-8">
+                            <AiAssistantAnimation size="large" />
                         </div>
                         <h2 className="text-3xl font-bold text-purple-900 mb-4 tracking-tight">Comece sua jornada com o Meu Sistema Psi</h2>
                         <p className="text-purple-800/70 text-lg font-medium leading-relaxed">

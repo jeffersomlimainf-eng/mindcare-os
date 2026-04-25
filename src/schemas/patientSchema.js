@@ -25,10 +25,13 @@ const validateCPF = (cpf) => {
 
 export const patientSchema = z.object({
     nome: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres').max(100, 'O nome é muito longo'),
-    cpf: z.string().refine(validateCPF, { message: 'CPF inválido' }),
+    cpf: z.string().min(1, 'CPF é obrigatório').refine(val => validateCPF(val), { message: 'CPF inválido' }),
     dataNascimento: z.string().optional().or(z.literal('')),
     genero: z.string().optional().or(z.literal('')),
-    telefone: z.string().min(10, 'Telefone inválido').max(15, 'Telefone muito longo'),
+    telefone: z.string().min(1, 'Telefone é obrigatório').refine(val => {
+        const clean = val.replace(/\D/g, '');
+        return clean.length >= 10 && clean.length <= 15;
+    }, { message: 'Telefone inválido' }),
     email: z.string().email('E-mail inválido').optional().or(z.literal('')),
     
     // Endereço

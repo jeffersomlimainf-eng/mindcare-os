@@ -102,7 +102,7 @@ export function useDashboardWeather() {
     } else {
       fetchClima(salva);
     }
-  }, []);
+  }, [handleAutoLocalizar, fetchClima]);
 
   useEffect(() => {
     if (cidade) localStorage.setItem('dashboard_clima_cidade', cidade);

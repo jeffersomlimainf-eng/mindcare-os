@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import NovoDocumentoModal from '../components/NovoDocumentoModal';
 import { useEvolutions } from '../contexts/EvolutionContext';
 import { useLaudos } from '../contexts/LaudoContext';
 import { useAtestados } from '../contexts/AtestadoContext';
@@ -35,7 +34,6 @@ const Prontuarios = () => {
     const { encaminhamentos = [], addEncaminhamento } = useEncaminhamentos() || {};
 
     const [busca, setBusca] = useState('');
-    const [modalAberto, setModalAberto] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
     const [showTour, setShowTour] = useState(false);
     const { shouldTrigger: prontuariosFirstVisit, markAsCompleted: markProntuariosTourCompleted } = useFirstVisit('prontuarios');
@@ -54,12 +52,10 @@ const Prontuarios = () => {
 
     useEffect(() => {
         if (state?.abrirNovo) {
-            setModalAberto(true);
-            if (state.modelo) setModeloNav(state.modelo);
-            else if (state.modeloId) setModeloNav({ id: state.modeloId });
+            navigate('/prontuarios/evolucao/novo');
             window.history.replaceState({}, document.title);
         }
-    }, [state]);
+    }, [state, navigate]);
 
     const evolucoesList = (evolutions || []).map(ev => ({
         id: ev.id,
@@ -172,29 +168,7 @@ const Prontuarios = () => {
         return 0;
     });
 
-    const handleSalvar = (dados) => {
-        const { paciente, tipo, conteudo } = dados;
-        const tipoNorm = tipo.toLowerCase();
 
-        const payload = {
-            pacienteId: paciente.id,
-            pacienteNome: paciente.nome,
-            pacienteIniciais: paciente.iniciais,
-            pacienteCor: paciente.cor,
-            conteudo,
-            status: 'Finalizado'
-        };
-
-        if (tipoNorm.includes('evolu')) addEvolution(payload);
-        else if (tipoNorm.includes('laudo')) addLaudo(payload);
-        else if (tipoNorm.includes('atestado')) addAtestado(payload);
-        else if (tipoNorm.includes('declara')) addDeclaracao(payload);
-        else if (tipoNorm.includes('anamnese')) addAnamnese(payload);
-        else if (tipoNorm.includes('encaminhamento')) addEncaminhamento(payload);
-
-        showToast(`${tipo} salvo com sucesso!`, 'success');
-        setModalAberto(false);
-    };
 
     return (
         <>
@@ -205,12 +179,7 @@ const Prontuarios = () => {
                 onStartTour={() => setShowTour(true)}
             />
 
-            <NovoDocumentoModal
-                isOpen={modalAberto}
-                onClose={() => { setModalAberto(false); setModeloNav(null); }}
-                onSave={handleSalvar}
-                modeloInicial={modeloNav}
-            />
+
 
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
@@ -284,10 +253,7 @@ const Prontuarios = () => {
                         </div>
                         
                         <button 
-                            onClick={() => {
-                                setModalAberto(true);
-                                setModeloNav({ id: 'evolucao' });
-                            }}
+                            onClick={() => navigate('/prontuarios/evolucao/novo')}
                             className="w-full md:w-auto relative z-10 px-6 py-3.5 bg-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center justify-center gap-2 group"
                         >
                             Ver Como Funciona

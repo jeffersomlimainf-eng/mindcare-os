@@ -7,6 +7,7 @@ import {
   ChevronRight, Brain, Star, Award,
   Target, TrendingUp, Gem, CreditCard
 } from 'lucide-react';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 // Assets
 import highEndOffice from '../assets/high_end_office.png';
@@ -106,8 +107,8 @@ export default function Vendas4() {
       <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 ${scrolled ? 'py-4 bg-white/80 backdrop-blur-2xl border-b border-purple-50 shadow-sm' : 'py-8 bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-3 group">
-            <div className="p-2.5 bg-purple-600 rounded-2xl shadow-lg shadow-purple-600/20 group-hover:rotate-6 transition-all duration-500">
-              <Heart className="w-5 h-5 text-white fill-white/20" />
+            <div className="group-hover:rotate-6 transition-all duration-500">
+              <AiAssistantAnimation size="micro" />
             </div>
             <span className="text-xl font-black tracking-tight text-slate-900">
               MEU SISTEMA <span className="text-purple-600">PSI</span>
@@ -311,8 +312,8 @@ export default function Vendas4() {
               </motion.div>
               
               <motion.div variants={fadeUp} className="mt-12 p-8 bg-purple-50 rounded-[2.5rem] border border-purple-100 flex items-center gap-6">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-                  <Heart className="w-8 h-8 text-purple-600" />
+                <div className="flex items-center justify-center">
+                  <AiAssistantAnimation size="xs" />
                 </div>
                 <div>
                   <h4 className="text-sm font-black uppercase tracking-tight text-slate-900 mb-1">Exclusivo: App MeuPSI para Pacientes</h4>
@@ -369,8 +370,8 @@ export default function Vendas4() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-16">
             <div>
               <div className="flex items-center gap-3 mb-8">
-                <div className="p-1.5 bg-slate-900 rounded-lg">
-                  <Heart className="w-4 h-4 text-white" />
+                <div className="">
+                  <AiAssistantAnimation size="micro" />
                 </div>
                 <span className="text-xl font-black tracking-tight text-slate-900 uppercase">MEU SISTEMA <span className="text-purple-600">PSI</span></span>
               </div>

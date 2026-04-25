@@ -4,6 +4,9 @@ import { useAnamneses } from '../contexts/AnamneseContext';
 import HelpModal from '../components/HelpModal';
 import { HELP_CONTENT } from '../constants/helpContent';
 import { formatDisplayId } from '../utils/formatId';
+import FeatureTour from '../components/FeatureTour';
+import useFirstVisit from '../hooks/useFirstVisit';
+import { useEffect } from 'react';
 
 const AnamnesesLista = () => {
     const navigate = useNavigate();
@@ -12,6 +15,12 @@ const AnamnesesLista = () => {
     const [filtroStatus, setFiltroStatus] = useState('Todos');
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [helpOpen, setHelpOpen] = useState(false);
+    const [showTour, setShowTour] = useState(false);
+    const { shouldTrigger: anamnesesFirstVisit, markAsCompleted: markAnamnesesTourCompleted } = useFirstVisit('anamneses');
+
+    useEffect(() => {
+        if (anamnesesFirstVisit) setShowTour(true);
+    }, [anamnesesFirstVisit]);
 
     const statusFiltros = ['Todos', 'Rascunho', 'Finalizado'];
 
@@ -47,6 +56,7 @@ const AnamnesesLista = () => {
                 isOpen={helpOpen} 
                 onClose={() => setHelpOpen(false)} 
                 content={HELP_CONTENT.prontuarios} 
+                onStartTour={() => setShowTour(true)}
             />
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
@@ -76,7 +86,7 @@ const AnamnesesLista = () => {
             </div>
 
             {/* Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-1">
+            <div id="tour-prontuario-ia" className="grid grid-cols-2 md:grid-cols-3 gap-4 px-1">
                 {[
                     { label: 'Todos', value: anamneses.length, icon: 'folder_open', cor: 'text-primary bg-primary/10' },
                     { label: 'Finalizadas', value: totalFinalizado, icon: 'verified', cor: 'text-emerald-500 bg-emerald-500/10' },
@@ -97,7 +107,7 @@ const AnamnesesLista = () => {
             </div>
 
             {/* Busca e Filtros */}
-            <div className="space-y-4">
+            <div id="tour-prontuario-docs" className="space-y-4">
                 <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden px-1">
                     <div className="relative flex items-center w-full">
                         <span className="material-symbols-outlined absolute left-4 text-slate-400">search</span>
@@ -110,7 +120,7 @@ const AnamnesesLista = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div id="tour-prontuario-history" className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="overflow-x-auto w-full">
                         <table className="w-full text-left whitespace-nowrap md:whitespace-normal">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
@@ -202,6 +212,20 @@ const AnamnesesLista = () => {
                     </div>
                 </div>
             )}
+
+            <FeatureTour 
+                isOpen={showTour} 
+                steps={HELP_CONTENT.prontuarios.tourSteps} 
+                onClose={() => {
+                    setShowTour(false);
+                    markAnamnesesTourCompleted();
+                }}
+                onComplete={() => {
+                    setShowTour(false);
+                    markAnamnesesTourCompleted();
+                    alert("Suas anamneses estão organizadas e seguras! 📝");
+                }}
+            />
         </div>
     );
 };

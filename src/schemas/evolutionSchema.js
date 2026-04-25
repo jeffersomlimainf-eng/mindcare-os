@@ -15,8 +15,8 @@ export const evolutionSchema = z.object({
     plano: z.string().optional().or(z.literal('')),
     
     // Metadados Clínicos
-    humorPaciente: z.enum(['radiante', 'feliz', 'neutro', 'triste', 'cansado', 'ansioso', 'irritado', 'outro']).default('neutro'),
-    nivelRisco: z.enum(['baixo', 'medio', 'alto', 'critico']).default('baixo'),
+    humorPaciente: z.enum(['muito_baixo', 'baixo', 'neutro', 'bom', 'muito_bom']).default('neutro'),
+    nivelRisco: z.enum(['baixo', 'moderado', 'alto', 'critico']).default('baixo'),
     observacoes: z.string().optional().or(z.literal('')),
     
     tecnicas: z.array(z.object({

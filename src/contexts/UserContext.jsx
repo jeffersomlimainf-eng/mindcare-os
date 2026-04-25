@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { notifyAdminNewSignup } from '../utils/notifications';
 
@@ -280,6 +280,26 @@ export const UserProvider = ({ children }) => {
         }
     };
 
+    const loginWithToken = async (tokenHash) => {
+        setLoading(true);
+        try {
+            // Verifica o hash do token (magic link)
+            const { data, error } = await supabase.auth.verifyOtp({
+                token_hash: tokenHash,
+                type: 'magiclink'
+            });
+
+            if (error) throw error;
+            
+            // O fetchProfile será disparado pelo onAuthStateChange
+            return { success: true, user: data.user };
+        } catch (error) {
+            logger.error('[UserContext] Erro no One-Click login:', error.message);
+            setLoading(false);
+            return { success: false, message: error.message };
+        }
+    };
+
     const register = async (nome, email, password, cpfCnpj) => {
         setLoading(true);
         try {
@@ -494,6 +514,7 @@ export const UserProvider = ({ children }) => {
             signUp: register,
             loginAs,
             loginWithGoogle,
+            loginWithToken,
             resetPassword,
             changePassword,
             logout,

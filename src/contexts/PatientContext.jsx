@@ -109,7 +109,14 @@ export const PatientProvider = ({ children }) => {
             const novo = await db.insert('patients', payload);
 
             setPatients(prev => [...prev, novo]);
-            
+
+            // Auto-criar conta de acesso ao portal do paciente (fire-and-forget)
+            if (dados.email) {
+                supabase.functions.invoke('create-patient-auth', {
+                    body: { email: dados.email, patient_id: novo.id }
+                }).catch(err => logger.error('[PatientContext] Erro ao criar auth do paciente:', err));
+            }
+
             addNotification({
                 title: 'Novo Paciente Cadastrado',
                 message: `${novo.name || novo.nome} foi adicionado(a) ao diretório.`,

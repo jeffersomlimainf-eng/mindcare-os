@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useLaudos } from '../contexts/LaudoContext';
 import { usePatients } from '../contexts/PatientContext';
@@ -9,6 +9,8 @@ import { showToast } from '../components/Toast';
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 import { logger } from '../utils/logger';
+import { laudoSchema } from '../schemas/documentSchema';
+
 const LaudoPsicologico = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -120,7 +122,6 @@ const LaudoPsicologico = () => {
                     analiseConclusao: modelo.conteudo || '',
                 }));
             } else if (location.state?.categoria) {
-                // Se não veio um modelo específico, mas veio uma categoria, busca o modelo padrão
                 const modeloPadrao = (models || []).find(m => m.categoria === location.state.categoria);
                 if (modeloPadrao) {
                     setDados(prev => ({
@@ -148,7 +149,6 @@ const LaudoPsicologico = () => {
                     ...prev,
                     pacienteCpf: (cpfVazio && p.cpf) ? p.cpf : prev.pacienteCpf,
                     pacienteDataNascimento: (dataVazia && (p.dataNascimento || p.nascimento)) ? (p.dataNascimento || p.nascimento) : prev.pacienteDataNascimento,
-                    // Atualizar também outros campos caso estejam vazios
                     pacienteEmail: !prev.pacienteEmail ? (p.email || '') : prev.pacienteEmail,
                     pacienteTelefone: !prev.pacienteTelefone ? (p.telefone || '') : prev.pacienteTelefone,
                 }));
@@ -156,7 +156,6 @@ const LaudoPsicologico = () => {
         }
     }, [patients, dados.pacienteId]);
 
-    // Fechar dropdown ao clicar fora
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target) &&
@@ -194,11 +193,6 @@ const LaudoPsicologico = () => {
     };
 
     const handleSalvar = (novoStatus) => {
-        if (!dados.pacienteId) {
-            showToast('Selecione um paciente antes de salvar.', 'warning');
-            return;
-        }
-
         setSalvando(true);
 
         const dadosSalvar = {
@@ -208,6 +202,21 @@ const LaudoPsicologico = () => {
             profissionalCrp: user.crp,
             profissionalEspecialidade: user.especialidade,
         };
+
+        // Validação robusta com Zod
+        if (novoStatus === 'Finalizado' || novoStatus === 'Em Revisão') {
+            const validation = laudoSchema.safeParse(dadosSalvar);
+            if (!validation.success) {
+                const erro = validation.error.errors[0].message;
+                showToast(erro, 'warning');
+                setSalvando(false);
+                return;
+            }
+        } else if (!dados.pacienteId) {
+            showToast('Selecione um paciente antes de salvar.', 'warning');
+            setSalvando(false);
+            return;
+        }
 
         setTimeout(() => {
             if (laudoId) {
@@ -284,7 +293,6 @@ const LaudoPsicologico = () => {
     const statusAtual = statusConfig[dados.status] || statusConfig['Rascunho'];
     const isFinalizado = dados.status === 'Finalizado' || dados.status === 'Assinado';
 
-    // Histórico do laudo
     const historico = laudoExistente?.historico || [];
     const criadoEm = laudoExistente?.criadoEm;
     const atualizadoEm = laudoExistente?.atualizadoEm;
@@ -317,9 +325,6 @@ const LaudoPsicologico = () => {
                     <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:border-primary transition-all shadow-sm">
                         <span className="material-symbols-outlined text-sm">print</span> Imprimir
                     </button>
-                    {/* <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:border-primary transition-all shadow-sm">
-                        <span className="material-symbols-outlined text-sm">picture_as_pdf</span> PDF
-                    </button> */}
                     <button onClick={handleExportWord} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:border-primary transition-all shadow-sm">
                         <span className="material-symbols-outlined text-sm">description</span> Word
                     </button>
@@ -344,7 +349,6 @@ const LaudoPsicologico = () => {
                                     <span className="material-symbols-outlined text-2xl">psychology</span>
                                 </div>
                                 <div>
-                                    {/* Removido branding Meu Sistema PSI do cabeçalho de visualização conforme solicitado */}
                                     <h2 className="font-black text-lg leading-tight text-primary invisible">Meu Sistema Psi</h2>
                                     <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 invisible">Clínica de Psicologia Especializada</p>
                                     <p className="text-[9px] text-slate-400">Contato: {user.telefone || '(41) 99999-9999'}</p>
@@ -402,7 +406,7 @@ const LaudoPsicologico = () => {
                                 value={dados.identificacao}
                                 onChange={e => handleChange('identificacao', e.target.value)}
                                 className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[80px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
-                                placeholder={`O presente laudo refere-se ao processo de avaliação psicológica realizado com o(a) paciente ${dados.pacienteNome || '[Nome do Paciente]'}, visando a compreensão de demandas cognitivas e emocionais relatadas em consulta inicial. O processo constou de XX sessões de XX minutos cada.`}
+                                placeholder={`O presente laudo refere-se ao processo de avaliação psicológica realizado com o(a) paciente ${dados.pacienteNome || '[Nome do Paciente]'}, visando a compreensão de demandas cognitivas e emocionais relatadas em consulta inicial.`}
                                 readOnly={isFinalizado}
                             />
                             <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
@@ -420,7 +424,7 @@ const LaudoPsicologico = () => {
                                 value={dados.demanda}
                                 onChange={e => handleChange('demanda', e.target.value)}
                                 className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[100px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
-                                placeholder="Descreva o motivo do encaminhamento e a queixa principal do paciente. Exemplo: O paciente buscou atendimento por encaminhamento médico especializado, relatando dificuldades persistentes de concentração, episódios de ansiedade aguda em ambiente laboral..."
+                                placeholder="Descreva o motivo do encaminhamento e a queixa principal do paciente."
                                 readOnly={isFinalizado}
                             />
                             <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
@@ -438,7 +442,7 @@ const LaudoPsicologico = () => {
                                 value={dados.procedimento}
                                 onChange={e => handleChange('procedimento', e.target.value)}
                                 className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[100px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
-                                placeholder="Liste os instrumentos e técnicas utilizados. Exemplo: Foram utilizados os seguintes instrumentos e técnicas: Entrevista Clínica Semiestruturada, Observação Comportamental, Inventário de Ansiedade de Beck (BAI) e Escala de Stress Percebido (PSS-10). As sessões ocorreram entre os dias DD/MM/AAAA e DD/MM/AAAA."
+                                placeholder="Liste os instrumentos e técnicas utilizados."
                                 readOnly={isFinalizado}
                             />
                             <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
@@ -456,7 +460,7 @@ const LaudoPsicologico = () => {
                                 value={dados.analiseConclusao}
                                 onChange={e => handleChange('analiseConclusao', e.target.value)}
                                 className="w-full text-[13px] leading-relaxed text-slate-700 bg-transparent border-none outline-none resize-none min-h-[120px] focus:bg-blue-50/30 rounded-lg p-3 transition-colors print:hidden"
-                                placeholder="Apresente os resultados, diagnóstico (CID se aplicável) e recomendações clínicas. Exemplo: A partir dos dados coletados, observa-se um quadro compatível com Transtorno de Ansiedade Generalizada (CID-11: 6B00), caracterizado por preocupação excessiva e sintomas somáticos. Recomenda-se a continuidade do acompanhamento psicoterápico semanal..."
+                                placeholder="Apresente os resultados, diagnóstico (CID se aplicável) e recomendações clínicas."
                                 readOnly={isFinalizado}
                             />
                             <div className="hidden print:block text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
@@ -490,7 +494,7 @@ const LaudoPsicologico = () => {
                         <div className="mt-8 pt-4 border-t border-slate-100 text-center">
                             <p className="text-[8px] text-slate-400 leading-relaxed">
                                 Este laudo é um documento sigiloso e pessoal. Sua divulgação sem autorização constitui infração ética.
-                                <br />Elaborado conforme a Resolução CFP nº 06/2019 que institui regras para a elaboração de documentos escritos produzidos pelo psicólogo.
+                                <br />Elaborado conforme a Resolução CFP nº 06/2019.
                             </p>
                         </div>
                     </div>
@@ -515,7 +519,6 @@ const LaudoPsicologico = () => {
                                     onFocus={() => setShowDropdown(true)}
                                     className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                     autoComplete="off"
-                                    autoFocus={showDropdown}
                                 />
                                 {showDropdown && (
                                     <div ref={dropdownRef} className="absolute z-50 left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto">
@@ -638,61 +641,8 @@ const LaudoPsicologico = () => {
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-xs text-slate-400 text-center py-4">Nenhum histórico disponível. Salve o laudo para iniciar o rastreamento.</p>
+                            <p className="text-xs text-slate-400 text-center py-4">Nenhum histórico disponível.</p>
                         )}
-                    </div>
-
-                    {/* Informações de Segurança */}
-                    <div className="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800">
-                        <h4 className="font-black text-emerald-700 dark:text-emerald-400 text-[10px] uppercase tracking-widest mb-3">Informações de Segurança</h4>
-                        <div className="space-y-2">
-                            {[
-                                'Documento assinado digitalmente.',
-                                'Criptografia de ponta a ponta na geração do PDF.',
-                                'Acesso restrito apenas a profissionais autorizados.',
-                                'Conforme Resolução CFP nº 06/2019.',
-                            ].map((txt, i) => (
-                                <div key={i} className="flex items-start gap-2">
-                                    <span className="material-symbols-outlined text-emerald-500 text-sm mt-0.5">shield</span>
-                                    <p className="text-[11px] text-emerald-700 dark:text-emerald-400">{txt}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Datas */}
-                    {(criadoEm || atualizadoEm) && (
-                        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-4">Datas</h4>
-                            <div className="space-y-3">
-                                {criadoEm && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-slate-400 text-sm">calendar_today</span>
-                                        <div>
-                                            <p className="text-[10px] text-slate-400">Criado em</p>
-                                            <p className="text-xs font-bold text-slate-700 dark:text-white">{formatDate(criadoEm)}</p>
-                                        </div>
-                                    </div>
-                                )}
-                                {atualizadoEm && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-slate-400 text-sm">update</span>
-                                        <div>
-                                            <p className="text-[10px] text-slate-400">Última edição</p>
-                                            <p className="text-xs font-bold text-slate-700 dark:text-white">{formatDate(atualizadoEm)}</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Ajuda */}
-                    <div className="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-2xl border border-blue-200 dark:border-blue-800">
-                        <h4 className="font-bold text-blue-700 text-sm mb-1">Precisa de ajuda?</h4>
-                        <p className="text-[11px] text-blue-600 dark:text-blue-400 leading-relaxed">
-                            Caso encontre algum erro nos dados do paciente, você pode solicitar a reabertura do laudo. As seções seguem a estrutura da Resolução CFP nº 06/2019.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -702,14 +652,9 @@ const LaudoPsicologico = () => {
                     @page { margin: 1cm; size: A4 portrait; }
                     body { background: white !important; }
                     .print\\:hidden { display: none !important; }
-                    
-                    /* Desativar o Grid para evitar problemas de largura no Chrome Print */
                     .grid { display: block !important; }
                     .gap-8 { gap: 0 !important; }
-                    
-                    /* Ocupar a folha inteira na impressão, margens vêm do @page */
                     .max-w-7xl { max-width: none !important; margin: 0 !important; width: 100% !important; display: block !important; }
-                    
                     .documento-laudo { 
                         width: auto !important;
                         max-width: none !important;
@@ -720,7 +665,6 @@ const LaudoPsicologico = () => {
                         border: none !important;
                         min-height: 0 !important;
                     }
-
                     .print-section {
                         page-break-inside: avoid !important;
                     }
@@ -728,7 +672,7 @@ const LaudoPsicologico = () => {
                 }
                 .documento-laudo {
                     width: 100%;
-                    max-width: 794px; /* A4 width */
+                    max-width: 794px;
                     margin: 0 auto;
                 }
             `}} />
@@ -737,6 +681,3 @@ const LaudoPsicologico = () => {
 };
 
 export default LaudoPsicologico;
-
-
-

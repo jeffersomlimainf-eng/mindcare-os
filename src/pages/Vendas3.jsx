@@ -15,6 +15,7 @@ import laptopShowcase from '../assets/screens/WhatsApp Image 2026-03-29 at 11.07
 import tabletShowcase from '../assets/screens/WhatsApp Image 2026-03-29 at 11.07.59.jpeg';
 import userTablet from '../assets/screens/WhatsApp Image 2026-03-29 at 11.08.00 (2).jpeg';
 import userPatient from '../assets/screens/WhatsApp Image 2026-03-29 at 11.08.00.jpeg';
+import AiAssistantAnimation from '../components/AiAssistantAnimation';
 
 export default function Vendas3() {
   const [openFaq, setOpenFaq] = useState(null);
@@ -129,7 +130,7 @@ export default function Vendas3() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-xl border-b border-purple-100">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Heart className="w-8 h-8 text-purple-600 fill-purple-100" />
+            <AiAssistantAnimation size="micro" />
             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
               MeuSistemaPsi
             </span>
@@ -373,7 +374,7 @@ export default function Vendas3() {
       <footer className="bg-white border-t border-purple-50 py-16">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <Heart className="w-6 h-6 text-purple-600" />
+            <AiAssistantAnimation size="micro" />
             <span className="font-serif font-bold text-xl text-slate-900">MeuSistemaPsi</span>
           </div>
           <p className="text-slate-500 font-light text-sm">© 2026 Meu Sistema Psi. Todos os direitos reservados.</p>

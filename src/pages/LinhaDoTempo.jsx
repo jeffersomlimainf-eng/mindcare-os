@@ -9,8 +9,8 @@ import { useAnamneses } from '../contexts/AnamneseContext';
 import { useEncaminhamentos } from '../contexts/EncaminhamentoContext';
 import { handleNavegacaoDocumento } from '../utils/navigation';
 import { calcularIdade } from '../utils/date';
-import NovoDocumentoModal from '../components/NovoDocumentoModal';
 import { safeRender } from '../utils/render';
+import PortalPacienteTab from '../components/PortalPacienteTab';
 
 const LinhaDoTempo = () => {
     const { id } = useParams();
@@ -27,7 +27,7 @@ const LinhaDoTempo = () => {
     const [busca, setBusca] = useState('');
     const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
     const [abaAtiva, setAbaAtiva] = useState('visao-geral');
-    const [modalNovoRegistro, setModalNovoRegistro] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
     const [editandoHistorico, setEditandoHistorico] = useState(false);
     const [textoHistorico, setTextoHistorico] = useState('');
     const { updatePatient } = usePatients();
@@ -86,6 +86,7 @@ const LinhaDoTempo = () => {
         { id: 'anamnese', label: 'Anamnese', icon: 'assignment', count: documentos.filter(d => d.tipo === 'Anamnese').length },
         { id: 'evolucoes', label: 'Evoluções', icon: 'clinical_notes', count: documentos.filter(d => d.tipo === 'Evolução').length },
         { id: 'documentos', label: 'Documentos', icon: 'description', count: documentos.filter(d => ['Laudo', 'Atestado', 'Declaração', 'Encaminhamento', 'Recibo'].includes(d.tipo)).length },
+        { id: 'portal-paciente', label: 'Portal do Paciente', icon: 'hub' },
         { id: 'historico', label: 'Histórico Clínico', icon: 'history' },
     ];
 
@@ -171,12 +172,42 @@ const LinhaDoTempo = () => {
                                     >
                                         <span className="material-symbols-outlined text-lg">folder_open</span> Ver Prontuário
                                     </button>
-                                    <button 
-                                        onClick={() => setModalNovoRegistro(true)}
-                                        className="h-10 px-4 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2"
-                                    >
-                                        <span className="material-symbols-outlined text-lg">add</span> Novo Registro
-                                    </button>
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => setShowOptions(!showOptions)}
+                                            className="h-10 px-4 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2"
+                                        >
+                                            <span className="material-symbols-outlined text-lg">{showOptions ? 'close' : 'add'}</span> Novo Registro
+                                        </button>
+
+                                        {showOptions && (
+                                            <>
+                                                <div className="fixed inset-0 z-10" onClick={() => setShowOptions(false)} />
+                                                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-20 animate-in fade-in zoom-in duration-200">
+                                                    {[
+                                                        { label: 'Evolução de Sessão', path: '/prontuarios/evolucao/novo', icon: 'clinical_notes', color: 'text-emerald-500' },
+                                                        { label: 'Laudo Psicológico', path: '/laudos/novo', icon: 'history_edu', color: 'text-violet-500' },
+                                                        { label: 'Atestado Mental', path: '/atestados/novo', icon: 'medical_information', color: 'text-amber-500' },
+                                                        { label: 'Declaração', path: '/declaracoes/novo', icon: 'verified', color: 'text-emerald-500' },
+                                                        { label: 'Ficha de Anamnese', path: '/anamneses/novo', icon: 'patient_list', color: 'text-rose-500' },
+                                                        { label: 'Encaminhamento', path: '/encaminhamentos/novo', icon: 'send', color: 'text-blue-500' },
+                                                    ].map((opt, i) => (
+                                                        <button
+                                                            key={i}
+                                                            onClick={() => {
+                                                                navigate(opt.path, { state: { pacienteObjeto: pacienteSelecionado } });
+                                                                setShowOptions(false);
+                                                            }}
+                                                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+                                                        >
+                                                            <span className={`material-symbols-outlined text-lg ${opt.color}`}>{opt.icon}</span>
+                                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors">{opt.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -312,7 +343,7 @@ const LinhaDoTempo = () => {
                                 <div className="flex justify-between items-center mb-8">
                                     <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Fichas de Anamnese</h3>
                                     <button 
-                                        onClick={() => setModalNovoRegistro(true)}
+                                        onClick={() => navigate('/anamneses/novo', { state: { pacienteObjeto: pacienteSelecionado } })}
                                         className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary font-bold rounded-xl text-xs transition-all hover:bg-primary/20 uppercase tracking-widest"
                                     >
                                         <span className="material-symbols-outlined text-lg">add</span> Nova Ficha
@@ -428,6 +459,10 @@ const LinhaDoTempo = () => {
                             </div>
                         )}
 
+                        {abaAtiva === 'portal-paciente' && (
+                            <PortalPacienteTab paciente={pacienteSelecionado} />
+                        )}
+
                         {abaAtiva === 'historico' && (
                             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
                                 <div className="flex justify-between items-center mb-6">
@@ -512,11 +547,7 @@ const LinhaDoTempo = () => {
                 )}
             </div>
 
-            <NovoDocumentoModal
-                isOpen={modalNovoRegistro}
-                onClose={() => setModalNovoRegistro(false)}
-                pacientePreSelecionado={pacienteSelecionado}
-            />
+
         </div>
     );
 };
