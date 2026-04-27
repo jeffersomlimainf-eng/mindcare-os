@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { useUser } from '../../contexts/UserContext';
 import { showToast } from '../../components/Toast';
 import { ESCALAS_CATALOG } from '../../data/escalasData';
+import { logger } from '../../utils/logger';
 
 // Fallback genérico caso a escala não tenha response_labels definidos
 const LIKERT_FALLBACK = ['0', '1', '2', '3'];
@@ -400,7 +401,8 @@ const EscalaRespostaForm = ({ escala, questions, onRespondida }) => {
             if (error) throw error;
             showToast('Escala respondida com sucesso!', 'success');
             onRespondida(escala.id, answers);
-        } catch {
+        } catch (err) {
+            logger.error('[PatientEscalas] handleSubmit:', err?.message);
             showToast('Erro ao enviar respostas. Tente novamente.', 'error');
         } finally {
             setSubmitting(false);

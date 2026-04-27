@@ -18,7 +18,7 @@ const PortalPaciente = () => {
     useEffect(() => {
         if (!user) return;
         fetchPacienteData();
-    }, [user]);
+    }, [user?.id]);
 
     const fetchPacienteData = async () => {
         setLoading(true);
@@ -37,7 +37,7 @@ const PortalPaciente = () => {
             const { data: pTasks, error: tError } = await supabase
                 .from('patient_tasks')
                 .select('*')
-                .eq('patient_id', paciente.id)
+                .eq('patient_profile_id', user.id)
                 .order('created_at', { ascending: false });
 
             if (tError) throw tError;
@@ -47,7 +47,7 @@ const PortalPaciente = () => {
             const { data: pMoods, error: mError } = await supabase
                 .from('patient_mood_logs')
                 .select('*')
-                .eq('patient_id', paciente.id)
+                .eq('patient_profile_id', user.id)
                 .order('created_at', { ascending: false })
                 .limit(7);
 
@@ -70,8 +70,7 @@ const PortalPaciente = () => {
             const { error } = await supabase
                 .from('patient_mood_logs')
                 .insert([{
-                    patient_id: pacienteData.id,
-                    tenant_id: pacienteData.tenant_id,
+                    patient_profile_id: user.id,
                     mood: newMood.mood,
                     note: newMood.note
                 }]);

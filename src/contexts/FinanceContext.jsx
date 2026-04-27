@@ -76,6 +76,7 @@ export const FinanceProvider = ({ children }) => {
             setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...atualizado } : t));
         } catch (e) {
             logger.error('[FinanceContext] Erro ao atualizar:', e);
+            throw e;
         }
     };
 
@@ -86,6 +87,7 @@ export const FinanceProvider = ({ children }) => {
             setTransactions(prev => prev.filter(t => t.id !== id));
         } catch (e) {
             logger.error('[FinanceContext] Erro ao excluir:', e);
+            throw e;
         }
     };
 

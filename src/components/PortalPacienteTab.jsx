@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from './Toast';
 import { ESCALAS_RAPIDAS, ESCALAS_CATALOG } from '../data/escalasData';
+import { logger } from '../utils/logger';
 
 const MOOD_MAP = {
     1: { emoji: '😢', label: 'Muito mal' },
@@ -63,7 +64,7 @@ const PortalPacienteTab = ({ paciente }) => {
                 .order('created_at', { ascending: false });
             setEscalas(eData || []);
         } catch (err) {
-            console.error('[PortalPacienteTab] fetchPortalData:', err.message);
+            logger.error('[PortalPacienteTab] fetchPortalData:', err.message);
             setPortalAtivo(false);
         } finally {
             setLoading(false);

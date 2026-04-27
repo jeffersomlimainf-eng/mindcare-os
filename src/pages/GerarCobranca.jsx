@@ -50,10 +50,6 @@ const GerarCobranca = () => {
 
     const linkPublico = `${window.location.origin}/cobranca/${id}${qs ? '?' + qs : ''}`;
 
-    // Forçar atualização dos dados financeiros ao montar a página
-    useEffect(() => {
-        if (refreshData) refreshData();
-    }, []);
 
     useEffect(() => {
         const carregarPaciente = async (patId) => {

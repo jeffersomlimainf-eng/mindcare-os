@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/db';
 import { showToast } from '../components/Toast';
+import { logger } from '../utils/logger';
 
 const Lixeira = () => {
     const [trashItems, setTrashItems] = useState([]);
@@ -18,7 +19,7 @@ const Lixeira = () => {
             const data = await db.listTrash();
             setTrashItems(data || []);
         } catch (error) {
-            console.error('Erro ao carregar lixeira:', error);
+            logger.error('[Lixeira] Erro ao carregar:', error);
             showToast('Erro ao carregar itens da lixeira', 'error');
         } finally {
             setLoading(false);
@@ -31,7 +32,7 @@ const Lixeira = () => {
             showToast('Registro restaurado com sucesso!', 'success');
             loadTrash();
         } catch (error) {
-            console.error('Erro ao restaurar:', error);
+            logger.error('[Lixeira] Erro ao restaurar:', error);
             showToast('Erro ao restaurar registro. Verifique se não há duplicatas.', 'error');
         }
     };
@@ -44,7 +45,7 @@ const Lixeira = () => {
             showToast('Item excluído permanentemente.', 'success');
             loadTrash();
         } catch (error) {
-            console.error('Erro ao excluir:', error);
+            logger.error('[Lixeira] Erro ao excluir:', error);
             showToast('Erro ao excluir item.', 'error');
         }
     };
@@ -57,7 +58,7 @@ const Lixeira = () => {
             showToast('Lixeira esvaziada!', 'success');
             loadTrash();
         } catch (error) {
-            console.error('Erro ao esvaziar:', error);
+            logger.error('[Lixeira] Erro ao esvaziar:', error);
             showToast('Erro ao esvaziar lixeira.', 'error');
         }
     };

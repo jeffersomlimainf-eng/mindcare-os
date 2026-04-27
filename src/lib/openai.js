@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { logger } from '../utils/logger';
 
 // Configuração do cliente OpenAI
 // O uso de dangerouslyAllowBrowser é necessário para rodar diretamente no Vite/React,
@@ -31,7 +32,7 @@ export async function perguntarIA(prompt, systemMessage = "Você é um assistent
 
     return response.choices[0].message.content;
   } catch (error) {
-    console.error("Erro ao chamar OpenAI:", error);
+    logger.error('[OpenAI] Erro na chamada:', error?.message);
     throw error;
   }
 }

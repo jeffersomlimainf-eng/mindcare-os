@@ -83,12 +83,14 @@ const PatientHome = () => {
                 supabase.from('patient_tasks').select('*').eq('patient_profile_id', user.id).order('created_at', { ascending: false }),
                 supabase.from('patient_mood_logs').select('*').eq('patient_profile_id', user.id).order('created_at', { ascending: false }).limit(30),
                 supabase.from('appointments').select('id, data, time_start, duration, status, type, patient_name').eq('patient_id', p.id).gte('data', todayISO).order('data', { ascending: true }).limit(6),
-                supabase.from('finance').select('id, description, value, due_date, status, type').eq('patient_id', p.id).eq('type', 'Receita').eq('status', 'Pendente').order('due_date', { ascending: true }),
+                supabase.from('finance').select('id, description, value, due_date, status, type').eq('patient_id', p.id).ilike('type', 'receita').ilike('status', 'pendente').order('due_date', { ascending: true }),
             ]);
             const tData = tRes.status === 'fulfilled' ? tRes.value.data : null;
             const mData = mRes.status === 'fulfilled' ? mRes.value.data : null;
             const aData = aRes.status === 'fulfilled' ? aRes.value.data : null;
             const fData = fRes.status === 'fulfilled' ? fRes.value.data : null;
+            if (fRes.status === 'fulfilled' && fRes.value.error) logger.error('[PatientHome] finance query error:', fRes.value.error);
+            if (aRes.status === 'fulfilled' && aRes.value.error) logger.error('[PatientHome] appointments query error:', aRes.value.error);
 
             setTasks(tData || []);
             const all = mData || [];

@@ -315,7 +315,7 @@ const PreviewModal = ({ escala, onClose }) => (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {escala.questions.map((q, i) => {
                     const qText   = typeof q === 'string' ? q : q.text;
-                    const qOpts   = (typeof q === 'object' && q.options) ? q.options : escala.response_options;
+                    const qOpts   = ((typeof q === 'object' && q.options) ? q.options : escala.response_options) || [];
                     const qLabels = (typeof q === 'object' && q.options) ? q.options : escala.response_labels;
                     return (
                         <div key={i} style={{ background: '#f8fafc', borderRadius: 12, padding: '14px 16px', border: '1px solid #f1f5f9' }}>

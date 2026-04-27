@@ -91,6 +91,7 @@ export const AppointmentProvider = ({ children }) => {
             return atualizado;
         } catch (error) {
             logger.error('[AppointmentContext] Erro ao atualizar:', error);
+            throw error;
         }
     };
 

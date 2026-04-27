@@ -111,7 +111,8 @@ const Agenda = () => {
     const debitosPacientes = useMemo(() => {
         const mapa = {};
         transactions.forEach(t => {
-            if (t.status === 'Pendente' && t.tipo === 'Receita') {
+            const tipoLower = (t.tipo || t.type || '').toLowerCase();
+            if ((t.status || '').toLowerCase() === 'pendente' && tipoLower === 'receita') {
                 // Se a descrição contiver o nome do paciente ou se tivermos pacienteId na transação (futuro)
                 // Por enquanto, vamos usar o nome do paciente na descrição para cruzar
                 const nomePaciente = t.desc?.split(' — ')[1];

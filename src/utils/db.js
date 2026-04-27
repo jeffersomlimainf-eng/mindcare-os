@@ -48,7 +48,10 @@ class SupabaseDB {
             .eq('id', id)
             .single();
 
-        if (error) return null;
+        if (error) {
+            if (error.code === 'PGRST116') return null;
+            throw error;
+        }
         return this._mapKeysFromDB(data);
     }
 
@@ -161,17 +164,14 @@ class SupabaseDB {
     }
 
     async emptyTrash(trashId = null) {
-        const query = supabase.from('trash').delete();
+        let query = supabase.from('trash').delete();
         if (trashId) {
-            query.eq('id', trashId);
+            query = query.eq('id', trashId);
         } else {
-            // Para limpar tudo, precisamos de um filtro que pegue tudo (ou apenas o tenant_id)
-            // O RLS já garante que só deletamos o que é nosso
             const { data: { user } } = await supabase.auth.getUser();
             const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user?.id).single();
-            if (profile?.tenant_id) {
-                query.eq('tenant_id', profile.tenant_id);
-            }
+            if (!profile?.tenant_id) throw new Error('tenant_id não encontrado — operação abortada');
+            query = query.eq('tenant_id', profile.tenant_id);
         }
         const { error } = await query;
         if (error) throw error;
