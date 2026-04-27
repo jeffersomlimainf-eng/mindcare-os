@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
       .select(`
         id, patient_name, data, time_start, reminder_sent, reminder_enabled,
         profiles (
-          full_name, email, configurations, clinic_name, specialty, crp
+          full_name, email, configurations, clinic_name, specialty, crp, plan_status
         ),
         patients(email)
       `)
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
       const configs = prof.configurations || {}
       const patientEmail = app.patients?.email
       
-      if (!configs.reminders_enabled || !patientEmail) continue
+      if (!configs.reminders_enabled || !patientEmail || prof.plan_status !== 'Ativo') continue
 
       const reminderBefore = configs.reminders_before_minutes || 60
       const appTimeMinutes = Math.round(app.time_start * 60)

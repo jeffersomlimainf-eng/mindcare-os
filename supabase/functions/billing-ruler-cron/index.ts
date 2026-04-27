@@ -29,8 +29,9 @@ serve(async (req) => {
         // 2. Buscar Profissionais (Profiles)
         const { data: professionals, error: profError } = await supabase
             .from('profiles')
-            .select('id, full_name, email, clinic_name, configurations')
+            .select('id, full_name, email, clinic_name, configurations, plan_status')
             .not('configurations', 'is', null)
+            .eq('plan_status', 'Ativo')
 
         if (profError) throw profError
 
