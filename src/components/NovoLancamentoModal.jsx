@@ -163,14 +163,14 @@ const NovoLancamentoModal = ({ isOpen, onClose, onSave, lancamentoEditando = nul
                         onChange={e => {
                             setBuscaPaciente(e.target.value);
                             setMostrarSugestoes(true);
-                            if (!e.target.value) setPacienteSelecionado(null);
+                            if (!e.target.value) { setValue('pacienteId', null); setValue('pacienteNome', null); }
                         }}
                         onFocus={() => setMostrarSugestoes(true)}
                         onBlur={() => setTimeout(() => setMostrarSugestoes(false), 200)}
                     />
                     {buscaPaciente && (
                         <button
-                            onClick={() => { setBuscaPaciente(''); setPacienteSelecionado(null); }}
+                            onClick={() => { setBuscaPaciente(''); setValue('pacienteId', null); setValue('pacienteNome', null); }}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 hover:text-emerald-600"
                         >
                             <span className="material-symbols-outlined text-lg">cancel</span>

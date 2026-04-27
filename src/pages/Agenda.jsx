@@ -169,7 +169,10 @@ const Agenda = () => {
         nomePreCadastro ? { nome: nomePreCadastro } : null
     , [nomePreCadastro]);
     const [calMes, setCalMes] = useState(hoje.getMonth());
-    const gridRef = useRef(null);
+    const gridRef     = useRef(null);
+    const touchDragRef = useRef(null);   // estado do drag touch em andamento
+    const _apptsRef    = useRef(appointments);
+    useEffect(() => { _apptsRef.current = appointments; }, [appointments]);
 
     const diaSemanaDaBase = dataBase.getDay();
     const segunda = new Date(dataBase);
@@ -203,7 +206,11 @@ const Agenda = () => {
     }, []);
     const horaAtual = agora.getHours() + agora.getMinutes() / 60;
     const linhaAgoraTop = (horaAtual - H_INICIO) * SLOT_H;
-    const mostrarLinha = format(agora) === format(dataBase) && visao !== 'mes' && horaAtual >= H_INICIO && horaAtual <= H_FIM + 1;
+    const mostrarLinha = visao !== 'mes'
+        && (visao === 'dia'
+            ? format(agora) === format(dataBase)
+            : diasSemana.some(d => format(d) === format(agora)))
+        && horaAtual >= H_INICIO && horaAtual <= H_FIM + 1;
 
     function format(d) { return formatDateLocal(d); }
 
@@ -280,7 +287,7 @@ const Agenda = () => {
 
         const qtd = parseInt(dados.qtdReplicar) || 1;
 
-        if (consultaEditando) {
+        if (consultaEditando && consultaEditando.id) {
             // 1. Atualiza a consulta atual
             updateAppointment(consultaEditando.id, payload);
             showToast(`Consulta de ${dados.paciente} atualizada!`, 'success');
@@ -351,12 +358,9 @@ const Agenda = () => {
     };
 
     const agendarDaFila = (item) => {
-        setConsultaEditando({
-            paciente: item.nome,
-            duracao: parseInt(item.duracao) || 50,
-            status: 'confirmado',
-        });
-        setDiaPreSel(new Date());
+        setConsultaEditando(null);
+        setPacienteParaAgenda({ nome: item.nome, duracao: parseInt(item.duracao) || 50 });
+        setDiaPreSel({ data: new Date(), hora: null });
         setModalAberto(true);
     };
 
@@ -417,7 +421,7 @@ const Agenda = () => {
         const id = e.dataTransfer.getData('appointmentId');
         if (!id) return;
 
-        const appt = filteredAppointments.find(a => a.id === Number(id));
+        const appt = filteredAppointments.find(a => String(a.id) === String(id));
         if (!appt) return;
 
         const horaNum = horaDrop 
@@ -426,12 +430,69 @@ const Agenda = () => {
             
         const dataISO = formatDateLocal(dataDrop);
 
-        updateAppointment(Number(id), {
+        updateAppointment(appt.id, {
             data: dataISO,
             timeStart: horaNum
         });
         showToast('Agendamento movido!', 'success');
     };
+
+    const handleTouchStart = (e, appointmentId) => {
+        if (e.target.closest('button, a')) return;
+        e.stopPropagation();
+        const touch = e.touches[0];
+        const card = e.currentTarget;
+        const rect = card.getBoundingClientRect();
+        const ghost = card.cloneNode(true);
+        Object.assign(ghost.style, {
+            position: 'fixed', left: `${rect.left}px`, top: `${rect.top}px`,
+            width: `${rect.width}px`, height: `${rect.height}px`,
+            opacity: '0.85', zIndex: '9999', pointerEvents: 'none',
+            transform: 'scale(1.05)', boxShadow: '0 14px 40px rgba(0,0,0,0.3)',
+            transition: 'none', borderRadius: '10px',
+        });
+        document.body.appendChild(ghost);
+        card.style.opacity = '0.35';
+        touchDragRef.current = { id: appointmentId, ghost, card, offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top };
+    };
+
+    useEffect(() => {
+        const onMove = (e) => {
+            if (!touchDragRef.current) return;
+            e.preventDefault();
+            const { ghost, offsetX, offsetY } = touchDragRef.current;
+            const t = e.touches[0];
+            ghost.style.left = `${t.clientX - offsetX}px`;
+            ghost.style.top  = `${t.clientY - offsetY}px`;
+        };
+        const onEnd = (e) => {
+            if (!touchDragRef.current) return;
+            const { id, ghost, card } = touchDragRef.current;
+            const t = e.changedTouches[0];
+            ghost.remove();
+            card.style.opacity = '';
+            touchDragRef.current = null;
+            const under = document.elementFromPoint(t.clientX, t.clientY);
+            const slot = under?.closest('[data-slot]');
+            if (!slot) return;
+            const dataDrop = slot.getAttribute('data-date');
+            const hourDrop = slot.getAttribute('data-hour');
+            const appt = _apptsRef.current.find(a => a.id === id || a.id === Number(id));
+            if (!appt || !dataDrop) return;
+            const horaNum = hourDrop
+                ? parseInt(hourDrop.split(':')[0]) + parseInt(hourDrop.split(':')[1]) / 60
+                : appt.timeStart;
+            if (dataDrop === appt.data && horaNum === appt.timeStart) return;
+            updateAppointment(appt.id, { data: dataDrop, timeStart: horaNum });
+            showToast('Agendamento movido!', 'success');
+        };
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+        return () => {
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+        };
+    }, [updateAppointment]);
 
     const dataHojeISO = formatDateLocal(hoje);
     const consultasHoje = filteredAppointments.filter(c => c.data === dataHojeISO);
@@ -660,10 +721,12 @@ const Agenda = () => {
                                     const diaConsultas = appointments.filter(c => c.data === dateISO);
                                     const isHoje = format(dateObj) === format(hoje);
                                     return (
-                                        <div key={idx} 
-                                            onClick={() => { if (cell.curr) { selecionarData(dateObj); setVisao('dia'); } }} 
+                                        <div key={idx}
+                                            onClick={() => { if (cell.curr) { selecionarData(dateObj); setVisao('dia'); } }}
                                             onDragOver={handleDragOver}
                                             onDrop={(e) => handleDrop(e, dateObj, null)}
+                                            data-slot=""
+                                            data-date={dateISO}
                                             className={`min-h-[110px] p-2 border-r border-b border-slate-100 dark:border-slate-800 transition-colors group relative ${!cell.curr ? 'opacity-30 bg-slate-50/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 cursor-pointer'}`}
                                         >
                                             <div className="flex justify-between items-center mb-1">
@@ -675,9 +738,10 @@ const Agenda = () => {
                                                     const s = STATUS_CFG[c.status] || STATUS_CFG.confirmado;
                                                     const t = TYPE_CFG[c.tipo?.toLowerCase()] || TYPE_CFG.presencial;
                                                     return (
-                                                        <div key={c.id} 
+                                                        <div key={c.id}
                                                             draggable="true"
                                                             onDragStart={(e) => handleDragStart(e, c.id)}
+                                                            onTouchStart={(e) => handleTouchStart(e, c.id)}
                                                             className={`px-2 py-1 rounded-lg text-[10px] font-bold truncate uppercase flex items-center gap-1.5 shadow-sm border transition-all hover:scale-[1.02] ${t.bg} ${t.text} ${s.border}`}>
                                                             <span className="material-symbols-outlined text-[10px] opacity-70">{t.icon}</span>
                                                             <span className="truncate flex-1">{safeRender(c.paciente).split(' ')[0]}</span>
@@ -745,18 +809,20 @@ const Agenda = () => {
                                             return (
                                                 <div key={dIdx} className={`relative border-l border-slate-100 dark:border-slate-800 ${isHoje ? 'bg-primary/[0.03] dark:bg-primary/10' : ''}`}>
                                                     {HORAS.map((h, hIdx) => (
-                                                        <div 
-                                                            key={hIdx} 
-                                                            onClick={() => abrirNovaConsulta(visao === 'semana' ? dIdx : null, h)} 
+                                                        <div
+                                                            key={hIdx}
+                                                            onClick={() => abrirNovaConsulta(visao === 'semana' ? dIdx : null, h)}
                                                             onDragOver={handleDragOver}
                                                             onDrop={(e) => handleDrop(e, dia, h)}
-                                                            className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-primary/5 cursor-pointer transition-colors" 
-                                                            style={{ height: SLOT_H }} 
+                                                            data-slot=""
+                                                            data-date={formatDateLocal(dia)}
+                                                            data-hour={h}
+                                                            className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-primary/5 cursor-pointer transition-colors"
+                                                            style={{ height: SLOT_H }}
                                                         />
                                                     ))}
                                                     {getConsultasDoDia(dia).map((c, idx) => {
                                                         const sCfg = STATUS_CFG[c.status] || STATUS_CFG.confirmado;
-                                                        const tCfg = TYPE_CFG[c.type?.toLowerCase()] || TYPE_CFG[c.tipo?.toLowerCase()] || TYPE_CFG.presencial;
                                                         const isOnline = c.tipo === 'teleconsulta' || c.tipo === 'online' || c.type === 'teleconsulta';
                                                         const hh = String(Math.floor(c.timeStart)).padStart(2,'0');
                                                         const mm = String(Math.round((c.timeStart % 1) * 60)).padStart(2,'0');
@@ -766,6 +832,7 @@ const Agenda = () => {
                                                                 key={c.id}
                                                                 draggable="true"
                                                                 onDragStart={(e) => handleDragStart(e, c.id)}
+                                                                onTouchStart={(e) => handleTouchStart(e, c.id)}
                                                                 onClick={(e) => { e.stopPropagation(); abrirEdicao(c); }}
                                                                 className="group"
                                                                 style={{

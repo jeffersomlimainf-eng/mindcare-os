@@ -21,6 +21,7 @@ const NAV_SECTIONS = [
             { title: 'Anamneses',        icon: 'assignment',         path: '/anamneses' },
             { title: 'Encaminhamentos',  icon: 'swap_horiz',         path: '/encaminhamentos' },
             { title: 'TCLE',             icon: 'handshake',          path: '/tcles' },
+            { title: 'Escalas',          icon: 'assignment_turned_in', path: '/escalas' },
         ],
     },
     {

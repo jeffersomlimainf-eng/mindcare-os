@@ -30,9 +30,11 @@ class SupabaseDB {
 
     async list(collectionName) {
         const table = this._getTableName(collectionName);
+        // .limit(10000) evita o truncamento silencioso padrão de 1000 linhas do Supabase
         const { data, error } = await supabase
             .from(table)
-            .select('*');
+            .select('*')
+            .limit(10000);
 
         if (error) throw error;
         return (data || []).map(item => this._mapKeysFromDB(item));
@@ -180,7 +182,6 @@ class SupabaseDB {
             'tipo': 'type',
             'recorrencia': 'recurrence',
             'obs': 'obs',
-            'data': 'date',
             'dataAtendimento': 'data_atendimento',
             'expectativas': 'expectativas',
             'queixaPrincipal': 'queixa_principal',
@@ -222,6 +223,8 @@ class SupabaseDB {
 
         // Mapeamentos por tabela que sobrescrevem os globais
         const tableMappings = {
+            // finance usa 'date' como nome da coluna (ao contrário de appointments que usa 'data')
+            'finance': { 'data': 'date' },
             'docs_tcle': {
                 'pacienteId': 'paciente_id',
                 'pacienteNome': 'paciente_nome',

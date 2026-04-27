@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useUser } from './contexts/UserContext';
 import Toast from './components/Toast';
 import AnalyticsTracker from './components/AnalyticsTracker';
@@ -33,6 +33,7 @@ const EncaminhamentosLista = lazy(() => import('./pages/EncaminhamentosLista'));
 const EncaminhamentoProfissional = lazy(() => import('./pages/EncaminhamentoProfissional'));
 const TclesLista = lazy(() => import('./pages/TclesLista'));
 const TermoConsentimento = lazy(() => import('./pages/TermoConsentimento'));
+const Escalas = lazy(() => import('./pages/Escalas'));
 const ProntuarioDetalhado = lazy(() => import('./pages/ProntuarioDetalhado'));
 const SelfRegister = lazy(() => import('./pages/SelfRegister'));
 const AIClinica = lazy(() => import('./pages/AIClinica'));
@@ -75,6 +76,7 @@ const LoadingFallback = () => (
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useUser();
+    const { pathname } = useLocation();
 
     if (loading && !user?.id) {
         return (
@@ -92,8 +94,8 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/paciente/home" replace />;
     }
 
-    const isConfigRoute = window.location.pathname.startsWith('/configuracoes');
-    const isSuspendedRoute = window.location.pathname === '/suspenso';
+    const isConfigRoute = pathname.startsWith('/configuracoes');
+    const isSuspendedRoute = pathname === '/suspenso';
 
     if (user.isClinicBlocked && !isSuspendedRoute) {
         if (user.role === 'admin' && isConfigRoute) {
@@ -224,6 +226,7 @@ function App() {
                         <Route path="/encaminhamentos/:id" element={<EncaminhamentoProfissional />} />
                         <Route path="/tcles" element={<TclesLista />} />
                         <Route path="/tcles/:id" element={<TermoConsentimento />} />
+                        <Route path="/escalas" element={<Escalas />} />
                     </Route>
                     <Route path="*" element={<NotFound />} />
                 </Routes>

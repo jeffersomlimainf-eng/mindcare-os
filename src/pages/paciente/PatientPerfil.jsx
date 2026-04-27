@@ -33,7 +33,7 @@ const PatientPerfil = () => {
             setLoading(false);
         };
         fetchData();
-    }, [user]);
+    }, [user?.id]);
 
     const handleLogout = async () => {
         await logout();

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from './Toast';
+import { ESCALAS_RAPIDAS, ESCALAS_CATALOG } from '../data/escalasData';
 
 const MOOD_MAP = {
     1: { emoji: '😢', label: 'Muito mal' },
@@ -14,11 +15,16 @@ const MOOD_MAP = {
 const PortalPacienteTab = ({ paciente }) => {
     const { user } = useUser();
     const [portalAtivo, setPortalAtivo] = useState(null);
+    const [profileId, setProfileId] = useState(null);
     const [tasks, setTasks] = useState([]);
     const [moods, setMoods] = useState([]);
+    const [escalas, setEscalas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activating, setActivating] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showEnviarEscala, setShowEnviarEscala] = useState(false);
+    const [enviandoEscala, setEnviandoEscala] = useState(false);
+    const [escalaSelecionada, setEscalaSelecionada] = useState('');
     const [editingTask, setEditingTask] = useState(null);
     const [taskForm, setTaskForm] = useState({ title: '', description: '', due_date: '' });
     const [saving, setSaving] = useState(false);
@@ -36,18 +42,28 @@ const PortalPacienteTab = ({ paciente }) => {
                 .eq('id', paciente.id)
                 .single();
 
-            const profileId = pat?.patient_profile_id || null;
-            setPortalAtivo(!!profileId);
+            const pid = pat?.patient_profile_id || null;
+            setProfileId(pid);
+            setPortalAtivo(!!pid);
 
-            if (profileId) {
+            if (pid) {
                 const [{ data: tData }, { data: mData }] = await Promise.all([
-                    supabase.from('patient_tasks').select('*').eq('patient_profile_id', profileId).order('created_at', { ascending: false }),
-                    supabase.from('patient_mood_logs').select('*').eq('patient_profile_id', profileId).order('created_at', { ascending: false }).limit(20),
+                    supabase.from('patient_tasks').select('*').eq('patient_profile_id', pid).order('created_at', { ascending: false }),
+                    supabase.from('patient_mood_logs').select('*').eq('patient_profile_id', pid).order('created_at', { ascending: false }).limit(20),
                 ]);
                 setTasks(tData || []);
                 setMoods(mData || []);
             }
-        } catch {
+
+            // Escalas: busca pelo patient_id (não precisa do portal ativo)
+            const { data: eData } = await supabase
+                .from('patient_escalas')
+                .select('id, nome, escala_id, status, created_at, answered_at')
+                .eq('patient_id', paciente.id)
+                .order('created_at', { ascending: false });
+            setEscalas(eData || []);
+        } catch (err) {
+            console.error('[PortalPacienteTab] fetchPortalData:', err.message);
             setPortalAtivo(false);
         } finally {
             setLoading(false);
@@ -112,7 +128,7 @@ const PortalPacienteTab = ({ paciente }) => {
             } else {
                 const { error } = await supabase.from('patient_tasks').insert({
                     ...payload,
-                    patient_profile_id: paciente.patient_profile_id,
+                    patient_profile_id: profileId,
                     therapist_id: user?.id,
                 });
                 if (error) throw error;
@@ -133,6 +149,50 @@ const PortalPacienteTab = ({ paciente }) => {
         if (error) { showToast('Erro ao excluir.', 'error'); return; }
         setTasks(prev => prev.filter(t => t.id !== taskId));
         showToast('Tarefa removida.', 'success');
+    };
+
+    const handleEnviarEscala = async () => {
+        if (!escalaSelecionada) return;
+        const cat = ESCALAS_CATALOG.find(e => e.id === escalaSelecionada);
+        if (!cat) return;
+        setEnviandoEscala(true);
+        try {
+            const { error } = await supabase.from('patient_escalas').insert([{
+                patient_id: paciente.id,
+                escala_id: cat.id,
+                nome: cat.nome,
+                instrucoes: cat.instrucoes,
+                questions: cat.questions.map(q => typeof q === 'string' ? { text: q } : q),
+                response_options: cat.response_options,
+                response_labels: cat.response_labels,
+                status: 'pendente',
+            }]);
+            if (error) throw error;
+            showToast(`Escala ${cat.nome} enviada!`, 'success');
+            setShowEnviarEscala(false);
+            setEscalaSelecionada('');
+            // Atualiza lista local otimisticamente
+            setEscalas(prev => [{
+                id: Date.now().toString(),
+                nome: cat.nome,
+                escala_id: cat.id,
+                status: 'pendente',
+                created_at: new Date().toISOString(),
+                answered_at: null,
+            }, ...prev]);
+        } catch {
+            showToast('Erro ao enviar escala.', 'error');
+        } finally {
+            setEnviandoEscala(false);
+        }
+    };
+
+    const handleCancelarEscala = async (escalaId) => {
+        if (!confirm('Cancelar o envio desta escala? O paciente não poderá mais respondê-la.')) return;
+        const { error } = await supabase.from('patient_escalas').delete().eq('id', escalaId);
+        if (error) { showToast('Erro ao cancelar escala.', 'error'); return; }
+        setEscalas(prev => prev.filter(e => e.id !== escalaId));
+        showToast('Envio cancelado.', 'success');
     };
 
     const handleToggleTask = async (task) => {
@@ -283,6 +343,139 @@ const PortalPacienteTab = ({ paciente }) => {
                     </div>
                 </div>
             </div>
+
+            {/* ── Escalas Clínicas ── */}
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <span className="material-symbols-outlined text-violet-500 text-xl">assignment_turned_in</span>
+                        <div>
+                            <h3 className="font-black text-slate-900 dark:text-white text-sm">Escalas Clínicas</h3>
+                            <p className="text-[10px] text-slate-400">Instrumentos enviados para avaliação deste paciente.</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setShowEnviarEscala(true)}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-xs transition-all"
+                    >
+                        <span className="material-symbols-outlined text-sm">send</span>
+                        Enviar Escala
+                    </button>
+                </div>
+                <div className="p-4 space-y-2 max-h-72 overflow-y-auto">
+                    {escalas.length === 0 ? (
+                        <div className="flex flex-col items-center py-10 gap-3">
+                            <span className="material-symbols-outlined text-4xl text-slate-200">assignment_late</span>
+                            <p className="text-xs text-slate-400 font-medium">Nenhuma escala enviada ainda.</p>
+                        </div>
+                    ) : escalas.map(e => {
+                        const isPendente = e.status !== 'respondida';
+                        const cat = ESCALAS_RAPIDAS.find(c => c.id === e.escala_id);
+                        return (
+                            <div key={e.id} className="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div className="size-9 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center text-lg shrink-0">
+                                    {cat?.emoji || '📋'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{e.nome}</p>
+                                    <p className="text-[10px] text-slate-400">
+                                        Enviada em {new Date(e.created_at).toLocaleDateString('pt-BR')}
+                                        {e.answered_at && ` · Respondida em ${new Date(e.answered_at).toLocaleDateString('pt-BR')}`}
+                                    </p>
+                                </div>
+                                <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shrink-0 ${
+                                    isPendente
+                                        ? 'bg-amber-50 text-amber-600 border border-amber-200'
+                                        : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                }`}>
+                                    {isPendente ? 'Pendente' : 'Respondida'}
+                                </span>
+                                {isPendente && (
+                                    <button
+                                        onClick={() => handleCancelarEscala(e.id)}
+                                        title="Cancelar envio"
+                                        className="size-7 rounded-lg flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-300 hover:text-red-500 transition-all shrink-0"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Modal Enviar Escala */}
+            {showEnviarEscala && (
+                <>
+                    <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setShowEnviarEscala(false)} />
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-sm p-6 space-y-5">
+                            <div className="flex items-center justify-between">
+                                <h3 className="font-black text-slate-900 dark:text-white text-lg">Enviar Escala</h3>
+                                <button
+                                    onClick={() => setShowEnviarEscala(false)}
+                                    className="size-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                >
+                                    <span className="material-symbols-outlined text-slate-400 text-lg">close</span>
+                                </button>
+                            </div>
+
+                            <div className="px-3 py-2 rounded-2xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-violet-500 text-base">person</span>
+                                <span className="text-sm font-bold text-violet-800 dark:text-violet-300">{paciente.nome || paciente.name}</span>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                                    Selecionar Escala
+                                </label>
+                                <div className="grid grid-cols-1 gap-2 max-h-72 overflow-y-auto pr-1">
+                                    {ESCALAS_RAPIDAS.map(esc => (
+                                        <button
+                                            key={esc.id}
+                                            onClick={() => setEscalaSelecionada(esc.id)}
+                                            className={`flex items-center gap-3 p-3 rounded-2xl border text-left transition-all ${
+                                                escalaSelecionada === esc.id
+                                                    ? 'border-violet-400 bg-violet-50 dark:bg-violet-900/30'
+                                                    : 'border-slate-200 dark:border-slate-700 hover:border-violet-300 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                                            }`}
+                                        >
+                                            <span className="text-xl">{esc.emoji}</span>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{esc.nome}</p>
+                                                <p className="text-[10px] text-slate-400">{esc.questions} itens · {esc.opcoes} opções de resposta</p>
+                                            </div>
+                                            {escalaSelecionada === esc.id && (
+                                                <span className="material-symbols-outlined text-violet-500 text-lg">check_circle</span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowEnviarEscala(false)}
+                                    className="flex-1 h-11 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-500 font-bold text-sm hover:bg-slate-50 transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleEnviarEscala}
+                                    disabled={!escalaSelecionada || enviandoEscala}
+                                    className="flex-1 h-11 rounded-2xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-bold text-sm transition-all flex items-center justify-center gap-2"
+                                >
+                                    {enviandoEscala
+                                        ? <span className="material-symbols-outlined animate-spin text-sm">autorenew</span>
+                                        : <span className="material-symbols-outlined text-sm">send</span>}
+                                    {enviandoEscala ? 'Enviando...' : 'Enviar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
 
             {/* Modal Nova Tarefa */}
             {showModal && (

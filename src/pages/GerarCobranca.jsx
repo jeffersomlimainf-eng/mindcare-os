@@ -131,7 +131,8 @@ const GerarCobranca = () => {
         };
 
         prepararDados();
-    }, [transacoesSel.length, transactions.length, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     const handleUpdateLinkSent = () => {
         ids.forEach(childId => {
@@ -231,9 +232,11 @@ const GerarCobranca = () => {
     const handleMarcarPago = async () => {
         setMarcandoPago(true);
         try {
-            await Promise.all(ids.map(childId => 
-                updateTransaction(childId, { status: 'Pago' })
-            ));
+            await Promise.all(ids.map(childId => {
+                const t = transacoesSel.find(x => x.id === childId);
+                const newStatus = t?.tipo?.toLowerCase() === 'receita' ? 'Recebido' : 'Pago';
+                return updateTransaction(childId, { status: newStatus });
+            }));
             showToast('Recebimento confirmado!', 'success');
         } catch (e) {
             showToast('Erro ao atualizar status.', 'error');

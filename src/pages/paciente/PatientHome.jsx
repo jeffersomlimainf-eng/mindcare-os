@@ -63,8 +63,8 @@ const PatientHome = () => {
     const dica = DICAS[today.getDate() % DICAS.length];
 
     useEffect(() => {
-        if (user) fetchData();
-    }, [user]);
+        if (user?.id) fetchData();
+    }, [user?.id]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -79,12 +79,16 @@ const PatientHome = () => {
 
             const todayISO = today.toISOString().split('T')[0];
 
-            const [{ data: tData }, { data: mData }, { data: aData }, { data: fData }] = await Promise.all([
+            const [tRes, mRes, aRes, fRes] = await Promise.allSettled([
                 supabase.from('patient_tasks').select('*').eq('patient_profile_id', user.id).order('created_at', { ascending: false }),
                 supabase.from('patient_mood_logs').select('*').eq('patient_profile_id', user.id).order('created_at', { ascending: false }).limit(30),
-                supabase.from('appointments').select('id, date, time_start, duration, status, type, patient_name').eq('patient_id', p.id).gte('date', todayISO).order('date', { ascending: true }).limit(6),
+                supabase.from('appointments').select('id, data, time_start, duration, status, type, patient_name').eq('patient_id', p.id).gte('data', todayISO).order('data', { ascending: true }).limit(6),
                 supabase.from('finance').select('id, description, value, due_date, status, type').eq('patient_id', p.id).eq('type', 'Receita').eq('status', 'Pendente').order('due_date', { ascending: true }),
             ]);
+            const tData = tRes.status === 'fulfilled' ? tRes.value.data : null;
+            const mData = mRes.status === 'fulfilled' ? mRes.value.data : null;
+            const aData = aRes.status === 'fulfilled' ? aRes.value.data : null;
+            const fData = fRes.status === 'fulfilled' ? fRes.value.data : null;
 
             setTasks(tData || []);
             const all = mData || [];
@@ -104,18 +108,43 @@ const PatientHome = () => {
     const handleSendMood = async () => {
         if (!selectedMood || !paciente) return;
         setSaving(true);
+
+        const tempId = `temp_${Date.now()}`;
+        const tempLog = {
+            id: tempId,
+            patient_profile_id: user.id,
+            mood_level: selectedMood,
+            note: note.trim() || null,
+            created_at: new Date().toISOString(),
+        };
+
+        // Optimistic update
+        const prevMoodLogs = moodLogs;
+        const prevTodayLogs = todayLogs;
+        setMoodLogs(prev => [tempLog, ...prev]);
+        setTodayLogs(prev => [tempLog, ...prev]);
+        setSelectedMood(null);
+        setNote('');
+
         try {
-            const { error } = await supabase.from('patient_mood_logs').insert([{
+            const { data, error } = await supabase.from('patient_mood_logs').insert([{
                 patient_profile_id: user.id,
-                mood_level: selectedMood,
-                note: note.trim() || null,
-            }]);
+                mood_level: tempLog.mood_level,
+                note: tempLog.note,
+            }]).select().single();
             if (error) throw error;
+
+            // Replace temp with real record
+            const realLog = data;
+            setMoodLogs(prev => prev.map(l => l.id === tempId ? realLog : l));
+            setTodayLogs(prev => prev.map(l => l.id === tempId ? realLog : l));
             showToast('Registro enviado!', 'success');
-            setSelectedMood(null);
-            setNote('');
-            fetchData();
         } catch (err) {
+            // Rollback
+            setMoodLogs(prevMoodLogs);
+            setTodayLogs(prevTodayLogs);
+            setSelectedMood(tempLog.mood_level);
+            setNote(tempLog.note || '');
             showToast('Erro ao enviar.', 'error');
         } finally {
             setSaving(false);
@@ -123,8 +152,21 @@ const PatientHome = () => {
     };
 
     const toggleTask = async (task) => {
-        await supabase.from('patient_tasks').update({ completed: !task.completed }).eq('id', task.id);
-        fetchData();
+        const newCompleted = !task.completed;
+
+        // Optimistic update
+        setTasks(prev => prev.map(t => t.id === task.id ? { ...t, completed: newCompleted } : t));
+
+        const { error } = await supabase
+            .from('patient_tasks')
+            .update({ completed: newCompleted })
+            .eq('id', task.id);
+
+        if (error) {
+            // Rollback
+            setTasks(prev => prev.map(t => t.id === task.id ? { ...t, completed: task.completed } : t));
+            showToast('Erro ao atualizar tarefa.', 'error');
+        }
     };
 
     const firstName = paciente?.name?.split(' ')[0] || user?.nome?.split(' ')[0] || 'visitante';
@@ -313,8 +355,8 @@ const PatientHome = () => {
                             ) : (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                     {appointments.map(apt => {
-                                        const d = new Date(apt.date + 'T00:00:00');
-                                        const isToday = apt.date === today.toISOString().split('T')[0];
+                                        const d = new Date(apt.data + 'T00:00:00');
+                                        const isToday = apt.data === today.toISOString().split('T')[0];
                                         const hh = String(Math.floor(apt.time_start)).padStart(2, '0');
                                         const mm = String(Math.round((apt.time_start % 1) * 60)).padStart(2, '0');
                                         const sCfg = STATUS_APT[apt.status] || STATUS_APT.confirmado;

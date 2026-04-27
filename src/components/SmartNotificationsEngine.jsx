@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useNotifications } from '../contexts/NotificationContext';
 import { usePatients } from '../contexts/PatientContext';
 import { useAppointments } from '../contexts/AppointmentContext';
@@ -17,7 +17,6 @@ const SmartNotificationsEngine = () => {
     const { transactions } = useFinance();
     const { evolutions } = useEvolutions();
     const { user } = useUser();
-    const executedRef = useRef(false);
 
     useEffect(() => {
         // Aguarda dados mínimos
@@ -156,7 +155,8 @@ const SmartNotificationsEngine = () => {
         // Sincroniza o lote final
         syncSmartNotifications(novasNotif);
 
-    }, [patients, appointments, transactions, evolutions, user?.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [patients, appointments, transactions, evolutions, user?.id, syncSmartNotifications]);
 
     return null;
 };

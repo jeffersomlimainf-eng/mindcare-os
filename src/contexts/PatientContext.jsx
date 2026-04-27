@@ -52,10 +52,10 @@ export const PatientProvider = ({ children }) => {
                     filter: `user_id=eq.${user.id}`
                 }, (payload) => {
                     if (isMounted && payload.new?.id) {
+                        const mapped = db._mapKeysFromDB(payload.new);
                         setPatients(prev => {
-                            // Evita duplicata caso o registro já exista (ex: otimismo local)
-                            if (prev.some(p => p.id === payload.new.id)) return prev;
-                            return [...prev, payload.new];
+                            if (prev.some(p => p.id === mapped.id)) return prev;
+                            return [...prev, mapped];
                         });
                     }
                 })
@@ -66,8 +66,9 @@ export const PatientProvider = ({ children }) => {
                     filter: `user_id=eq.${user.id}`
                 }, (payload) => {
                     if (isMounted && payload.new?.id) {
+                        const mapped = db._mapKeysFromDB(payload.new);
                         setPatients(prev =>
-                            prev.map(p => p.id === payload.new.id ? { ...p, ...payload.new } : p)
+                            prev.map(p => p.id === mapped.id ? { ...p, ...mapped } : p)
                         );
                     }
                 })
@@ -88,7 +89,8 @@ export const PatientProvider = ({ children }) => {
             isMounted = false;
             if (channel) supabase.removeChannel(channel);
         };
-    }, [user]);
+    // PERF-01 FIX: user?.id em vez de user (objeto) — evita re-fetch em qualquer atualização de perfil
+    }, [user?.id]);
 
     const addPatient = async (dados) => {
         const iniciais = (dados.nome || 'P').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
