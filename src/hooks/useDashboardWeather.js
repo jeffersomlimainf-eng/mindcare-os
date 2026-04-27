@@ -1,8 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { logger } from '../utils/logger';
+import { useUser } from '../contexts/UserContext';
 
 export function useDashboardWeather() {
-  const [cidade, setCidade] = useState(() => localStorage.getItem('dashboard_clima_cidade') || 'São Paulo, SP');
+  const { user, updateConfigs } = useUser();
+  const [cidade, setCidade] = useState(() => 
+    user?.configuracoes?.cidade || 
+    localStorage.getItem('dashboard_clima_cidade') || 
+    'São Paulo, SP'
+  );
+
+  useEffect(() => {
+    if (user?.configuracoes?.cidade && user.configuracoes.cidade !== cidade) {
+      setCidade(user.configuracoes.cidade);
+    }
+  }, [user?.configuracoes?.cidade]);
   const [dadosClima, setDadosClima] = useState({ temp: 26, condicao: 'Ensolarado', icone: 'wb_sunny', umidade: 60, vento: 12 });
   const [loadingClima, setLoadingClima] = useState(false);
   const [editandoCidade, setEditandoCidade] = useState(false);
@@ -96,17 +108,24 @@ export function useDashboardWeather() {
   }, [fetchClima]);
 
   useEffect(() => {
-    const salva = localStorage.getItem('dashboard_clima_cidade');
+    const salva = user?.configuracoes?.cidade || localStorage.getItem('dashboard_clima_cidade');
     if (!salva) {
       handleAutoLocalizar();
     } else {
       fetchClima(salva);
     }
-  }, [handleAutoLocalizar, fetchClima]);
+  }, [handleAutoLocalizar, fetchClima, user?.configuracoes?.cidade]);
 
   useEffect(() => {
-    if (cidade) localStorage.setItem('dashboard_clima_cidade', cidade);
-  }, [cidade]);
+    if (cidade) {
+      localStorage.setItem('dashboard_clima_cidade', cidade);
+      
+      // Sincronizar com o banco de dados se o usuário estiver logado e a cidade for diferente
+      if (user?.id && user?.configuracoes?.cidade !== cidade) {
+        updateConfigs({ cidade });
+      }
+    }
+  }, [cidade, user?.id, user?.configuracoes?.cidade, updateConfigs]);
 
   return {
     cidade,

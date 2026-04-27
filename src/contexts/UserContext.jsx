@@ -421,7 +421,8 @@ export const UserProvider = ({ children }) => {
             Object.keys(localStorage).forEach(key => {
                 const isPreference = key.startsWith('psi_tour_') || 
                                    key.startsWith('psi_visited_') || 
-                                   key === 'darkMode';
+                                   key === 'darkMode' ||
+                                   key === 'dashboard_clima_cidade';
                 
                 if (!isPreference) {
                     localStorage.removeItem(key);
