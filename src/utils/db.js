@@ -92,11 +92,88 @@ class SupabaseDB {
 
     async delete(collectionName, id) {
         const table = this._getTableName(collectionName);
+        
+        try {
+            // 1. Buscar o registro antes de deletar para mover para a lixeira
+            const { data: record, error: fetchErr } = await supabase
+                .from(table)
+                .select('*')
+                .eq('id', id)
+                .single();
+            
+            if (!fetchErr && record) {
+                // 2. Mover para a lixeira (tabela 'trash')
+                const { error: trashErr } = await supabase
+                    .from('trash')
+                    .insert([{
+                        original_id: String(record.id),
+                        table_name: table,
+                        data: record,
+                        tenant_id: record.tenant_id,
+                        deleted_by: (await supabase.auth.getUser()).data.user?.id
+                    }]);
+                
+                if (trashErr) logger.error("[db.delete] Erro ao mover para lixeira:", trashErr);
+            }
+        } catch (e) {
+            logger.error("[db.delete] Falha ao preparar lixeira:", e);
+        }
+
+        // 3. Deletar definitivamente da tabela original
         const { error } = await supabase
             .from(table)
             .delete()
             .eq('id', id);
 
+        if (error) throw error;
+        return true;
+    }
+
+    async listTrash() {
+        const { data, error } = await supabase
+            .from('trash')
+            .select('*')
+            .order('deleted_at', { ascending: false });
+        if (error) throw error;
+        return data;
+    }
+
+    async restoreFromTrash(trashId) {
+        // 1. Buscar item na lixeira
+        const { data: trashItem, error: fetchErr } = await supabase
+            .from('trash')
+            .select('*')
+            .eq('id', trashId)
+            .single();
+        
+        if (fetchErr) throw fetchErr;
+
+        // 2. Restaurar na tabela original
+        const { error: restoreErr } = await supabase
+            .from(trashItem.table_name)
+            .insert([trashItem.data]);
+        
+        if (restoreErr) throw restoreErr;
+
+        // 3. Remover da lixeira
+        await supabase.from('trash').delete().eq('id', trashId);
+        return true;
+    }
+
+    async emptyTrash(trashId = null) {
+        const query = supabase.from('trash').delete();
+        if (trashId) {
+            query.eq('id', trashId);
+        } else {
+            // Para limpar tudo, precisamos de um filtro que pegue tudo (ou apenas o tenant_id)
+            // O RLS já garante que só deletamos o que é nosso
+            const { data: { user } } = await supabase.auth.getUser();
+            const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user?.id).single();
+            if (profile?.tenant_id) {
+                query.eq('tenant_id', profile.tenant_id);
+            }
+        }
+        const { error } = await query;
         if (error) throw error;
         return true;
     }

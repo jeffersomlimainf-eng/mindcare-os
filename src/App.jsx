@@ -63,6 +63,7 @@ const PatientLogin = lazy(() => import('./pages/paciente/PatientLogin'));
 const PatientHome = lazy(() => import('./pages/paciente/PatientHome'));
 const PatientEscalas = lazy(() => import('./pages/paciente/PatientEscalas'));
 const PatientPerfil = lazy(() => import('./pages/paciente/PatientPerfil'));
+const Lixeira = lazy(() => import('./pages/Lixeira'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const LoadingFallback = () => (
@@ -227,6 +228,7 @@ function App() {
                         <Route path="/tcles" element={<TclesLista />} />
                         <Route path="/tcles/:id" element={<TermoConsentimento />} />
                         <Route path="/escalas" element={<Escalas />} />
+                        <Route path="/lixeira" element={<Lixeira />} />
                     </Route>
                     <Route path="*" element={<NotFound />} />
                 </Routes>
