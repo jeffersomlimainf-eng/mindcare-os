@@ -193,9 +193,9 @@ const PatientHome = () => {
     const pendingCount = tasks.filter(t => !t.completed).length;
     const completedCount = tasks.filter(t => t.completed).length;
 
-    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
     useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth < 640);
+        const onResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
@@ -207,8 +207,13 @@ const PatientHome = () => {
     );
 
     return (
-        <div style={{ minHeight: '100vh', background: '#f1f5f9', padding: isMobile ? '20px 16px' : '36px 32px', fontFamily: "'Inter', sans-serif" }}>
-            <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ minHeight: '100vh', background: '#f1f5f9', padding: isMobile ? '20px 16px 20px' : '36px 32px', fontFamily: "'Inter', sans-serif", overflowX: 'hidden', boxSizing: 'border-box', width: '100%' }}>
+            <style>{`
+                .ph-grid { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+                @media (min-width: 768px) { .ph-grid { grid-template-columns: 1fr 280px; } }
+                .ph-col { min-width: 0; overflow: hidden; }
+            `}</style>
+            <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
 
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 10 }}>
@@ -234,10 +239,10 @@ const PatientHome = () => {
                 </div>
 
                 {/* Main grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 280px', gap: 20 }}>
+                <div className="ph-grid">
 
                     {/* LEFT COLUMN */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                    <div className="ph-col" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
                         {/* Mood card */}
                         <div style={card}>
@@ -453,8 +458,8 @@ const PatientHome = () => {
                         </div>
 
                         {/* Calendar strip */}
-                        <div style={{ ...card, padding: '18px 20px' }}>
-                            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+                        <div style={{ ...card, padding: '18px 20px', overflow: 'hidden' }}>
+                            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4, width: '100%' }}>
                                 {calDays.map(({ date, isToday }) => (
                                     <div key={date.toISOString()} style={{
                                         minWidth: 44, textAlign: 'center', flexShrink: 0,
@@ -607,7 +612,7 @@ const PatientHome = () => {
                     </div>
 
                     {/* RIGHT COLUMN */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="ph-col" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
                         {/* Dica da semana */}
                         <div style={{

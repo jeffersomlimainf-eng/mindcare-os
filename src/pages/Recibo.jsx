@@ -261,12 +261,12 @@ const Recibo = () => {
                         {/* Rodapé / Assinatura */}
                         <div className="mt-20 flex flex-col items-center">
                             <p className="text-sm mb-16 self-end">
-                                Paraná, {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                                {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
                             </p>
 
                             <div className="w-80 border-t border-slate-900 pt-4 text-center">
                                 <p className="font-black text-lg uppercase">{user.nome}</p>
-                                <p className="text-sm text-slate-500 font-bold">{user.especialidade} - CRP {user.crp}</p>
+                                <p className="text-sm text-slate-500 font-bold">{user.especialidade || 'Psicólogo(a)'}{user.crp ? ` - CRP ${user.crp}` : ''}</p>
                             </div>
                         </div>
                     </div>

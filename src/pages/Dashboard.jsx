@@ -75,7 +75,7 @@ const Dashboard = () => {
     const [ativaNotaId, setAtivaNotaId] = useState(() => {
         const salva = localStorage.getItem('Meu Sistema PSI_dashboard_notes_v2');
         if (salva) {
-            try { return JSON.parse(salva)[0]?.id || '1'; } catch(e) {}
+            try { return JSON.parse(salva)[0]?.id || '1'; } catch(e) { logger.error(e); }
         }
         return '1';
     });
@@ -292,28 +292,21 @@ Retorne SEMPRE no seguinte formato (Markdown):
                 />
             </div>
 
-            <DashboardRiskAlerts pacientesEmRisco={pacientesEmRisco} navigate={navigate} />
-
-
             <DashboardStats stats={stats.stats} navigate={navigate} />
-
 
             <DashboardQuickActions 
                 quickActions={stats.quickActions} 
             />
-                      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Coluna 1: Pendências e Ocupação */}
-                <div className="flex flex-col gap-6">
-                    <DashboardTasks 
-                        tasks={tasks} 
-                        novaTarefa={novaTarefa} 
-                        setNovaTarefa={setNovaTarefa} 
-                        navigate={navigate} 
-                    />
 
-                    <DashboardOccupation 
-                        agenda={agenda} 
-                        setIsSettingsOpen={setIsSettingsOpen} 
+            <DashboardRiskAlerts pacientesEmRisco={pacientesEmRisco} navigate={navigate} />
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                {/* Coluna 1: Documentos Recentes + Reflexão */}
+                <div className="flex flex-col gap-6">
+                    <DashboardRecentDocs 
+                        documents={stats.todosDocumentosRecentes}
+                        navigate={navigate}
+                        onNewDoc={() => navigate('/prontuarios')}
                     />
 
                     <DashboardReflection />
@@ -333,14 +326,22 @@ Retorne SEMPRE no seguinte formato (Markdown):
                     navigate={navigate}
                 />
 
-                {/* Coluna 3: Documentos Recentes */}
-                <DashboardRecentDocs 
-                    documents={stats.todosDocumentosRecentes}
-                    navigate={navigate}
-                    onNewDoc={() => navigate('/prontuarios')}
-                />
+                {/* Coluna 3: Pendências e Ocupação */}
+                <div className="flex flex-col gap-6">
+                    <DashboardTasks 
+                        tasks={tasks} 
+                        novaTarefa={novaTarefa} 
+                        setNovaTarefa={setNovaTarefa} 
+                        navigate={navigate} 
+                    />
+
+                    <DashboardOccupation 
+                        agenda={agenda} 
+                        setIsSettingsOpen={setIsSettingsOpen} 
+                    />
+                </div>
             </div>
-            
+
             <DashboardFooter navigate={navigate} setHelpOpen={setHelpOpen} />
 
             {/* Modais */}

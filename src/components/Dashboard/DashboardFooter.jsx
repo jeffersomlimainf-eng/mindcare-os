@@ -9,7 +9,7 @@ const DashboardFooter = ({ navigate, setHelpOpen }) => {
                         <div className="size-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
                             <span className="material-symbols-outlined text-lg">psychology</span>
                         </div>
-                        <span className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tighter">Psiquê <span className="text-primary">OS</span></span>
+                        <span className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tighter">Meu Sistema <span className="text-primary">.PSI</span></span>
                     </div>
                     <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden md:block" />
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">

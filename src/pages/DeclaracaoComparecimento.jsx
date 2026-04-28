@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useUnsavedChanges } from '../hooks/useUnsavedChanges';
 import { useDeclaracoes } from '../contexts/DeclaracaoContext';
 import { usePatients } from '../contexts/PatientContext';
 import { useModels } from '../contexts/ModelContext';
@@ -19,6 +20,8 @@ const DeclaracaoComparecimento = () => {
 
     const isNovo = id === 'novo';
     const declExistente = !isNovo ? getDeclaracaoById(id) : null;
+    const { markDirty, markClean } = useUnsavedChanges();
+    const initialLoadRef = useRef(true);
 
     const [salvando, setSalvando] = useState(false);
     const [pacienteBusca, setPacienteBusca] = useState('');
@@ -170,6 +173,11 @@ const DeclaracaoComparecimento = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        if (initialLoadRef.current) { initialLoadRef.current = false; return; }
+        markDirty();
+    }, [dados]);
+
     const pacientesFiltrados = patients.filter(p =>
         p.nome.toLowerCase().includes(pacienteBusca.toLowerCase()) ||
         p.id.toLowerCase().includes(pacienteBusca.toLowerCase())
@@ -237,6 +245,7 @@ const DeclaracaoComparecimento = () => {
                 setDados(prev => ({ ...prev, documentoId: nova.documentoId, status: nova.status }));
                 showToast('Declaração criada com sucesso!', 'success');
             }
+            markClean();
             setSalvando(false);
         }, 600);
     };
@@ -447,7 +456,7 @@ const DeclaracaoComparecimento = () => {
                                         </div>
                                         <div className="text-left">
                                             <p className="font-black text-sm text-slate-900">{user.nome}</p>
-                                            <p className="text-xs text-slate-500">{user.especialidade} — CRP {user.crp}</p>
+                                            <p className="text-xs text-slate-500">{user.especialidade || 'Psicólogo(a)'}{user.crp ? ` — CRP ${user.crp}` : ''}</p>
                                         </div>
                                     </div>
                                     <p className="text-[10px] text-emerald-600 font-bold mt-2">Assinado digitalmente via Meu Sistema Psi</p>

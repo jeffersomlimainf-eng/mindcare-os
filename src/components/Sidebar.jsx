@@ -35,7 +35,6 @@ const NAV_SECTIONS = [
         label: 'IA & Config',
         items: [
             { title: 'AI Clínica',     icon: 'psychology_alt', path: '/ai-clinica' },
-            { title: 'Lixeira',        icon: 'delete_outline', path: '/lixeira' },
             { title: 'Configurações',  icon: 'settings',       path: '/configuracoes' },
         ],
     },

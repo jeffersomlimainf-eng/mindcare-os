@@ -4,6 +4,7 @@ import { useTcles } from '../contexts/TcleContext';
 import { usePatients } from '../contexts/PatientContext';
 import { useUser } from '../contexts/UserContext';
 import { showToast } from '../components/Toast';
+import { useUnsavedChanges } from '../hooks/useUnsavedChanges';
 
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
@@ -18,6 +19,8 @@ const TermoConsentimento = () => {
 
     const isNovo = id === 'novo';
     const tcleExistente = !isNovo ? getTcleById(id) : null;
+    const { markDirty, markClean } = useUnsavedChanges();
+    const initialLoadRef = useRef(true);
 
     const [salvando, setSalvando] = useState(false);
     const [pacienteBusca, setPacienteBusca] = useState('');
@@ -130,6 +133,11 @@ const TermoConsentimento = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        if (initialLoadRef.current) { initialLoadRef.current = false; return; }
+        markDirty();
+    }, [dados]);
+
     const pacientesFiltrados = patients.filter(p =>
         (p.nome || '').toLowerCase().includes(pacienteBusca.toLowerCase())
     ).slice(0, 8);
@@ -174,6 +182,7 @@ const TermoConsentimento = () => {
                 setTcleId(novo?.id || novo?.[0]?.id);
                 showToast('TCLE criado com sucesso!', 'success');
             }
+            markClean();
         } catch (err) {
             showToast('Erro ao salvar TCLE.', 'error');
         } finally {
@@ -242,8 +251,8 @@ const TermoConsentimento = () => {
     const abas = [
         { id: 'identificacao', label: 'Identificação', icon: 'person' },
         { id: 'servico', label: 'Serviço', icon: 'medical_services' },
-        { id: 'etica', label: 'Ética e Sigilo', icon: 'shield' },
-        { id: 'direitos', label: 'Direitos e Deveres', icon: 'gavel' },
+        { id: 'etica', label: 'Sigilo', icon: 'shield' },
+        { id: 'direitos', label: 'Direitos', icon: 'gavel' },
         { id: 'consentimentos', label: 'Consentimentos', icon: 'fact_check' },
         { id: 'assinatura', label: 'Assinatura', icon: 'draw' },
     ];
@@ -263,25 +272,25 @@ const TermoConsentimento = () => {
                         Conforme Resolução CFP nº 001/2009 e Código de Ética Profissional do Psicólogo
                     </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-2">
                     <button
                         onClick={() => handleSalvar()}
                         disabled={salvando}
-                        className="h-10 px-5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 disabled:opacity-50"
+                        className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wide hover:bg-slate-50 transition-all flex items-center gap-2 disabled:opacity-50 whitespace-nowrap"
                     >
                         <span className="material-symbols-outlined text-lg">save</span>
                         {salvando ? 'Salvando...' : 'Salvar Rascunho'}
                     </button>
-                    {/* <button
-                        onClick={handleExportPDF}
-                        className="h-10 px-5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2"
+                    <button
+                        onClick={() => window.print()}
+                        className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wide hover:bg-slate-50 transition-all flex items-center gap-2 whitespace-nowrap"
                     >
-                        <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
-                        PDF
-                    </button> */}
+                        <span className="material-symbols-outlined text-lg">print</span>
+                        Imprimir
+                    </button>
                     <button
                         onClick={handleExportWord}
-                        className="h-10 px-5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2"
+                        className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wide hover:bg-slate-50 transition-all flex items-center gap-2 whitespace-nowrap"
                     >
                         <span className="material-symbols-outlined text-lg">description</span>
                         Word
@@ -289,7 +298,7 @@ const TermoConsentimento = () => {
                     <button
                         onClick={handleFinalizar}
                         disabled={salvando || !dados.pacienteId}
-                        className="h-10 px-5 rounded-xl bg-rose-500 text-white text-xs font-bold uppercase tracking-widest shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all flex items-center gap-2 disabled:opacity-50"
+                        className="h-10 px-5 rounded-xl bg-rose-500 text-white text-xs font-bold uppercase tracking-wide shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all flex items-center gap-2 disabled:opacity-50 whitespace-nowrap"
                     >
                         <span className="material-symbols-outlined text-lg">verified</span>
                         Assinar e Finalizar
@@ -620,9 +629,11 @@ const TermoConsentimento = () => {
                             <div className="flex items-start gap-3">
                                 <span className="material-symbols-outlined text-emerald-500 text-xl mt-0.5">verified_user</span>
                                 <div>
-                                    <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-1">Proteção CFP Garantida</p>
+                                    <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-1">Proteção garantida pelo CFP</p>
                                     <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium leading-relaxed">
-                                                                         </p>
+                                        Este documento segue a Resolução CFP nº 001/2009 e o Código de Ética Profissional do Psicólogo (Res. CFP nº 010/2005).
+                                        O armazenamento é seguro e o acesso restrito ao profissional responsável.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -632,7 +643,7 @@ const TermoConsentimento = () => {
 
             <style>{`
                 @media print {
-                    @page { margin: 1cm; size: A4 portrait; }
+                    @page { margin: 2cm 2.2cm 2.5cm 2.2cm; size: A4 portrait; }
                     body { background: white !important; }
                     .print\\:hidden { display: none !important; }
                     

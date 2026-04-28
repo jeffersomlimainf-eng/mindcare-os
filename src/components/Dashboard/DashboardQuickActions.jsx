@@ -9,7 +9,7 @@ const DashboardQuickActions = ({ quickActions }) => {
                 <span className="material-symbols-outlined text-primary text-base">bolt</span>
                 <h3 className="text-slate-900 dark:text-white font-bold text-[10px] uppercase tracking-widest">Ações Rápidas</h3>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 {quickActions.map((action, index) => (
                     <button
                         key={index}

@@ -498,7 +498,7 @@ const EncaminhamentoProfissional = () => {
                                     </div>
                                     <div className="text-left">
                                         <p className="font-black text-sm text-slate-900">{user.nome}</p>
-                                        <p className="text-xs text-slate-500">{user.especialidade} — CRP {user.crp}</p>
+                                        <p className="text-xs text-slate-500">{user.especialidade || 'Psicólogo(a)'}{user.crp ? ` — CRP ${user.crp}` : ''}</p>
                                     </div>
                                 </div>
                                 <p className="text-[10px] text-sky-600 font-bold mt-2">Assinado digitalmente via Meu Sistema Psi</p>

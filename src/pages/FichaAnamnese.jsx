@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useUnsavedChanges } from '../hooks/useUnsavedChanges';
 import { useAnamneses } from '../contexts/AnamneseContext';
 import { usePatients } from '../contexts/PatientContext';
 import { useModels } from '../contexts/ModelContext';
@@ -9,6 +10,14 @@ import { showToast } from '../components/Toast';
 import { formatDisplayId, formatFileId } from '../utils/formatId';
 
 import { logger } from '../utils/logger';
+
+const formatBirthDate = (dateStr) => {
+    if (!dateStr || dateStr === '—') return '—';
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString('pt-BR');
+};
+
 const secoes = [
     {
         id: 'queixaPrincipal',
@@ -77,6 +86,8 @@ const FichaAnamnese = () => {
 
     const isNovo = id === 'novo';
     const existente = !isNovo ? getAnamneseById(id) : null;
+    const { markDirty, markClean } = useUnsavedChanges();
+    const initialLoadRef = useRef(true);
 
     const [salvando, setSalvando] = useState(false);
     const [pacienteBusca, setPacienteBusca] = useState('');
@@ -243,6 +254,11 @@ const FichaAnamnese = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        if (initialLoadRef.current) { initialLoadRef.current = false; return; }
+        markDirty();
+    }, [dados]);
+
     const pacientesFiltrados = patients.filter(p =>
         p.nome.toLowerCase().includes(pacienteBusca.toLowerCase()) ||
         p.id.toLowerCase().includes(pacienteBusca.toLowerCase())
@@ -300,6 +316,7 @@ const FichaAnamnese = () => {
                 setDados(prev => ({ ...prev, documentoId: nova.documentoId, status: nova.status }));
                 showToast('Anamnese criada com sucesso!', 'success');
             }
+            markClean();
             setSalvando(false);
         }, 600);
     };
@@ -328,7 +345,7 @@ const FichaAnamnese = () => {
                 paciente: {
                     nome: dados.pacienteNome,
                     cpf: dados.pacienteCpf,
-                    nascimento: dados.pacienteNascimento ? new Date(dados.pacienteNascimento).toLocaleDateString('pt-BR') : '—'
+                    nascimento: formatBirthDate(dados.pacienteDataNascimento)
                 },
                 dataEmissao: new Date().toLocaleDateString('pt-BR'),
                 secoes: secoes.map(s => ({
@@ -415,31 +432,31 @@ const FichaAnamnese = () => {
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Formulário (2 cols) */}
                 <div className="lg:col-span-2 print:col-span-3 space-y-0" ref={documentoRef} id="documento-anamnese">
-                    {/* Cabeçalho do documento */}
-                    <div className="bg-white dark:bg-slate-900 p-5 md:p-8 rounded-t-2xl border border-slate-200 dark:border-slate-800 border-b-0 print:border-none print:px-12 print:pt-12 print:pb-6 relative overflow-hidden">
-                        {/* Faixa decorativa no topo apenas para PDF */}
-                        <div className="hidden print:block absolute top-0 left-0 right-0 h-2 bg-amber-500"></div>
-
+                    {/* Cabeçalho do documento — visível na tela */}
+                    <div className="print:hidden bg-white dark:bg-slate-900 p-5 md:p-8 rounded-t-2xl border border-slate-200 dark:border-slate-800 border-b-0 relative overflow-hidden">
                         <div className="flex justify-between items-center mb-10">
                             <div className="flex items-center gap-5">
                                 <div className="size-14 rounded-2xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
                                     <span className="material-symbols-outlined text-3xl">assignment</span>
                                 </div>
                                 <div>
-                                    <h2 className="font-black text-2xl leading-none text-slate-900 dark:text-white print:text-slate-900">Meu Sistema PSI</h2>
+                                    <h2 className="font-black text-2xl leading-none text-slate-900 dark:text-white">
+                                        {user.clinica?.nome || user.clinic_name || user.nome}
+                                    </h2>
                                     <p className="text-[10px] text-amber-600 font-black uppercase tracking-[0.2em] mt-2">Ficha de Anamnese Psicológica</p>
                                 </div>
                             </div>
                             <div className="text-right">
                                 <div className="inline-block px-3 py-1 bg-slate-100 rounded-md mb-2">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase">Doc {formatDisplayId(dados.documentoId, 'ANA')}</p>
+                                    <p className="text-[10px] font-black text-slate-500 uppercase font-mono">
+                                        {dados.documentoId ? formatDisplayId(dados.documentoId, 'ANA') : 'RASCUNHO'}
+                                    </p>
                                 </div>
                                 <p className="text-xs font-bold text-slate-400">{new Date().toLocaleDateString('pt-BR')}</p>
                             </div>
                         </div>
 
-                        {/* Dados do Paciente (Estilo Premium Card) */}
-                        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 print:bg-slate-50 print:border-slate-200">
+                        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-800">
                             <div className="flex items-center gap-2 mb-4 border-b border-slate-200/50 pb-3">
                                 <span className="material-symbols-outlined text-amber-500 text-lg">person</span>
                                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Identificação do Paciente</h3>
@@ -447,40 +464,99 @@ const FichaAnamnese = () => {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 <div className="col-span-2">
                                     <p className="text-[9px] font-bold text-amber-600 uppercase mb-1">Nome Completo</p>
-                                    <p className="text-sm font-black text-slate-900 dark:text-white print:text-slate-900">{dados.pacienteNome || '—'}</p>
+                                    <p className="text-sm font-black text-slate-900 dark:text-white">{dados.pacienteNome || '—'}</p>
                                 </div>
                                 <div>
                                     <p className="text-[9px] font-bold text-amber-600 uppercase mb-1">Idade/Nascimento</p>
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 print:text-slate-700">
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
                                         {dados.pacienteIdade ? `${dados.pacienteIdade} anos` : '—'}
-                                        <span className="block text-[10px] font-medium text-slate-400 mt-0.5">{dados.pacienteDataNascimento || ''}</span>
+                                        <span className="block text-[10px] font-medium text-slate-400 mt-0.5">{formatBirthDate(dados.pacienteDataNascimento)}</span>
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-[9px] font-bold text-amber-600 uppercase mb-1">CPF</p>
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 print:text-slate-700">{dados.pacienteCpf || '—'}</p>
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{dados.pacienteCpf || '—'}</p>
                                 </div>
                                 <div>
                                     <p className="text-[9px] font-bold text-amber-600 uppercase mb-1">Estado Civil</p>
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 print:text-slate-700">{dados.pacienteEstadoCivil || '—'}</p>
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{dados.pacienteEstadoCivil || '—'}</p>
                                 </div>
                                 <div>
                                     <p className="text-[9px] font-bold text-amber-600 uppercase mb-1">Profissão/Ocupação</p>
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 print:text-slate-700">{dados.pacienteProfissao || '—'}</p>
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{dados.pacienteProfissao || '—'}</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Cabeçalho de impressão */}
+                    <div className="hidden print:block print-doc-header">
+                        <div className="text-center pb-5 mb-2" style={{ borderBottom: '2px solid #1e293b' }}>
+                            <h1 className="font-black text-[17pt] text-slate-900 leading-tight">
+                                {user.clinica?.nome || user.clinic_name || user.nome}
+                            </h1>
+                            <p className="text-[8pt] text-slate-500 uppercase tracking-[0.3em] font-bold mt-1">
+                                Ficha de Anamnese Psicológica
+                            </p>
+                        </div>
+                        <div className="flex justify-between items-center mt-3 mb-6">
+                            <span className="text-[8pt] text-slate-400">Data: {new Date().toLocaleDateString('pt-BR')}</span>
+                            <span className="text-[8pt] font-mono font-bold text-slate-600 uppercase">
+                                {dados.documentoId ? formatDisplayId(dados.documentoId, 'ANA') : 'RASCUNHO'}
+                            </span>
+                        </div>
+
+                        {/* Tabela de dados do paciente */}
+                        <table className="print-patient-table w-full mb-6" style={{ borderCollapse: 'collapse', border: '1px solid #cbd5e1', fontSize: '9.5pt' }}>
+                            <thead>
+                                <tr style={{ background: '#f8fafc', borderBottom: '1px solid #cbd5e1' }}>
+                                    <th colSpan={4} style={{ padding: '6px 10px', textAlign: 'left', fontSize: '7.5pt', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+                                        Identificação do Paciente
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                                    <td colSpan={2} style={{ padding: '8px 10px', verticalAlign: 'top' }}>
+                                        <div style={{ fontSize: '7pt', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Nome Completo</div>
+                                        <div style={{ fontWeight: 900, color: '#0f172a' }}>{dados.pacienteNome || '—'}</div>
+                                    </td>
+                                    <td style={{ padding: '8px 10px', verticalAlign: 'top', borderLeft: '1px solid #e2e8f0' }}>
+                                        <div style={{ fontSize: '7pt', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Data de Nascimento</div>
+                                        <div style={{ fontWeight: 700, color: '#334155' }}>{formatBirthDate(dados.pacienteDataNascimento) || '—'}</div>
+                                    </td>
+                                    <td style={{ padding: '8px 10px', verticalAlign: 'top', borderLeft: '1px solid #e2e8f0' }}>
+                                        <div style={{ fontSize: '7pt', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Idade</div>
+                                        <div style={{ fontWeight: 700, color: '#334155' }}>{dados.pacienteIdade ? `${dados.pacienteIdade} anos` : '—'}</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style={{ padding: '8px 10px', verticalAlign: 'top' }}>
+                                        <div style={{ fontSize: '7pt', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>CPF</div>
+                                        <div style={{ fontWeight: 700, color: '#334155' }}>{dados.pacienteCpf || '—'}</div>
+                                    </td>
+                                    <td style={{ padding: '8px 10px', verticalAlign: 'top', borderLeft: '1px solid #e2e8f0' }}>
+                                        <div style={{ fontSize: '7pt', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Estado Civil</div>
+                                        <div style={{ fontWeight: 700, color: '#334155' }}>{dados.pacienteEstadoCivil || '—'}</div>
+                                    </td>
+                                    <td colSpan={2} style={{ padding: '8px 10px', verticalAlign: 'top', borderLeft: '1px solid #e2e8f0' }}>
+                                        <div style={{ fontSize: '7pt', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Profissão / Ocupação</div>
+                                        <div style={{ fontWeight: 700, color: '#334155' }}>{dados.pacienteProfissao || '—'}</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     {/* Seções da Anamnese */}
                     {secoes.map((secao, idx) => (
                         <div
                             key={secao.id}
-                            className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-t-0 ${idx === secoes.length - 1 ? 'rounded-b-2xl' : ''} transition-all`}
+                            className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-t-0 print:border-0 ${idx === secoes.length - 1 ? 'rounded-b-2xl' : ''} transition-all`}
                         >
                             <button
                                 onClick={() => setSecaoAberta(secaoAberta === secao.id ? null : secao.id)}
-                                className="w-full flex items-center justify-between px-5 md:px-8 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                                className="w-full flex items-center justify-between px-5 md:px-8 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors print:hidden"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className={`size-8 rounded-lg flex items-center justify-center ${dados[secao.id]?.trim() ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-400'}`}>
@@ -491,7 +567,7 @@ const FichaAnamnese = () => {
                                         <span className="material-symbols-outlined text-amber-500 text-sm">check_circle</span>
                                     )}
                                 </div>
-                                <span className={`material-symbols-outlined text-slate-400 transition-transform print:hidden ${secaoAberta === secao.id ? 'rotate-180' : ''}`}>expand_more</span>
+                                <span className={`material-symbols-outlined text-slate-400 transition-transform ${secaoAberta === secao.id ? 'rotate-180' : ''}`}>expand_more</span>
                             </button>
                             {secaoAberta === secao.id && (
                                 <div className="px-5 md:px-8 pb-6 print:hidden">
@@ -505,13 +581,10 @@ const FichaAnamnese = () => {
                                 </div>
                             )}
 
-                            {/* Versão de Impressão (sempre visível no PDF) */}
-                            <div className="hidden print:block print-section px-10 py-6 bg-white border-b border-slate-100 last:border-0" style={{ pageBreakInside: 'avoid' }}>
-                                <h3 className="text-[12pt] font-black text-amber-600 mb-3 uppercase tracking-widest flex items-center gap-3">
-                                    <span className="material-symbols-outlined text-[14pt]" style={{ fontVariant: 'ligatures' }}>{secao.icon}</span>
-                                    {secao.titulo}
-                                </h3>
-                                <div className="text-[10.5pt] leading-relaxed text-slate-800 whitespace-pre-wrap text-justify">
+                            {/* Versão de Impressão */}
+                            <div className="hidden print:block print-section">
+                                <h3 className="print-section-title">{secao.titulo}</h3>
+                                <div className="print-section-body">
                                     {dados[secao.id] || 'Não informado.'}
                                 </div>
                             </div>
@@ -586,11 +659,11 @@ const FichaAnamnese = () => {
                             </div>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 mt-4">
-                            {secoes.map(s => (
+                            {secoes.map((s, i) => (
                                 <button
                                     key={s.id}
                                     onClick={() => setSecaoAberta(s.id)}
-                                    className={`p-2 rounded-lg text-center transition-all ${dados[s.id]?.trim()
+                                    className={`px-2 py-1.5 rounded-lg text-center transition-all ${dados[s.id]?.trim()
                                         ? 'bg-amber-100 text-amber-700 border border-amber-200'
                                         : secaoAberta === s.id
                                             ? 'bg-primary/10 text-primary border border-primary/20'
@@ -598,7 +671,8 @@ const FichaAnamnese = () => {
                                         }`}
                                     title={s.titulo}
                                 >
-                                    <span className="material-symbols-outlined text-sm">{s.icon}</span>
+                                    <span className="text-[10px] font-black block">{i + 1}</span>
+                                    <span className="text-[9px] leading-tight block truncate">{s.titulo.replace(/^\d+\.\s/, '')}</span>
                                 </button>
                             ))}
                         </div>
@@ -691,49 +765,67 @@ const FichaAnamnese = () => {
             </div>
 
             {/* Rodapé de Assinatura exclusivo para Print */}
-            <div className="hidden print:block mt-20 pt-10 border-t border-slate-300 text-center max-w-sm mx-auto">
-                <p className="text-sm font-bold text-slate-900 mb-1">{dados.profissionalNome || user.nome}</p>
-                <p className="text-[11px] text-slate-500 uppercase tracking-widest font-black">Psicólogo(a) Clínico(a) • CRP {dados.profissionalCrp || user.crp || '---'}</p>
-                <div className="mt-8 text-[9px] text-slate-400">Gerado em {new Date().toLocaleDateString('pt-BR')} • Meu Sistema PSI</div>
+            <div className="hidden print:block print-signature">
+                <div style={{ width: 260, borderTop: '1.5px solid #334155', paddingTop: 12, textAlign: 'center', margin: '0 auto' }}>
+                    <p style={{ fontWeight: 900, fontSize: '10pt', color: '#0f172a', marginBottom: 3 }}>{dados.profissionalNome || user.nome}</p>
+                    <p style={{ fontSize: '8pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        {user.especialidade || 'Psicólogo(a)'}
+                        {(dados.profissionalCrp || user.crp) ? ` — CRP ${dados.profissionalCrp || user.crp}` : ''}
+                    </p>
+                </div>
+                <p style={{ textAlign: 'center', fontSize: '7.5pt', color: '#94a3b8', marginTop: 28 }}>
+                    Gerado em {new Date().toLocaleDateString('pt-BR')} • {user.clinica?.nome || user.clinic_name || user.nome}
+                </p>
             </div>
 
             <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
-                    @page { margin: 0; size: A4; }
-                    body { background: white !important; }
+                    @page { margin: 2cm 2.2cm 2.5cm 2.2cm; size: A4 portrait; }
+                    html, body { background: white !important; }
                     .print\\:hidden { display: none !important; }
-                    
-                    #documento-anamnese { 
-                        width: 794px !important; 
-                        margin: 0 auto !important;
+
+                    #documento-anamnese {
+                        width: 100% !important;
+                        margin: 0 !important;
                         padding: 0 !important;
                         background: white !important;
-                        display: block !important;
-                        text-rendering: optimizeLegibility;
-                        -webkit-font-smoothing: antialiased;
                     }
+
+                    .print-doc-header { margin-bottom: 4px; }
 
                     .print-section {
+                        padding: 14px 0 !important;
+                        border-bottom: 1px solid #e2e8f0 !important;
                         page-break-inside: avoid !important;
-                        border-bottom: 2px solid #f8fafc !important;
-                        padding: 30px 50px !important;
                     }
 
-                    .material-symbols-outlined {
-                        font-family: 'Material Symbols Outlined' !important;
-                        font-style: normal !important;
-                        display: inline-block !important;
-                        line-height: 1 !important;
-                        text-transform: none !important;
-                        letter-spacing: normal !important;
-                        word-wrap: normal !important;
-                        white-space: nowrap !important;
-                        direction: ltr !important;
+                    .print-section:last-of-type {
+                        border-bottom: none !important;
                     }
 
-                    h1, h2, h3, p, span, div {
-                        font-family: 'Inter', system-ui, sans-serif !important;
+                    .print-section-title {
+                        font-size: 9pt !important;
+                        font-weight: 900 !important;
+                        color: #334155 !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 0.12em !important;
+                        margin-bottom: 6px !important;
                     }
+
+                    .print-section-body {
+                        font-size: 10.5pt !important;
+                        line-height: 1.7 !important;
+                        color: #1e293b !important;
+                        white-space: pre-wrap !important;
+                        text-align: justify !important;
+                    }
+
+                    .print-signature {
+                        margin-top: 48px !important;
+                        page-break-inside: avoid !important;
+                    }
+
+                    * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
                 }
             `}} />
         </div>

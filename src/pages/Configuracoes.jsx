@@ -360,7 +360,7 @@ const Configuracoes = () => {
                                 {formData.nome}
                             </p>
                             <p className="text-sm text-slate-400 font-medium mt-0.5">
-                                {user.especialidade} · CRP {formData.crp}
+                                {user.especialidade || 'Psicólogo(a)'}{formData.crp ? ` · CRP ${formData.crp}` : ''}
                             </p>
                             <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
                             <button
@@ -1037,7 +1037,7 @@ const Configuracoes = () => {
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
                 <SectionHeader icon="database" iconBg="bg-primary/10" iconColor="text-primary" title="Gerenciamento de Dados" />
 
-                <div className="p-6 md:p-8">
+                <div className="p-6 md:p-8 space-y-6">
                     <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800">
                         <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
                             <span className="material-symbols-outlined text-primary text-xl">cloud_download</span>
@@ -1058,6 +1058,22 @@ const Configuracoes = () => {
                         >
                             <span className="material-symbols-outlined text-sm">download</span>
                             Gerar Backup
+                        </button>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-2xl border border-slate-100 dark:border-slate-800/50 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-all">
+                        <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-slate-400 text-lg">delete_outline</span>
+                            <div className="text-left">
+                                <p className="font-bold text-[13px] text-slate-600 dark:text-slate-300">Lixeira do Sistema</p>
+                                <p className="text-[11px] text-slate-400 mt-0.5">Acesse registros excluídos recentemente.</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => navigate('/lixeira')}
+                            className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                        >
+                            Acessar Lixeira
                         </button>
                     </div>
                 </div>

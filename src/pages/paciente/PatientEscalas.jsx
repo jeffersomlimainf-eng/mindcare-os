@@ -66,7 +66,7 @@ const PatientEscalas = () => {
                 .order('created_at', { ascending: false });
             setEscalas(data || []);
         } catch (err) {
-            console.error('[PatientEscalas] fetchEscalas:', err.message);
+            logger.error('[PatientEscalas] fetchEscalas:', err.message);
         } finally {
             setLoading(false);
         }

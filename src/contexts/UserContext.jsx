@@ -253,8 +253,9 @@ export const UserProvider = ({ children }) => {
         initAuth();
 
         // 2. Escuta mudanças subsequentes
+        // TOKEN_REFRESHED não precisa re-buscar o perfil (apenas renova o JWT)
         const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
                 handleAuth(event, session);
             }
         });
@@ -266,7 +267,7 @@ export const UserProvider = ({ children }) => {
                 logger.warn('[UserContext] Safety timeout atingido!');
                 setLoading(false);
             }
-        }, 8000);
+        }, 5000);
 
         return () => {
             mounted = false;
@@ -278,13 +279,12 @@ export const UserProvider = ({ children }) => {
     const login = async (email, password) => {
         setLoading(true);
         try {
-            // Removida redundância de signOut() para acelerar o processo.
-            const { error } = await supabase.auth.signInWithPassword({
-                email,
-                password
-            });
-
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
+            // Busca o perfil diretamente sem depender do onAuthStateChange
+            if (data?.user) {
+                await fetchProfile(data.user).catch(() => {});
+            }
             return { success: true };
         } catch (error) {
             setLoading(false);

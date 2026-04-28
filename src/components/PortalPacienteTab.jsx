@@ -26,6 +26,71 @@ const EMOTION_MAP = {
     feliz:     { emoji: '😄', label: 'Feliz' },
 };
 
+function MoodChart({ moods }) {
+    if (!moods || moods.length < 2) return null;
+
+    const sorted = [...moods].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    const byDay = {};
+    sorted.forEach(m => {
+        const day = new Date(m.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        if (!byDay[day]) byDay[day] = [];
+        byDay[day].push(m.mood_level || 3);
+    });
+
+    const entries = Object.entries(byDay).slice(-14).map(([date, vals]) => ({
+        date,
+        avg: vals.reduce((a, b) => a + b, 0) / vals.length,
+    }));
+
+    if (entries.length < 2) return null;
+
+    const W = 400, H = 80, PAD = 12;
+    const xStep = (W - PAD * 2) / (entries.length - 1);
+    const yScale = (v) => H - PAD - ((v - 1) / 4) * (H - PAD * 2);
+
+    const points = entries.map((e, i) => ({
+        x: PAD + i * xStep,
+        y: yScale(e.avg),
+        avg: e.avg,
+        date: e.date,
+    }));
+
+    const polyline = points.map(p => `${p.x},${p.y}`).join(' ');
+
+    const showAllLabels = entries.length <= 7;
+    const labelIndices = showAllLabels
+        ? entries.map((_, i) => i)
+        : [0, Math.floor(entries.length / 2), entries.length - 1];
+
+    return (
+        <div className="px-4 pt-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <p className="text-[10px] text-slate-400 mb-2 font-bold uppercase tracking-widest">Evolução do Humor</p>
+            <svg viewBox={`0 0 ${W} ${H}`} className="w-full overflow-visible" style={{ height: 70 }}>
+                {[1, 2, 3, 4, 5].map(v => (
+                    <line key={v} x1={PAD} y1={yScale(v)} x2={W - PAD} y2={yScale(v)}
+                        stroke="#f1f5f9" strokeWidth="1" />
+                ))}
+                <polyline points={polyline} fill="none" stroke="#8b5cf6"
+                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                {points.map((p, i) => {
+                    const color = MOOD_MAP[Math.round(p.avg)]?.color || '#8b5cf6';
+                    return (
+                        <g key={i}>
+                            <circle cx={p.x} cy={p.y} r={4} fill={color} stroke="white" strokeWidth="1.5" />
+                            <title>{p.date}: {MOOD_MAP[Math.round(p.avg)]?.label || p.avg.toFixed(1)}</title>
+                        </g>
+                    );
+                })}
+            </svg>
+            <div className="flex justify-between mt-0.5">
+                {labelIndices.map(i => (
+                    <span key={i} className="text-[9px] text-slate-300">{entries[i].date}</span>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 const PortalPacienteTab = ({ paciente }) => {
     const { user } = useUser();
     const [portalAtivo, setPortalAtivo] = useState(null);
@@ -280,7 +345,8 @@ const PortalPacienteTab = ({ paciente }) => {
                             );
                         })()}
                     </div>
-                    <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
+                    <MoodChart moods={moods} />
+                    <div className="p-4 space-y-2 max-h-72 overflow-y-auto">
                         {moods.length === 0 ? (
                             <div className="flex flex-col items-center py-10 gap-3">
                                 <span className="material-symbols-outlined text-4xl text-slate-200">mood_bad</span>

@@ -38,6 +38,8 @@ const PatientLayout = () => {
                     margin-left: 180px;
                     flex: 1;
                     min-height: 100vh;
+                    min-width: 0;
+                    overflow-x: hidden;
                 }
                 /* ── Bottom nav: escondido por padrão (desktop) ── */
                 .ps-bottom-nav { display: none !important; }
