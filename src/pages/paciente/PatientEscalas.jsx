@@ -42,6 +42,7 @@ const PatientEscalas = () => {
     const [escalas, setEscalas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [respondendoId, setRespondendoId] = useState(null);
+    const [viewingResultId, setViewingResultId] = useState(null);
 
     useEffect(() => {
         if (!user?.id) return;
@@ -137,9 +138,12 @@ const PatientEscalas = () => {
                             key={escala.id}
                             escala={escala}
                             isResponding={respondendoId === escala.id}
-                            onStartResponder={() => setRespondendoId(escala.id)}
+                            isViewingResult={viewingResultId === escala.id}
+                            onStartResponder={() => { setRespondendoId(escala.id); setViewingResultId(null); }}
                             onCancelar={() => setRespondendoId(null)}
                             onRespondida={handleRespondida}
+                            onViewResult={() => setViewingResultId(escala.id)}
+                            onCloseResult={() => setViewingResultId(null)}
                         />
                     ))}
                 </div>
@@ -156,7 +160,7 @@ const PatientEscalas = () => {
     );
 };
 
-const EscalaCard = ({ escala, isResponding, onStartResponder, onCancelar, onRespondida }) => {
+const EscalaCard = ({ escala, isResponding, isViewingResult, onStartResponder, onCancelar, onRespondida, onViewResult, onCloseResult }) => {
     const isPendente = escala.status !== 'respondida';
 
     // Lookup catalog para dados enriquecidos (descricao, emoji, categoria)
@@ -304,6 +308,36 @@ const EscalaCard = ({ escala, isResponding, onStartResponder, onCancelar, onResp
                             Responder Agora
                         </button>
                     )}
+                    {!isPendente && !isViewingResult && (
+                        <button
+                            onClick={onViewResult}
+                            style={{
+                                height: 36, padding: '0 16px', borderRadius: 10, border: 0,
+                                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                                color: '#fff', fontWeight: 700, fontSize: 12,
+                                cursor: 'pointer', fontFamily: 'inherit',
+                                display: 'flex', alignItems: 'center', gap: 6,
+                            }}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>bar_chart</span>
+                            Ver Minhas Respostas
+                        </button>
+                    )}
+                    {!isPendente && isViewingResult && (
+                        <button
+                            onClick={onCloseResult}
+                            style={{
+                                height: 36, padding: '0 16px', borderRadius: 10,
+                                border: '1.5px solid #e2e8f0', background: '#fff',
+                                color: '#94a3b8', fontWeight: 600, fontSize: 12,
+                                cursor: 'pointer', fontFamily: 'inherit',
+                                display: 'flex', alignItems: 'center', gap: 6,
+                            }}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>close</span>
+                            Fechar
+                        </button>
+                    )}
                     {isResponding && (
                         <button
                             onClick={onCancelar}
@@ -329,6 +363,11 @@ const EscalaCard = ({ escala, isResponding, onStartResponder, onCancelar, onResp
                     questions={questions}
                     onRespondida={onRespondida}
                 />
+            )}
+
+            {/* Painel de resultado */}
+            {!isPendente && isViewingResult && (
+                <EscalaResultadoPanel escala={escala} questions={questions} cat={cat} />
             )}
         </div>
     );
@@ -364,6 +403,104 @@ function friendlyTitle(cat) {
     };
     return map[cat.id] || cat.nome;
 }
+
+function calcScore(answers, cat) {
+    if (!cat?.scoring || !answers) return null;
+    const { method, max, reverseItems } = cat.scoring;
+    const total = Object.entries(answers).reduce((sum, [idx, val]) => {
+        let v = typeof val === 'number' ? val : parseInt(val) ?? 0;
+        if (method === 'cesd' && reverseItems?.includes(parseInt(idx))) v = 3 - v;
+        return sum + v;
+    }, 0);
+    const range = cat.scoring.ranges?.find(r => total >= r.min && total <= r.max);
+    return { total, max, range };
+}
+
+const EscalaResultadoPanel = ({ escala, questions, cat }) => {
+    const score = calcScore(escala.answers, cat);
+    const opts = escala.response_options || cat?.response_options || [];
+    const labels = escala.response_labels || cat?.response_labels || opts;
+
+    return (
+        <div style={{
+            borderTop: '1px solid #f1f5f9',
+            padding: '20px 20px 24px',
+            background: '#faf9ff',
+            animation: 'slideDown 0.2s ease',
+        }}>
+            {/* Score badge */}
+            {score && (
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: 16,
+                    background: score.range?.bg || '#f8fafc',
+                    border: `1.5px solid ${score.range?.color || '#e2e8f0'}33`,
+                    borderRadius: 14, padding: '14px 18px', marginBottom: 20,
+                }}>
+                    <div style={{ fontSize: 36, fontWeight: 900, color: score.range?.color || '#64748b', lineHeight: 1 }}>
+                        {score.total}
+                    </div>
+                    <div>
+                        <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#94a3b8', margin: '0 0 2px' }}>
+                            Pontuação total · máx. {score.max}
+                        </p>
+                        <p style={{ fontSize: 15, fontWeight: 800, color: score.range?.color || '#1e293b', margin: 0 }}>
+                            {score.range?.label || 'N/A'}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Text answer */}
+            {!questions?.length && escala.answers?.texto && (
+                <div style={{ background: '#fff', borderRadius: 12, padding: '14px 16px', border: '1px solid #e2e8f0' }}>
+                    <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
+                        {escala.answers.texto}
+                    </p>
+                </div>
+            )}
+
+            {/* Questions + answers */}
+            {questions?.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {questions.map((q, i) => {
+                        const hasCustomOpts = typeof q === 'object' && Array.isArray(q.options);
+                        const answerIdx = escala.answers?.[i];
+                        const answered = answerIdx !== null && answerIdx !== undefined;
+                        const answerLabel = hasCustomOpts
+                            ? q.options?.[answerIdx]
+                            : (labels[answerIdx] ?? `Opção ${answerIdx}`);
+                        const answerVal = hasCustomOpts ? null : opts[answerIdx];
+                        return (
+                            <div key={i} style={{ display: 'flex', gap: 10 }}>
+                                <span style={{ fontSize: 12, fontWeight: 800, color: '#7c3aed', marginTop: 1, minWidth: 18, flexShrink: 0 }}>{i + 1}.</span>
+                                <div style={{ flex: 1 }}>
+                                    <p style={{ fontSize: 13, fontWeight: 600, color: '#1e1b4b', margin: '0 0 6px', lineHeight: 1.4 }}>
+                                        {q.text || q.texto || q}
+                                    </p>
+                                    {answered ? (
+                                        <div style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: 8,
+                                            background: 'rgba(109,40,217,0.08)',
+                                            border: '1px solid rgba(109,40,217,0.2)',
+                                            borderRadius: 8, padding: '5px 12px',
+                                        }}>
+                                            {answerVal !== null && answerVal !== undefined && (
+                                                <span style={{ fontSize: 14, fontWeight: 900, color: '#6d28d9' }}>{answerVal}</span>
+                                            )}
+                                            <span style={{ fontSize: 12, color: '#4c1d95', fontWeight: 600 }}>{answerLabel}</span>
+                                        </div>
+                                    ) : (
+                                        <span style={{ fontSize: 11, color: '#cbd5e1', fontStyle: 'italic' }}>Não respondida</span>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const EscalaRespostaForm = ({ escala, questions, onRespondida }) => {
     const hasQuestions = questions && questions.length > 0;

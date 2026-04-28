@@ -48,10 +48,7 @@ class SupabaseDB {
             .eq('id', id)
             .single();
 
-        if (error) {
-            if (error.code === 'PGRST116') return null;
-            throw error;
-        }
+        if (error) return null;
         return this._mapKeysFromDB(data);
     }
 
@@ -439,6 +436,8 @@ class SupabaseDB {
             'plan_payment_method': 'planoFormaPagamento',
             'plan_status': 'planoStatus',
             'plan_value': 'planoValor',
+            'reminder_enabled': 'reminderEnabled',
+            'reminder_sent': 'reminderSent',
             // TCLE specific
             'paciente_iniciais': 'pacienteIniciais',
             'paciente_cor': 'pacienteCor',

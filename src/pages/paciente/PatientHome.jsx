@@ -12,6 +12,19 @@ const MOODS = [
     { value: 5, emoji: '🤩', label: 'Muito bem' },
 ];
 
+const EMOTIONS = [
+    { key: 'ansioso',    emoji: '😰', label: 'Ansioso(a)' },
+    { key: 'triste',     emoji: '😔', label: 'Triste' },
+    { key: 'raiva',      emoji: '😠', label: 'Raiva' },
+    { key: 'irritado',   emoji: '😤', label: 'Irritado(a)' },
+    { key: 'assustado',  emoji: '😨', label: 'Assustado(a)' },
+    { key: 'cansado',    emoji: '😴', label: 'Cansado(a)' },
+    { key: 'confuso',    emoji: '😕', label: 'Confuso(a)' },
+    { key: 'calmo',      emoji: '😌', label: 'Calmo(a)' },
+    { key: 'grato',      emoji: '🙏', label: 'Grato(a)' },
+    { key: 'feliz',      emoji: '😄', label: 'Feliz' },
+];
+
 const DICAS = [
     'Pequenos passos geram grandes mudanças.',
     'Cuidar de si mesmo é um ato de coragem.',
@@ -55,6 +68,7 @@ const PatientHome = () => {
     const [debts, setDebts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedMood, setSelectedMood] = useState(null);
+    const [selectedEmotion, setSelectedEmotion] = useState(null);
     const [note, setNote] = useState('');
     const [saving, setSaving] = useState(false);
 
@@ -116,6 +130,7 @@ const PatientHome = () => {
             id: tempId,
             patient_profile_id: user.id,
             mood_level: selectedMood,
+            emotion: selectedEmotion || null,
             note: note.trim() || null,
             created_at: new Date().toISOString(),
         };
@@ -126,12 +141,14 @@ const PatientHome = () => {
         setMoodLogs(prev => [tempLog, ...prev]);
         setTodayLogs(prev => [tempLog, ...prev]);
         setSelectedMood(null);
+        setSelectedEmotion(null);
         setNote('');
 
         try {
             const { data, error } = await supabase.from('patient_mood_logs').insert([{
                 patient_profile_id: user.id,
                 mood_level: tempLog.mood_level,
+                emotion: tempLog.emotion,
                 note: tempLog.note,
             }]).select().single();
             if (error) throw error;
@@ -146,6 +163,7 @@ const PatientHome = () => {
             setMoodLogs(prevMoodLogs);
             setTodayLogs(prevTodayLogs);
             setSelectedMood(tempLog.mood_level);
+            setSelectedEmotion(tempLog.emotion || null);
             setNote(tempLog.note || '');
             showToast('Erro ao enviar.', 'error');
         } finally {
@@ -175,6 +193,13 @@ const PatientHome = () => {
     const pendingCount = tasks.filter(t => !t.completed).length;
     const completedCount = tasks.filter(t => t.completed).length;
 
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
+
     if (loading) return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span className="material-symbols-outlined animate-spin text-violet-600" style={{ fontSize: 40 }}>autorenew</span>
@@ -182,13 +207,13 @@ const PatientHome = () => {
     );
 
     return (
-        <div style={{ minHeight: '100vh', background: '#f1f5f9', padding: '36px 32px', fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ minHeight: '100vh', background: '#f1f5f9', padding: isMobile ? '20px 16px' : '36px 32px', fontFamily: "'Inter', sans-serif" }}>
             <div style={{ maxWidth: 1100, margin: '0 auto' }}>
 
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isMobile ? 20 : 28, flexWrap: 'wrap', gap: 10 }}>
                     <div>
-                        <h1 style={{ fontSize: 36, fontWeight: 900, fontStyle: 'italic', color: '#1e1b4b', margin: 0, lineHeight: 1.1 }}>
+                        <h1 style={{ fontSize: isMobile ? 26 : 36, fontWeight: 900, fontStyle: 'italic', color: '#1e1b4b', margin: 0, lineHeight: 1.1 }}>
                             {(() => {
                                 const h = today.getHours();
                                 if (h < 12) return 'Bom dia';
@@ -196,7 +221,7 @@ const PatientHome = () => {
                                 return 'Boa noite';
                             })()}, {firstName} ! 👋
                         </h1>
-                        <p style={{ color: '#94a3b8', marginTop: 6, fontSize: 14 }}>
+                        <p style={{ color: '#94a3b8', marginTop: 6, fontSize: isMobile ? 13 : 14 }}>
                             Sua jornada de hoje começa aqui. Como você está se sentindo?
                         </p>
                     </div>
@@ -209,109 +234,216 @@ const PatientHome = () => {
                 </div>
 
                 {/* Main grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 280px', gap: 20 }}>
 
                     {/* LEFT COLUMN */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
                         {/* Mood card */}
                         <div style={card}>
-                            <h2 style={{ fontWeight: 800, fontSize: 16, color: '#1e1b4b', marginBottom: 4 }}>
-                                Como você está se sentindo agora?
-                            </h2>
-                            <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 20 }}>
-                                Seu terapeuta poderá acompanhar sua evolução emocional através deste registro diário.
-                            </p>
+                            {/* Card header */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                                <div style={{
+                                    width: 38, height: 38, borderRadius: 12,
+                                    background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                                }}>
+                                    <span className="material-symbols-outlined" style={{ color: '#fff', fontSize: 20 }}>mood</span>
+                                </div>
+                                <div>
+                                    <h2 style={{ fontWeight: 800, fontSize: 15, color: '#1e1b4b', margin: 0 }}>
+                                        Como você está se sentindo?
+                                    </h2>
+                                    <p style={{ color: '#94a3b8', fontSize: 12, margin: 0 }}>
+                                        Seu terapeuta acompanha sua evolução emocional
+                                    </p>
+                                </div>
+                            </div>
 
-                            {/* Emoji row */}
-                            <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-                                {MOODS.map(m => (
+                            {/* PASSO 1 — Intensidade */}
+                            <div style={{ marginBottom: 18 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                                    <span style={{
+                                        width: 20, height: 20, borderRadius: '50%', background: '#7c3aed',
+                                        color: '#fff', fontSize: 11, fontWeight: 800,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                                    }}>1</span>
+                                    <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>
+                                        Escolha como você está — toque em um emoji
+                                    </span>
+                                </div>
+                                <div style={{ display: 'flex', gap: isMobile ? 6 : 10 }}>
+                                    {MOODS.map(m => {
+                                        const active = selectedMood === m.value;
+                                        const dimmed = selectedMood && !active;
+                                        return (
+                                            <button
+                                                key={m.value}
+                                                onClick={() => setSelectedMood(active ? null : m.value)}
+                                                style={{
+                                                    flex: 1, borderRadius: 14, border: 'none', padding: isMobile ? '10px 0' : '12px 0',
+                                                    background: active ? '#f5f3ff' : '#f8fafc',
+                                                    outline: active ? '2px solid #7c3aed' : '2px solid transparent',
+                                                    cursor: 'pointer', transition: 'all 0.15s',
+                                                    filter: dimmed ? 'grayscale(1) opacity(0.4)' : 'none',
+                                                    transform: active ? 'scale(1.06)' : 'scale(1)',
+                                                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                                                }}
+                                            >
+                                                <span style={{ fontSize: isMobile ? 28 : 30 }}>{m.emoji}</span>
+                                                <span style={{
+                                                    fontSize: 9, fontWeight: active ? 800 : 500,
+                                                    color: active ? '#6d28d9' : '#94a3b8',
+                                                    textTransform: 'uppercase', letterSpacing: '0.04em',
+                                                    lineHeight: 1.2, textAlign: 'center',
+                                                }}>{m.label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* PASSO 2 — Emoção específica */}
+                            {selectedMood && (
+                                <div style={{ marginBottom: 18 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                                        <span style={{
+                                            width: 20, height: 20, borderRadius: '50%', background: '#7c3aed',
+                                            color: '#fff', fontSize: 11, fontWeight: 800,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                                        }}>2</span>
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>
+                                            Qual emoção você está sentindo?{' '}
+                                            <span style={{ fontWeight: 400, color: '#94a3b8' }}>(opcional)</span>
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 6 : 7 }}>
+                                        {EMOTIONS.map(e => {
+                                            const active = selectedEmotion === e.key;
+                                            return (
+                                                <button
+                                                    key={e.key}
+                                                    onClick={() => setSelectedEmotion(active ? null : e.key)}
+                                                    style={{
+                                                        display: 'flex', alignItems: 'center', gap: 5,
+                                                        padding: isMobile ? '8px 12px' : '7px 13px',
+                                                        borderRadius: 20, border: 'none',
+                                                        background: active ? '#f5f3ff' : '#f1f5f9',
+                                                        outline: active ? '2px solid #7c3aed' : '2px solid transparent',
+                                                        color: active ? '#6d28d9' : '#64748b',
+                                                        fontWeight: active ? 700 : 500,
+                                                        fontSize: isMobile ? 13 : 12, cursor: 'pointer',
+                                                        transition: 'all 0.15s', fontFamily: 'inherit',
+                                                    }}
+                                                >
+                                                    <span style={{ fontSize: isMobile ? 18 : 16 }}>{e.emoji}</span>
+                                                    {e.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PASSO 3 — Nota e envio */}
+                            {selectedMood && (
+                                <div style={{ marginBottom: 4 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                                        <span style={{
+                                            width: 20, height: 20, borderRadius: '50%', background: '#7c3aed',
+                                            color: '#fff', fontSize: 11, fontWeight: 800,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                                        }}>3</span>
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>
+                                            Quer escrever algo?{' '}
+                                            <span style={{ fontWeight: 400, color: '#94a3b8' }}>(opcional)</span>
+                                        </span>
+                                    </div>
+                                    <div style={{ position: 'relative', marginBottom: 12 }}>
+                                        <span className="material-symbols-outlined" style={{
+                                            position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                                            color: '#cbd5e1', fontSize: 18,
+                                        }}>stylus_note</span>
+                                        <input
+                                            type="text"
+                                            value={note}
+                                            onChange={e => setNote(e.target.value)}
+                                            placeholder="Ex: Estou nervoso com o trabalho hoje..."
+                                            style={{
+                                                width: '100%', height: isMobile ? 48 : 44, paddingLeft: 38, paddingRight: 14,
+                                                border: '1.5px solid #e2e8f0', borderRadius: 12,
+                                                background: '#f8fafc', fontSize: 13, color: '#374151',
+                                                outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
+                                            }}
+                                            onKeyDown={e => e.key === 'Enter' && handleSendMood()}
+                                        />
+                                    </div>
                                     <button
-                                        key={m.value}
-                                        onClick={() => setSelectedMood(m.value)}
-                                        title={m.label}
+                                        onClick={handleSendMood}
+                                        disabled={saving}
                                         style={{
-                                            flex: 1, height: 56, borderRadius: 14, border: 'none',
-                                            background: selectedMood === m.value ? '#f5f3ff' : '#f8fafc',
-                                            outline: selectedMood === m.value ? '2px solid #7c3aed' : '2px solid transparent',
-                                            cursor: 'pointer', fontSize: 28, transition: 'all 0.15s',
-                                            filter: selectedMood && selectedMood !== m.value ? 'grayscale(1) opacity(0.45)' : 'none',
-                                            transform: selectedMood === m.value ? 'scale(1.08)' : 'scale(1)',
+                                            width: '100%', height: isMobile ? 52 : 46, borderRadius: 14, border: 0,
+                                            background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+                                            color: '#fff', fontWeight: 800, fontSize: 14,
+                                            letterSpacing: '0.05em', cursor: 'pointer',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                                            fontFamily: 'inherit', transition: 'opacity 0.15s',
+                                            opacity: saving ? 0.7 : 1,
                                         }}
                                     >
-                                        {m.emoji}
+                                        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>send</span>
+                                        {saving ? 'Enviando...' : 'Registrar meu humor'}
                                     </button>
-                                ))}
-                            </div>
-
-                            {/* Note + Send */}
-                            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
-                                <div style={{ flex: 1, position: 'relative' }}>
-                                    <span className="material-symbols-outlined" style={{
-                                        position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-                                        color: '#cbd5e1', fontSize: 18,
-                                    }}>stylus_note</span>
-                                    <input
-                                        type="text"
-                                        value={note}
-                                        onChange={e => setNote(e.target.value)}
-                                        placeholder="Quer contar o porquê? Escreva algo breve aqui..."
-                                        style={{
-                                            width: '100%', height: 44, paddingLeft: 38, paddingRight: 14,
-                                            border: '1.5px solid #e2e8f0', borderRadius: 12,
-                                            background: '#f8fafc', fontSize: 13, color: '#374151',
-                                            outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
-                                        }}
-                                        onKeyDown={e => e.key === 'Enter' && handleSendMood()}
-                                    />
                                 </div>
-                                <button
-                                    onClick={handleSendMood}
-                                    disabled={!selectedMood || saving}
-                                    style={{
-                                        height: 44, padding: '0 20px', borderRadius: 12, border: 0,
-                                        background: selectedMood ? '#f1f5f9' : '#f8fafc',
-                                        color: selectedMood ? '#374151' : '#cbd5e1',
-                                        fontWeight: 700, fontSize: 12, letterSpacing: '0.06em',
-                                        cursor: selectedMood ? 'pointer' : 'not-allowed',
-                                        display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit',
-                                        transition: 'all 0.15s',
-                                    }}
-                                >
-                                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>send</span>
-                                    MANDAR
-                                </button>
-                            </div>
+                            )}
+
+                            {/* Hint quando nenhum mood selecionado */}
+                            {!selectedMood && (
+                                <div style={{
+                                    textAlign: 'center', padding: '8px 0 4px',
+                                    color: '#cbd5e1', fontSize: 12, fontWeight: 500,
+                                }}>
+                                    👆 Toque em um emoji acima para começar
+                                </div>
+                            )}
 
                             {/* Today's logs */}
                             {todayLogs.length > 0 && (
                                 <div style={{ marginTop: 20, borderTop: '1px solid #f1f5f9', paddingTop: 16 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                                         <span className="material-symbols-outlined" style={{ color: '#7c3aed', fontSize: 18 }}>history</span>
                                         <span style={{ fontSize: 11, fontWeight: 800, color: '#64748b', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                                            Registros do dia
-                                        </span>
-                                        <span style={{ fontSize: 11, color: '#94a3b8' }}>
-                                            · Clique em um registro para editar ou visualizar o que foi enviado
+                                            Já registrado hoje
                                         </span>
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                         {todayLogs.map(log => {
                                             const m = MOODS.find(x => x.value === log.mood_level) || MOODS[2];
+                                            const emo = log.emotion ? EMOTIONS.find(e => e.key === log.emotion) : null;
                                             const time = new Date(log.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                                             return (
                                                 <div key={log.id} style={{
                                                     display: 'flex', alignItems: 'center', gap: 12,
-                                                    padding: '10px 14px', borderRadius: 12, background: '#f8fafc',
+                                                    padding: '12px 14px', borderRadius: 12, background: '#f8fafc',
                                                     border: '1px solid #f1f5f9',
                                                 }}>
-                                                    <span style={{ fontSize: 22 }}>{m.emoji}</span>
+                                                    <span style={{ fontSize: 26 }}>{m.emoji}</span>
                                                     <div style={{ flex: 1 }}>
-                                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8' }}>{time}</span>
-                                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginLeft: 8 }}>{m.label}</span>
-                                                        {log.note && <p style={{ fontSize: 12, color: '#94a3b8', margin: '2px 0 0', fontStyle: 'italic' }}>"{log.note}"</p>}
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                                                            <span style={{ fontSize: 13, fontWeight: 800, color: '#374151' }}>{m.label}</span>
+                                                            {emo && (
+                                                                <span style={{
+                                                                    display: 'inline-flex', alignItems: 'center', gap: 3,
+                                                                    padding: '3px 9px', borderRadius: 10, fontSize: 11,
+                                                                    background: '#f5f3ff', color: '#6d28d9', fontWeight: 700,
+                                                                }}>
+                                                                    {emo.emoji} {emo.label}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <span style={{ fontSize: 11, color: '#94a3b8' }}>{time}</span>
+                                                        {log.note && <p style={{ fontSize: 12, color: '#64748b', margin: '3px 0 0', fontStyle: 'italic' }}>"{log.note}"</p>}
                                                     </div>
-                                                    <span className="material-symbols-outlined" style={{ color: '#cbd5e1', fontSize: 16 }}>edit_note</span>
                                                 </div>
                                             );
                                         })}

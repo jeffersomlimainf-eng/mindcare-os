@@ -35,6 +35,8 @@ const DeclaracaoComparecimento = () => {
     const hojeFormatado = hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
+    const cidadeSalva = localStorage.getItem('decl_local_emissao') || '';
+
     const [dados, setDados] = useState({
         pacienteId: '',
         pacienteNome: '',
@@ -48,7 +50,7 @@ const DeclaracaoComparecimento = () => {
         horaInicio: horaAtual,
         horaFim: '',
         finalidade: 'Sessão de Psicoterapia',
-        localEmissao: '',
+        localEmissao: cidadeSalva,
         observacoes: '',
         status: 'Rascunho',
         documentoId: '',
@@ -190,13 +192,36 @@ const DeclaracaoComparecimento = () => {
     };
 
     const handleChange = (campo, valor) => {
-        setDados(prev => ({ ...prev, [campo]: valor }));
+        setDados(prev => {
+            const next = { ...prev, [campo]: valor };
+            // Auto-calcular Hora Fim quando Hora Início mudar e Hora Fim estiver vazia
+            if (campo === 'horaInicio' && !prev.horaFim && valor) {
+                const [h, m] = valor.split(':').map(Number);
+                const fim = new Date(0, 0, 0, h, m + 50);
+                next.horaFim = `${String(fim.getHours()).padStart(2,'0')}:${String(fim.getMinutes()).padStart(2,'0')}`;
+            }
+            // Memorizar cidade para próximas declarações
+            if (campo === 'localEmissao') {
+                localStorage.setItem('decl_local_emissao', valor);
+            }
+            return next;
+        });
     };
 
     const handleSalvar = (novoStatus) => {
         if (!dados.pacienteId) {
             showToast('Selecione um paciente antes de salvar.', 'warning');
             return;
+        }
+        if (novoStatus === 'Finalizado') {
+            if (!dados.horaInicio) {
+                showToast('Informe a Hora de Início antes de finalizar.', 'warning');
+                return;
+            }
+            if (!dados.localEmissao.trim()) {
+                showToast('Informe o Local de Emissão (cidade) antes de finalizar.', 'warning');
+                return;
+            }
         }
 
         setSalvando(true);
@@ -369,14 +394,7 @@ const DeclaracaoComparecimento = () => {
                                             {dados.horaFim ? <> às <span className="font-black">{dados.horaFim}</span></> : null}</>
                                     )}
                                     , para{' '}
-                                    <input
-                                        type="text"
-                                        value={dados.finalidade}
-                                        onChange={e => handleChange('finalidade', e.target.value)}
-                                        className="font-black border-b border-dotted border-slate-300 focus:border-emerald-500 outline-none bg-transparent print:hidden"
-                                        style={{ width: `${Math.max(dados.finalidade.length, 20) + 2}ch` }}
-                                        readOnly={isFinalizado}
-                                    /><span className="hidden print:inline font-black border-b border-transparent">{dados.finalidade}</span>.
+                                    <span className="font-black">{dados.finalidade}</span>.
                                 </p>
 
                                 {dados.observacoes ? (
@@ -524,13 +542,20 @@ const DeclaracaoComparecimento = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Hora Fim</label>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">
+                                            Hora Fim
+                                        </label>
                                         <input
                                             type="time"
                                             value={dados.horaFim}
                                             onChange={e => handleChange('horaFim', e.target.value)}
                                             className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                                         />
+                                        {dados.horaFim && dados.horaInicio && (
+                                            <p className="text-[10px] text-emerald-600 font-medium mt-1">
+                                                ⚡ Auto-calculado (50 min)
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                                 <div>
@@ -544,6 +569,9 @@ const DeclaracaoComparecimento = () => {
                                         <option value="Avaliação Psicológica">Avaliação Psicológica</option>
                                         <option value="Consulta Psicológica">Consulta Psicológica</option>
                                         <option value="Acompanhamento Terapêutico">Acompanhamento Terapêutico</option>
+                                        <option value="Orientação Familiar">Orientação Familiar</option>
+                                        <option value="Triagem Psicológica">Triagem Psicológica</option>
+                                        <option value="Plantão Psicológico">Plantão Psicológico</option>
                                         <option value="Orientação Profissional">Orientação Profissional</option>
                                         <option value="Atendimento de Urgência">Atendimento de Urgência</option>
                                     </select>

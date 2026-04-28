@@ -284,6 +284,7 @@ const Agenda = () => {
             obs: dados.obs,
             recorrencia: dados.recorrencia,
             status: dados.status || 'confirmado',
+            reminderEnabled: dados.reminderEnabled !== false,
         };
 
         const qtd = parseInt(dados.qtdReplicar) || 1;

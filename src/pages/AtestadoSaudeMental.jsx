@@ -22,6 +22,8 @@ const AtestadoSaudeMental = () => {
     const isNovo = id === 'novo';
     const atestExistente = !isNovo ? getAtestadoById(id) : null;
 
+    const cidadeSalva = localStorage.getItem('decl_local_emissao') || '';
+    const [localEmissao, setLocalEmissao] = useState(cidadeSalva);
     const [salvando, setSalvando] = useState(false);
     const [pacienteBusca, setPacienteBusca] = useState('');
     const [showDropdown, setShowDropdown] = useState(() => {
@@ -162,6 +164,18 @@ const AtestadoSaudeMental = () => {
         setShowDropdown(false);
     };
 
+    const formatBirthDate = (dateStr) => {
+        if (!dateStr || dateStr === '—') return '—';
+        const d = new Date(dateStr + 'T00:00:00');
+        if (isNaN(d.getTime())) return dateStr;
+        return d.toLocaleDateString('pt-BR');
+    };
+
+    const handleLocalEmissaoChange = (valor) => {
+        setLocalEmissao(valor);
+        localStorage.setItem('decl_local_emissao', valor);
+    };
+
     const handleChange = (campo, valor) => {
         setDados(prev => ({ ...prev, [campo]: valor }));
     };
@@ -210,7 +224,7 @@ const AtestadoSaudeMental = () => {
                 paciente: {
                     nome: dados.pacienteNome,
                     cpf: dados.pacienteCpf,
-                    nascimento: dados.pacienteDataNascimento ? new Date(dados.pacienteDataNascimento).toLocaleDateString('pt-BR') : '—'
+                    nascimento: formatBirthDate(dados.pacienteDataNascimento)
                 },
                 dataEmissao: new Date().toLocaleDateString('pt-BR'),
                 secoes: [
@@ -329,7 +343,7 @@ const AtestadoSaudeMental = () => {
                                 </div>
                                 <div>
                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Data de Nascimento</p>
-                                    <p className="text-sm font-bold text-slate-700">{dados.pacienteDataNascimento || '—'}</p>
+                                    <p className="text-sm font-bold text-slate-700">{formatBirthDate(dados.pacienteDataNascimento)}</p>
                                 </div>
                                 <div>
                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Data de Emissão</p>
@@ -369,7 +383,7 @@ const AtestadoSaudeMental = () => {
                             {dados.observacoes && <p>{dados.observacoes}</p>}
                         </div>
 
-                        <p className="text-sm text-right mt-12 mb-16">Paraná, {hojeExtenso}</p>
+                        <p className="text-sm text-right mt-12 mb-16">{localEmissao || 'Local'}, {hojeExtenso}</p>
 
                         <div className="flex flex-col items-center">
                             <div className="w-80 border-t-2 border-slate-800 pt-4 text-center">
@@ -448,9 +462,14 @@ const AtestadoSaudeMental = () => {
                                         <option value="Aptidão psicológica">Aptidão psicológica</option>
                                         <option value="Aptidão para trabalho">Aptidão para trabalho</option>
                                         <option value="Aptidão para porte de arma">Aptidão para porte de arma</option>
-                                        <option value="Aptidão para concurso">Aptidão para concurso</option>
+                                        <option value="Aptidão para concurso público">Aptidão para concurso público</option>
                                         <option value="Afastamento por saúde mental">Afastamento por saúde mental</option>
                                         <option value="Acompanhamento psicológico">Acompanhamento psicológico</option>
+                                        <option value="Capacidade para atos civis">Capacidade para atos civis</option>
+                                        <option value="Laudo para guarda/tutela">Laudo para guarda/tutela</option>
+                                        <option value="Laudo para internação voluntária">Laudo para internação voluntária</option>
+                                        <option value="Avaliação para adoção">Avaliação para adoção</option>
+                                        <option value="Fins previdenciários (INSS)">Fins previdenciários (INSS)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -460,6 +479,17 @@ const AtestadoSaudeMental = () => {
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Dias de Afastamento</label>
                                     <input type="number" value={dados.diasAfastamento} onChange={e => handleChange('diasAfastamento', e.target.value)} className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none" placeholder="Ex: 5" />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Local de Emissão</label>
+                                    <input
+                                        type="text"
+                                        value={localEmissao}
+                                        onChange={e => handleLocalEmissaoChange(e.target.value)}
+                                        className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
+                                        placeholder="Ex: Curitiba"
+                                    />
+                                    <p className="text-[9px] text-slate-400 mt-1">💾 Salvo automaticamente</p>
                                 </div>
                             </div>
                         </div>

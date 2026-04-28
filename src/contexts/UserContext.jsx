@@ -174,9 +174,21 @@ export const UserProvider = ({ children }) => {
 
         } catch (error) {
             logger.error("Erro Supabase Profile:", error);
-            await supabase.auth.signOut().catch(() => {});
-            clearCachedProfile();
-            setUser(defaultUser);
+            // Só desloga em erros de autenticação real (JWT inválido, expirado, sem permissão)
+            // Erros transitórios de rede/banco NÃO devem deslogar o usuário
+            const isAuthError = error?.status === 401 || error?.status === 403
+                || error?.message?.includes('JWT')
+                || error?.message?.includes('invalid token')
+                || error?.message?.includes('token expired');
+            if (isAuthError) {
+                await supabase.auth.signOut().catch(() => {});
+                clearCachedProfile();
+                setUser(defaultUser);
+            } else {
+                // Mantém perfil em cache para não derrubar dados por erro transitório
+                const cached = getCachedProfile();
+                if (cached) setUser(cached);
+            }
             return null;
         } finally {
             setLoading(false);

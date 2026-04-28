@@ -6,11 +6,24 @@ import { ESCALAS_RAPIDAS, ESCALAS_CATALOG } from '../data/escalasData';
 import { logger } from '../utils/logger';
 
 const MOOD_MAP = {
-    1: { emoji: '😢', label: 'Muito mal' },
-    2: { emoji: '😐', label: 'Mal' },
-    3: { emoji: '🙂', label: 'Neutro' },
-    4: { emoji: '😊', label: 'Bem' },
-    5: { emoji: '🤩', label: 'Muito bem' },
+    1: { emoji: '😢', label: 'Muito mal',  color: '#ef4444', bg: '#fef2f2' },
+    2: { emoji: '😐', label: 'Mal',        color: '#f97316', bg: '#fff7ed' },
+    3: { emoji: '🙂', label: 'Neutro',     color: '#eab308', bg: '#fefce8' },
+    4: { emoji: '😊', label: 'Bem',        color: '#22c55e', bg: '#f0fdf4' },
+    5: { emoji: '🤩', label: 'Muito bem',  color: '#8b5cf6', bg: '#f5f3ff' },
+};
+
+const EMOTION_MAP = {
+    ansioso:   { emoji: '😰', label: 'Ansioso(a)' },
+    triste:    { emoji: '😔', label: 'Triste' },
+    raiva:     { emoji: '😠', label: 'Raiva' },
+    irritado:  { emoji: '😤', label: 'Irritado(a)' },
+    assustado: { emoji: '😨', label: 'Assustado(a)' },
+    cansado:   { emoji: '😴', label: 'Cansado(a)' },
+    confuso:   { emoji: '😕', label: 'Confuso(a)' },
+    calmo:     { emoji: '😌', label: 'Calmo(a)' },
+    grato:     { emoji: '🙏', label: 'Grato(a)' },
+    feliz:     { emoji: '😄', label: 'Feliz' },
 };
 
 const PortalPacienteTab = ({ paciente }) => {
@@ -29,6 +42,7 @@ const PortalPacienteTab = ({ paciente }) => {
     const [editingTask, setEditingTask] = useState(null);
     const [taskForm, setTaskForm] = useState({ title: '', description: '', due_date: '' });
     const [saving, setSaving] = useState(false);
+    const [showResultado, setShowResultado] = useState(null);
 
     useEffect(() => {
         if (paciente?.id) fetchPortalData();
@@ -59,7 +73,7 @@ const PortalPacienteTab = ({ paciente }) => {
             // Escalas: busca pelo patient_id (não precisa do portal ativo)
             const { data: eData } = await supabase
                 .from('patient_escalas')
-                .select('id, nome, escala_id, status, created_at, answered_at')
+                .select('id, nome, escala_id, status, created_at, answered_at, answers, questions, response_options, response_labels')
                 .eq('patient_id', paciente.id)
                 .order('created_at', { ascending: false });
             setEscalas(eData || []);
@@ -247,29 +261,53 @@ const PortalPacienteTab = ({ paciente }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Monitor de Humor */}
                 <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
-                        <span className="material-symbols-outlined text-violet-500 text-xl">monitoring</span>
-                        <h3 className="font-black text-slate-900 dark:text-white text-sm">Monitor de Humor</h3>
+                    <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-violet-500 text-xl">monitoring</span>
+                            <div>
+                                <h3 className="font-black text-slate-900 dark:text-white text-sm">Monitor de Humor</h3>
+                                <p className="text-[10px] text-slate-400">{moods.length} registro{moods.length !== 1 ? 's' : ''} nos últimos 20</p>
+                            </div>
+                        </div>
+                        {moods.length > 0 && (() => {
+                            const avg = moods.slice(0, 7).reduce((s, m) => s + (m.mood_level || 3), 0) / Math.min(moods.length, 7);
+                            const avgMood = MOOD_MAP[Math.round(avg)] || MOOD_MAP[3];
+                            return (
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold" style={{ background: avgMood.bg, color: avgMood.color }}>
+                                    <span>{avgMood.emoji}</span>
+                                    <span>Média: {avgMood.label}</span>
+                                </div>
+                            );
+                        })()}
                     </div>
-                    <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
+                    <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
                         {moods.length === 0 ? (
                             <div className="flex flex-col items-center py-10 gap-3">
                                 <span className="material-symbols-outlined text-4xl text-slate-200">mood_bad</span>
                                 <p className="text-xs text-slate-400 font-medium">Nenhum registro de humor ainda.</p>
+                                <p className="text-xs text-slate-300 text-center">O paciente ainda não registrou como está se sentindo pelo portal.</p>
                             </div>
                         ) : moods.map(log => {
-                            const mood = MOOD_MAP[log.mood_level] || { emoji: '😐', label: String(log.mood_level) };
+                            const mood = MOOD_MAP[log.mood_level] || { emoji: '😐', label: String(log.mood_level), color: '#94a3b8', bg: '#f8fafc' };
+                            const emo = log.emotion ? EMOTION_MAP[log.emotion] : null;
                             const date = new Date(log.created_at);
+                            const dateLabel = date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
+                            const timeLabel = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                             return (
-                                <div key={log.id} className="flex gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
-                                    <div className="text-2xl leading-none mt-0.5">{mood.emoji}</div>
+                                <div key={log.id} className="flex gap-3 p-3 rounded-2xl border border-slate-100 dark:border-slate-800" style={{ background: mood.bg }}>
+                                    <div className="text-2xl leading-none mt-0.5 shrink-0">{mood.emoji}</div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
-                                            {date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'short' }).toUpperCase()}
-                                        </p>
-                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{mood.emoji} {mood.label}</p>
+                                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                                            <span className="text-xs font-black" style={{ color: mood.color }}>{mood.label}</span>
+                                            {emo && (
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-white/70 text-slate-600">
+                                                    {emo.emoji} {emo.label}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 font-medium capitalize">{dateLabel} · {timeLabel}</p>
                                         {log.note && (
-                                            <p className="text-xs text-slate-400 italic mt-0.5 truncate">"{log.note}"</p>
+                                            <p className="text-xs text-slate-500 italic mt-1">"{log.note}"</p>
                                         )}
                                     </div>
                                 </div>
@@ -363,7 +401,7 @@ const PortalPacienteTab = ({ paciente }) => {
                         Enviar Escala
                     </button>
                 </div>
-                <div className="p-4 space-y-2 max-h-72 overflow-y-auto">
+                <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
                     {escalas.length === 0 ? (
                         <div className="flex flex-col items-center py-10 gap-3">
                             <span className="material-symbols-outlined text-4xl text-slate-200">assignment_late</span>
@@ -371,14 +409,24 @@ const PortalPacienteTab = ({ paciente }) => {
                         </div>
                     ) : escalas.map(e => {
                         const isPendente = e.status !== 'respondida';
-                        const cat = ESCALAS_RAPIDAS.find(c => c.id === e.escala_id);
+                        const cat = ESCALAS_CATALOG.find(c => c.id === e.escala_id);
                         return (
-                            <div key={e.id} className="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                <div className="size-9 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center text-lg shrink-0">
+                            <div key={e.id} className="flex items-start gap-3 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div className="size-9 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center text-lg shrink-0 mt-0.5">
                                     {cat?.emoji || '📋'}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{e.nome}</p>
+                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{e.nome}</p>
+                                        {cat?.categoria && (
+                                            <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-violet-50 dark:bg-violet-900/30 text-violet-500">
+                                                {cat.categoria}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {cat?.descricao && (
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-1">{cat.descricao}</p>
+                                    )}
                                     <p className="text-[10px] text-slate-400">
                                         Enviada em {new Date(e.created_at).toLocaleDateString('pt-BR')}
                                         {e.answered_at && ` · Respondida em ${new Date(e.answered_at).toLocaleDateString('pt-BR')}`}
@@ -391,6 +439,16 @@ const PortalPacienteTab = ({ paciente }) => {
                                 }`}>
                                     {isPendente ? 'Pendente' : 'Respondida'}
                                 </span>
+                                {!isPendente && (
+                                    <button
+                                        onClick={() => setShowResultado(e)}
+                                        title="Ver resultado"
+                                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-violet-50 dark:bg-violet-900/30 text-violet-600 hover:bg-violet-100 transition-all text-[10px] font-black shrink-0"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">bar_chart</span>
+                                        Ver Resultado
+                                    </button>
+                                )}
                                 {isPendente && (
                                     <button
                                         onClick={() => handleCancelarEscala(e.id)}
@@ -405,6 +463,11 @@ const PortalPacienteTab = ({ paciente }) => {
                     })}
                 </div>
             </div>
+
+            {/* Modal Resultado Escala */}
+            {showResultado && (
+                <ResultadoModal escala={showResultado} onClose={() => setShowResultado(null)} />
+            )}
 
             {/* Modal Enviar Escala */}
             {showEnviarEscala && (
@@ -554,3 +617,113 @@ const PortalPacienteTab = ({ paciente }) => {
 };
 
 export default PortalPacienteTab;
+
+// ─── Score calculator ─────────────────────────────────────────────────────────
+function calcScore(answers, cat) {
+    if (!cat?.scoring || !answers) return null;
+    const { method, max, reverseItems } = cat.scoring;
+    const total = Object.entries(answers).reduce((sum, [idx, val]) => {
+        let v = typeof val === 'number' ? val : parseInt(val) ?? 0;
+        if (method === 'cesd' && reverseItems?.includes(parseInt(idx))) v = 3 - v;
+        return sum + v;
+    }, 0);
+    const range = cat.scoring.ranges?.find(r => total >= r.min && total <= r.max);
+    return { total, max, range };
+}
+
+// ─── ResultadoModal ───────────────────────────────────────────────────────────
+const ResultadoModal = ({ escala, onClose }) => {
+    const cat = ESCALAS_CATALOG.find(c => c.id === escala.escala_id);
+    const score = calcScore(escala.answers, cat);
+
+    const rawQ = escala.questions || cat?.questions || [];
+    const questions = rawQ.map(q => typeof q === 'string' ? { text: q } : q);
+    const opts = escala.response_options || cat?.response_options || [];
+    const labels = escala.response_labels || cat?.response_labels || opts;
+
+    return (
+        <>
+            <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+                    {/* Header */}
+                    <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4 shrink-0">
+                        <div>
+                            <p className="text-[10px] font-black text-violet-500 uppercase tracking-widest mb-1">{escala.nome}</p>
+                            <h3 className="font-black text-slate-900 dark:text-white text-lg leading-tight">Resultado da Escala</h3>
+                            {escala.answered_at && (
+                                <p className="text-xs text-slate-400 mt-1">
+                                    Respondida em {new Date(escala.answered_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                                </p>
+                            )}
+                        </div>
+                        <button onClick={onClose} className="size-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shrink-0 mt-0.5">
+                            <span className="material-symbols-outlined text-slate-400 text-lg">close</span>
+                        </button>
+                    </div>
+
+                    {/* Score Badge */}
+                    {score && (
+                        <div className="mx-6 mt-5 shrink-0 rounded-2xl p-4 flex items-center gap-4 border"
+                            style={{ background: score.range?.bg || '#f8fafc', borderColor: score.range?.color + '33' || '#e2e8f0' }}>
+                            <div className="text-4xl font-black" style={{ color: score.range?.color || '#64748b' }}>
+                                {score.total}
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pontuação Total</p>
+                                <p className="font-black text-base" style={{ color: score.range?.color || '#1e293b' }}>
+                                    {score.range?.label || 'N/A'}
+                                </p>
+                                <p className="text-xs text-slate-400">máx. {score.max} pontos</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Questions */}
+                    <div className="overflow-y-auto flex-1 px-6 py-4 space-y-3">
+                        {questions.length === 0 && escala.answers?.texto && (
+                            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4">
+                                <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{escala.answers.texto}</p>
+                            </div>
+                        )}
+                        {questions.map((q, i) => {
+                            const hasCustomOpts = typeof q === 'object' && Array.isArray(q.options);
+                            const answerIdx = escala.answers?.[i];
+                            const answered = answerIdx !== null && answerIdx !== undefined;
+                            const answerLabel = hasCustomOpts
+                                ? q.options?.[answerIdx]
+                                : (labels[answerIdx] ?? `Opção ${answerIdx}`);
+                            const answerVal = hasCustomOpts ? null : opts[answerIdx];
+                            return (
+                                <div key={i} className="flex gap-3">
+                                    <span className="text-xs font-black text-violet-400 mt-0.5 shrink-0 w-5">{i + 1}.</span>
+                                    <div className="flex-1">
+                                        <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 leading-relaxed">
+                                            {q.text || q.texto || q}
+                                        </p>
+                                        {answered ? (
+                                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-800">
+                                                {answerVal !== null && answerVal !== undefined && (
+                                                    <span className="text-sm font-black text-violet-700 dark:text-violet-300">{answerVal}</span>
+                                                )}
+                                                <span className="text-xs text-slate-600 dark:text-slate-400">{answerLabel}</span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-xs text-slate-300 italic">Não respondida</span>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
+                        <button onClick={onClose} className="w-full h-11 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-black text-sm transition-all">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
